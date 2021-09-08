@@ -1,23 +1,22 @@
-"use strict";
+"use strict"
 
+require('dotenv').config()
 const Alpaca = require("@alpacahq/alpaca-trade-api");
 
 class AlpacaDataStream {
-  constructor({ apiKey, secretKey, feed }) {
+  constructor(symbols_array) {
     this.alpaca = new Alpaca({
-      keyId: apiKey,
-      secretKey,
-      feed,
+      keyId: process.env.ALPACA_API_KEY,
+      secretKey: process.env.ALPACA_API_SECRET,
+      feed: "sip",
+      paper: true
     });
 
     const socket = this.alpaca.data_stream_v2;
 
     socket.onConnect(function () {
       console.log("Connected");
-      socket.subscribeForQuotes(["AAPL"]);
-      socket.subscribeForTrades(["FB"]);
-      socket.subscribeForBars(["SPY"]);
-      socket.subscribeForStatuses(["*"]);
+      socket.subscribeForQuotes(symbols_array);
     });
 
     socket.onError((err) => {
