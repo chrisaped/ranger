@@ -1,6 +1,5 @@
 "use strict";
 
-require('dotenv').config()
 const Alpaca = require("@alpacahq/alpaca-trade-api");
 
 class AlpacaDataStream {
@@ -58,9 +57,4 @@ class AlpacaDataStream {
   }
 }
 
-let stream = new AlpacaDataStream({
-  apiKey: process.env.ALPACA_API_KEY,
-  secretKey: process.env.ALPACA_API_SECRET,
-  feed: "sip",
-  paper: true,
-})
+module.exports = { AlpacaDataStream }
