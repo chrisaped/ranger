@@ -3,14 +3,14 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { store } from './configure-store';
 // import App from './App';
-import { Search } from './search/searchContainer';
+import { Container } from './counter/container';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       {/* <App /> */}
-      <Search />
+      <Container />
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')
