@@ -1,4 +1,8 @@
-import { createStore } from 'redux';
-import { countReducer } from './counter/reducer';
+import { combineReducers, createStore } from 'redux';
+import { searchReducer } from './search/searchReducer';
 
-export const store = createStore(countReducer);
+const rootReducer = combineReducers({
+  search: searchReducer
+});
+
+export const store = createStore(rootReducer);
