@@ -1,10 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { 
   initiateSocketConnection,
-  disconnectSocket
+  disconnectSocket,
+  connectToAlpaca
 } from "./socket.io.service";
 
 export default function App() {
+  const [searchParams, setSearchParams] = useState('');
+  // const [streamData, setStreamData] = useState({});
+
+  // console.log('here is the streamData', streamData);
+
   useEffect(() => {
     initiateSocketConnection();
     return () => {
@@ -12,14 +18,20 @@ export default function App() {
     }    
   }, []);
 
-  async function callAlpacaDataStream() {
-    const response = await fetch('/alpaca_data_stream', { method: 'POST' });
-    console.log('here is the response', response);
+  const initiateAlpacaDataStream = () => {
+    const arrayString = JSON.stringify([searchParams]);
+    connectToAlpaca(arrayString);
   }
 
   return (
     <div>
-      <button onClick={callAlpacaDataStream}>Submit</button>
+      <div>
+        <input type="text" placeholder="Symbol" value={searchParams} onChange={setSearchParams} />
+        <button onClick={initiateAlpacaDataStream}>Search</button>
+      </div>
+      <div>
+        {/* <p>{`${streamData}`}</p> */}
+      </div>
     </div>
   );
 }
