@@ -1,36 +1,42 @@
 import { useEffect, useState } from "react";
-import { 
-  initiateSocketConnection,
-  disconnectSocket,
-  connectToAlpaca
-} from "./socket.io.service";
+import { io } from 'socket.io-client';
 
 export default function App() {
+  const [socket, setSocket] = useState(null);
   const [searchParams, setSearchParams] = useState('');
-  // const [streamData, setStreamData] = useState({});
-
-  // console.log('here is the streamData', streamData);
+  const [streamData, setStreamData] = useState({});
 
   useEffect(() => {
-    initiateSocketConnection();
+    const newSocket = io(process.env.REACT_APP_SOCKET_ENDPOINT);
+    setSocket(newSocket);
     return () => {
-      disconnectSocket();
+      newSocket.disconnect();
     }    
-  }, []);
+  }, [setSocket]);
 
   const initiateAlpacaDataStream = () => {
     const arrayString = JSON.stringify([searchParams]);
-    connectToAlpaca(arrayString);
+    socket.emit('alpaca connect', arrayString);
+
+    socket.on('alpaca connect', function(data) {
+  		setStreamData(data);
+		});
   }
 
   return (
     <div>
       <div>
-        <input type="text" placeholder="Symbol" value={searchParams} onChange={setSearchParams} />
+        <input 
+          type="text" 
+          placeholder="Symbol" 
+          value={searchParams} 
+          onChange={(e) => setSearchParams(e.target.value)} 
+        />
         <button onClick={initiateAlpacaDataStream}>Search</button>
       </div>
       <div>
-        {/* <p>{`${streamData}`}</p> */}
+        <p>{`${searchParams}`}</p>
+        <p>{`${streamData?.Symbol}: ${streamData?.AskPrice}`}</p>
       </div>
     </div>
   );
