@@ -9,6 +9,16 @@ export default function App() {
   useEffect(() => {
     const newSocket = io(process.env.REACT_APP_SOCKET_ENDPOINT);
     setSocket(newSocket);
+
+    const subscribeToChat = (cb) => {
+      newSocket.on('my broadcast', msg => {
+        return cb(null, msg);
+      });
+    }
+
+    subscribeToChat((err, data) => {
+      console.log('here is the datta', data);
+    });
     return () => {
       newSocket.disconnect();
     }    
@@ -16,11 +26,7 @@ export default function App() {
 
   const initiateAlpacaDataStream = () => {
     const arrayString = JSON.stringify([searchParams]);
-    socket.emit('alpaca connect', arrayString);
-
-    socket.on('alpaca connect', function(data) {
-  		setStreamData(data);
-		});
+    socket.emit('my message', arrayString);
   }
 
   return (

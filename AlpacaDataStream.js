@@ -52,7 +52,7 @@ class AlpacaDataStream {
     // disconnect after 5 seconds
     setTimeout(() => {
       socket.disconnect();
-    }, 5000);
+    }, 10000);
   }
 }
 

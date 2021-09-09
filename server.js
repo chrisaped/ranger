@@ -8,20 +8,20 @@ const io = require('socket.io')(http, {
   }
 });
 
-const stream = {
-  T: 'q',
-  Symbol: 'GME',
-  BidExchange: 'H',
-  BidPrice: 196.53,
-  BidSize: 1,
-  AskExchange: 'T',
-  AskPrice: 196.92,
-  AskSize: 1,
-  Condition: [ 'R' ],
-  Tape: 'A',
-  Timestamp: '2021-09-08T18:18:06.708Z'
-}
-// const alpacaDataStream = require('./AlpacaDataStream').AlpacaDataStream;
+// const stream = {
+//   T: 'q',
+//   Symbol: 'GME',
+//   BidExchange: 'H',
+//   BidPrice: 196.53,
+//   BidSize: 1,
+//   AskExchange: 'T',
+//   AskPrice: 196.92,
+//   AskSize: 1,
+//   Condition: [ 'R' ],
+//   Tape: 'A',
+//   Timestamp: '2021-09-08T18:18:06.708Z'
+// }
+const alpacaDataStream = require('./AlpacaDataStream').AlpacaDataStream;
 
 // app.post('/alpaca_data_stream', (req, res) => {
 //   console.log('here is the request', req);
@@ -35,10 +35,11 @@ io.on('connection', (socket) => {
     console.log('user disconnected');
   });
 
-  socket.on('alpaca connect', (symbols_array_string) => {
-    console.log('here is the symbols array', symbols_array_string);
-    // let stream = new alpacaDataStream(['GME']);
-    io.emit('alpaca connect', stream);
+  socket.on('my message', (msg) => {
+    console.log('here is the message', msg);
+    // console.log('here is the symbols array', symbols_array_string);
+    let stream = new alpacaDataStream(['GME']);
+    io.emit('my broadcast', stream);
   });
 });
 
