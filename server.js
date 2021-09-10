@@ -36,7 +36,9 @@ const alpacaSocket = alpacaInstance.data_stream_v2;
 io.on('connection', (socket) => {
   console.log('a user connected');
   socket.on('disconnect', () => {
-    alpacaSocket.disconnect();
+    if (alpacaSocket.conn) {
+      alpacaSocket.disconnect();
+    }
     console.log('user disconnected');
   });
 
