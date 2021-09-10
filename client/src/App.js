@@ -17,6 +17,7 @@ export default function App() {
     }
 
     subscribeToChat((err, data) => {
+      setStreamData(data);
       console.log('here is the datta', data);
     });
     return () => {

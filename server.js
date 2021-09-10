@@ -7,6 +7,17 @@ const io = require('socket.io')(http, {
     origins: ['http://localhost:3000']
   }
 });
+require('dotenv').config();
+const Alpaca = require("@alpacahq/alpaca-trade-api");
+
+const alpacaInstance = new Alpaca({
+  keyId: process.env.ALPACA_API_KEY,
+  secretKey: process.env.ALPACA_API_SECRET,
+  feed: "sip",
+  paper: true
+});
+
+const alpacaSocket = alpacaInstance.data_stream_v2;
 
 // const stream = {
 //   T: 'q',
@@ -21,25 +32,28 @@ const io = require('socket.io')(http, {
 //   Tape: 'A',
 //   Timestamp: '2021-09-08T18:18:06.708Z'
 // }
-const alpacaDataStream = require('./AlpacaDataStream').AlpacaDataStream;
-
-// app.post('/alpaca_data_stream', (req, res) => {
-//   console.log('here is the request', req);
-//   console.log('it works!', stream);
-//   res.send({ dataStream: stream });
-// })
 
 io.on('connection', (socket) => {
   console.log('a user connected');
   socket.on('disconnect', () => {
+    alpacaSocket.disconnect();
     console.log('user disconnected');
   });
 
   socket.on('my message', (msg) => {
     console.log('here is the message', msg);
-    // console.log('here is the symbols array', symbols_array_string);
-    let stream = new alpacaDataStream(['GME']);
-    io.emit('my broadcast', stream);
+
+    alpacaSocket.connect();
+
+    alpacaSocket.onConnect(function () {
+      console.log("Connected");
+      alpacaSocket.subscribeForQuotes(['GME']);
+    });
+
+    alpacaSocket.onStockQuote((quote) => {
+      console.log('here is the quote', quote);
+      io.emit('my broadcast', quote);
+    });
   });
 });
 

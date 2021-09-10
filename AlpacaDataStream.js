@@ -28,6 +28,7 @@ class AlpacaDataStream {
     });
 
     socket.onStockQuote((quote) => {
+      // add socket emit here
       console.log(quote);
     });
 
