@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function Search({ socket, quoteData }) {
+export default function Search({ socket }) {
   const [searchParams, setSearchParams] = useState('');
 
   const getStockQuote = () => {
@@ -13,7 +13,7 @@ export default function Search({ socket, quoteData }) {
   }
 
   return (
-    <div>
+    <div className="d-flex justify-content-center">
       <div className="d-inline-flex">
         <input 
           className="form-control m-2"
@@ -30,11 +30,6 @@ export default function Search({ socket, quoteData }) {
           Search
         </button>
       </div>
-      {Object.keys(quoteData).length > 0 && (
-        <div>
-          <p>{`${quoteData?.Symbol}: ${quoteData?.AskPrice}`}</p>
-        </div>
-      )}
     </div>
   );
 }
