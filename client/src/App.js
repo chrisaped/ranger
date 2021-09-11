@@ -39,9 +39,11 @@ export default function App() {
         />
         <button onClick={getStockQuote}>Search</button>
       </div>
-      <div>
-        <p>{`${quoteData?.Symbol}: ${quoteData?.AskPrice}`}</p>
-      </div>
+      {Object.keys(quoteData).length > 0 && (
+        <div>
+          <p>{`${quoteData?.Symbol}: ${quoteData?.AskPrice}`}</p>
+        </div>
+      )}
     </div>
   );
 }
