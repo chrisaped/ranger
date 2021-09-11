@@ -19,13 +19,12 @@ const alpacaInstance = new Alpaca({
 
 const alpacaSocket = alpacaInstance.data_stream_v2;
 
-
 io.on('connection', (socket) => {
   alpacaSocket.connect();
   console.log('connected');
 
   alpacaSocket.onConnect(() => {
-    alpaca.getPositions().then((positions) => {
+    alpacaInstance.getPositions().then((positions) => {
       console.log('here are the positions', positions);
       alpacaSocket.subscribeForQuotes(positions);
     })
