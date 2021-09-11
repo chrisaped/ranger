@@ -36,6 +36,7 @@ export default function SearchResult({ socket, quote, setQuote }) {
 
   const addToWatchlist = () => {
     socket.emit('addToWatchlist', Symbol);
+    setQuote({});
   }
 
   return (
