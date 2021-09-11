@@ -28,7 +28,7 @@ export default function App() {
 
   const sampleQuote = {
     Symbol: 'GME',
-    AskPrice: 250.12
+    AskPrice: 10
   };
 
   return (
