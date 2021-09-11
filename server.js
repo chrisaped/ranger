@@ -20,7 +20,9 @@ const alpacaInstance = new Alpaca({
 const alpacaSocket = alpacaInstance.data_stream_v2;
 
 io.on('connection', (socket) => {
-  alpacaSocket.connect();
+  if (!alpacaSocket.conn) {
+    alpacaSocket.connect();
+  }  
   console.log('connected');
 
   alpacaSocket.onConnect(() => {
@@ -41,7 +43,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    alpacaSocket.disconnect();
+    if (alpacaSocket.conn) {
+      alpacaSocket.disconnect();
+    }
     console.log('disconnected');
   });
 });
