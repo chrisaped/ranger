@@ -29,15 +29,16 @@ export default function App() {
   }
 
   return (
-    <div>
-      <div>
+    <div className="container d-flex justify-content-center">
+      <div className="d-inline-flex">
         <input 
+          className="form-control m-2"
           type="text" 
           placeholder="Symbol" 
           value={searchParams} 
           onChange={(e) => setSearchParams(e.target.value)} 
         />
-        <button onClick={getStockQuote}>Search</button>
+        <button className="btn btn-primary m-2" onClick={getStockQuote}>Search</button>
       </div>
       {Object.keys(quoteData).length > 0 && (
         <div>
