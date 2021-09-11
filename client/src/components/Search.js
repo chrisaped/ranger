@@ -7,6 +7,11 @@ export default function Search({ socket, quoteData }) {
     socket.emit('getStockQuote', searchParams);
   }
 
+  const handleChange = (e) => {
+    const params = e.target.value;
+    setSearchParams(params.toUpperCase());
+  }
+
   return (
     <div>
       <div className="d-inline-flex">
@@ -15,7 +20,7 @@ export default function Search({ socket, quoteData }) {
           type="text" 
           placeholder="Symbol" 
           value={searchParams} 
-          onChange={(e) => setSearchParams(e.target.value)} 
+          onChange={handleChange} 
         />
         <button className="btn btn-primary m-2" onClick={getStockQuote}>Search</button>
       </div>

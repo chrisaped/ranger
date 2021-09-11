@@ -37,7 +37,7 @@ io.on('connection', (socket) => {
   });
   
   socket.on('getStockQuote', (symbol) => {
-    const symbolsArray = symbol.toUpperCase().split(',');
+    const symbolsArray = symbol.split(',');
     const message = { quotes: symbolsArray };
     alpacaSocket.updateSubscriptions(message);
   });
