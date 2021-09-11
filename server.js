@@ -42,6 +42,12 @@ io.on('connection', (socket) => {
     alpacaSocket.updateSubscriptions(message);
   });
 
+  socket.on('createOrder', (orderObject) => {
+    alpacaInstance.createOrder(orderObject).then((order) => {
+      console.log('here is the order', order);
+    });
+  });
+
   socket.on('disconnect', () => {
     if (alpacaSocket.conn) {
       alpacaSocket.disconnect();

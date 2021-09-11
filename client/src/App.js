@@ -38,7 +38,11 @@ export default function App() {
       </div>
       {/* {Object.keys(quote).length > 0 && ( */}
       <div className="row">
-        <SearchResult quote={sampleQuote} />
+        <SearchResult
+          socket={socket}
+          quote={sampleQuote} 
+          setQuote={setQuote} 
+        />
       </div>
       {/* )} */}
     </div>

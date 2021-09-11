@@ -1,14 +1,38 @@
 import { useState } from "react";
 import {
+  calculatProfitTarget,
   calculatePositionSize,
-  calculatProfitTarget
+  calculateMoneyUpfront
 } from "../shared/calculations";
 
-export default function SearchResult({ quote }) {
+export default function SearchResult({ socket, quote, setQuote }) {
   const { Symbol, AskPrice } = quote;
   const defaultStopPrice = AskPrice - .25;
 
   const [stopPrice, setStopPrice] = useState(defaultStopPrice);
+  const profitTarget = calculatProfitTarget(AskPrice, stopPrice);
+  const positionSize = calculatePositionSize(AskPrice, stopPrice);
+  const moneyUpfront = calculateMoneyUpfront(AskPrice, stopPrice);
+
+  const orderObject = {
+    "side": "buy",
+    "symbol": Symbol,
+    "type": "market",
+    "qty": `${positionSize}`,
+    "time_in_force": "gtc",
+    "order_class": "bracket",
+    "take_profit": {
+      "limit_price": `${profitTarget}`
+    },
+    "stop_loss": {
+      "stop_price": `${stopPrice}`
+    }
+  };
+
+  const createOrder = () => {
+    socket.emit('createOrder', orderObject);
+    setQuote({});
+  };
 
   return (
     <div>
@@ -20,6 +44,8 @@ export default function SearchResult({ quote }) {
             <th>Stop Price</th>
             <th>Target Price</th>
             <th>Shares</th>
+            <th>Money Upfront</th>
+            <th colSpan="2">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -35,8 +61,35 @@ export default function SearchResult({ quote }) {
                 onChange={(e) => setStopPrice(e.target.value)} 
               />              
             </td>
-            <td>{calculatProfitTarget(AskPrice, stopPrice)}</td>
-            <td>{calculatePositionSize(AskPrice, stopPrice)}</td>
+            <td>{profitTarget}</td>
+            <td>{positionSize}</td>
+            <td>${moneyUpfront}</td>
+            <td>
+              <button 
+                className="btn btn-success m-2" 
+                onClick={createOrder}
+                // disabled= if I dont have enough money
+              >
+                Long
+              </button>
+            </td>
+            {/* <td>
+              <button 
+                className="btn btn-danger m-2" 
+                // onClick={}
+                // disabled= if I dont have enough money
+              >
+                Short
+              </button>              
+            </td> */}
+            <td>
+              <button 
+                className="btn btn-secondary m-2" 
+                // onClick={}
+              >
+                Watchlist
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
