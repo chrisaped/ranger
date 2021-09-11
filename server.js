@@ -19,43 +19,31 @@ const alpacaInstance = new Alpaca({
 
 const alpacaSocket = alpacaInstance.data_stream_v2;
 
-// const stream = {
-//   T: 'q',
-//   Symbol: 'GME',
-//   BidExchange: 'H',
-//   BidPrice: 196.53,
-//   BidSize: 1,
-//   AskExchange: 'T',
-//   AskPrice: 196.92,
-//   AskSize: 1,
-//   Condition: [ 'R' ],
-//   Tape: 'A',
-//   Timestamp: '2021-09-08T18:18:06.708Z'
-// }
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
-  socket.on('disconnect', () => {
-    if (alpacaSocket.conn) {
-      alpacaSocket.disconnect();
-    }
-    console.log('user disconnected');
+  alpacaSocket.connect();
+  console.log('connected');
+
+  alpacaSocket.onConnect(() => {
+    alpaca.getPositions().then((positions) => {
+      console.log('here are the positions', positions);
+      alpacaSocket.subscribeForQuotes(positions);
+    })
+  });
+  
+  alpacaSocket.onStockQuote((quote) => {
+    io.emit('stockQuoteResponse', quote);
+  });
+  
+  socket.on('getStockQuote', (symbol) => {
+    const symbolsArray = symbol.toUpperCase().split(',');
+    const message = { quotes: symbolsArray };
+    alpacaSocket.updateSubscriptions(message);
   });
 
-  socket.on('my message', (msg) => {
-    console.log('here is the message', msg);
-
-    alpacaSocket.connect();
-
-    alpacaSocket.onConnect(function () {
-      console.log("Connected");
-      alpacaSocket.subscribeForQuotes(['GME']);
-    });
-
-    alpacaSocket.onStockQuote((quote) => {
-      console.log('here is the quote', quote);
-      io.emit('my broadcast', quote);
-    });
+  socket.on('disconnect', () => {
+    alpacaSocket.disconnect();
+    console.log('disconnected');
   });
 });
 

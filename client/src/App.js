@@ -4,30 +4,28 @@ import { io } from 'socket.io-client';
 export default function App() {
   const [socket, setSocket] = useState(null);
   const [searchParams, setSearchParams] = useState('');
-  const [streamData, setStreamData] = useState({});
+  const [quoteData, setQuoteData] = useState({});
 
   useEffect(() => {
     const newSocket = io(process.env.REACT_APP_SOCKET_ENDPOINT);
     setSocket(newSocket);
 
-    const subscribeToChat = (cb) => {
-      newSocket.on('my broadcast', msg => {
-        return cb(null, msg);
+    const onStockQuote = (cb) => {
+      newSocket.on('stockQuoteResponse', data => {
+        return cb(null, data);
       });
     }
 
-    subscribeToChat((err, data) => {
-      setStreamData(data);
-      console.log('here is the datta', data);
+    onStockQuote((_err, data) => {
+      setQuoteData(data);
     });
     return () => {
       newSocket.disconnect();
-    }    
-  }, [setSocket]);
+    }
+  }, []);
 
-  const initiateAlpacaDataStream = () => {
-    const arrayString = JSON.stringify([searchParams]);
-    socket.emit('my message', arrayString);
+  const getStockQuote = () => {
+    socket.emit('getStockQuote', searchParams);
   }
 
   return (
@@ -39,11 +37,10 @@ export default function App() {
           value={searchParams} 
           onChange={(e) => setSearchParams(e.target.value)} 
         />
-        <button onClick={initiateAlpacaDataStream}>Search</button>
+        <button onClick={getStockQuote}>Search</button>
       </div>
       <div>
-        <p>{`${searchParams}`}</p>
-        <p>{`${streamData?.Symbol}: ${streamData?.AskPrice}`}</p>
+        <p>{`${quoteData?.Symbol}: ${quoteData?.AskPrice}`}</p>
       </div>
     </div>
   );
