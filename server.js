@@ -48,6 +48,12 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('addToWatchlist', (symbol) => {
+    alpacaInstance.addToWatchlist(process.env.ALPACA_WATCHLIST_ID, symbol).then((response) => {
+      console.log('here is the addToWatchlist response', response);
+    });
+  });
+
   socket.on('disconnect', () => {
     if (alpacaSocket.conn) {
       alpacaSocket.disconnect();

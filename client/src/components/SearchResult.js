@@ -19,7 +19,7 @@ export default function SearchResult({ socket, quote, setQuote }) {
     "symbol": Symbol,
     "type": "market",
     "qty": `${positionSize}`,
-    "time_in_force": "gtc",
+    "time_in_force": "day",
     "order_class": "bracket",
     "take_profit": {
       "limit_price": `${profitTarget}`
@@ -33,6 +33,10 @@ export default function SearchResult({ socket, quote, setQuote }) {
     socket.emit('createOrder', orderObject);
     setQuote({});
   };
+
+  const addToWatchlist = () => {
+    socket.emit('addToWatchlist', Symbol);
+  }
 
   return (
     <div>
@@ -85,7 +89,7 @@ export default function SearchResult({ socket, quote, setQuote }) {
             <td>
               <button 
                 className="btn btn-secondary m-2" 
-                // onClick={}
+                onClick={addToWatchlist}
               >
                 Watchlist
               </button>
