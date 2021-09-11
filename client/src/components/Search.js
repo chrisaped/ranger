@@ -22,7 +22,13 @@ export default function Search({ socket, quoteData }) {
           value={searchParams} 
           onChange={handleChange} 
         />
-        <button className="btn btn-primary m-2" onClick={getStockQuote}>Search</button>
+        <button 
+          className="btn btn-primary m-2" 
+          onClick={getStockQuote}
+          disabled={!searchParams}
+        >
+          Search
+        </button>
       </div>
       {Object.keys(quoteData).length > 0 && (
         <div>
