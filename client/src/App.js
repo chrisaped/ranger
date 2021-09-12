@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { io } from 'socket.io-client';
 import Search from './components/Search';
 import SearchResult from "./components/SearchResult";
+import Positions from "./components/Positions";
+import Watchlist from "./components/Watchlist";
 
 export default function App() {
   const [socket, setSocket] = useState(null);
@@ -27,7 +29,7 @@ export default function App() {
   }, []);
 
   const sampleQuote = {
-    Symbol: 'GME',
+    Symbol: 'AAPL',
     AskPrice: 10
   };
 
@@ -45,6 +47,12 @@ export default function App() {
         />
       </div>
       {/* )} */}
+      <div className="row">
+        <Positions socket={socket} />
+      </div>      
+      <div className="row">
+        <Watchlist socket={socket} />
+      </div>
     </div>
   );
 }

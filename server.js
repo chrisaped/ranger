@@ -26,10 +26,23 @@ io.on('connection', (socket) => {
   console.log('connected');
 
   alpacaSocket.onConnect(() => {
-    alpacaInstance.getPositions().then((positions) => {
-      console.log('here are the positions', positions);
-      alpacaSocket.subscribeForQuotes(positions);
-    })
+    let alpacaPositions;
+    let alpacaWatchlist;
+  
+    alpacaInstance.getPositions().then((response) => {
+      const symbolsArray = response.assets.map(obj => obj.symbol);
+      alpacaPositions = symbolsArray;
+      io.emit('getPositionsResponse', symbolsArray);
+    });
+
+    alpacaInstance.getWatchlist(process.env.ALPACA_WATCHLIST_ID).then((response) => {
+      const symbolsArray = response.assets.map(obj => obj.symbol);
+      alpacaWatchlist = symbolsArray;
+      io.emit('watchlistResponse', symbolsArray);
+    });
+
+    const allSymbols = [...alpacaPositions, ...alpacaWatchlist];    
+    alpacaSocket.subscribeForQuotes(allSymbols);
   });
   
   alpacaSocket.onStockQuote((quote) => {
@@ -50,7 +63,10 @@ io.on('connection', (socket) => {
 
   socket.on('addToWatchlist', (symbol) => {
     alpacaInstance.addToWatchlist(process.env.ALPACA_WATCHLIST_ID, symbol).then((response) => {
-      console.log('here is the addToWatchlist response', response);
+      const symbolsArray = response.assets.map(obj => obj.symbol);
+      io.emit('watchlistResponse', symbolsArray);
+      const message = { quotes: symbolsArray };
+      alpacaSocket.updateSubscriptions(message);
     });
   });
 
