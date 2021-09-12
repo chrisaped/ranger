@@ -19,7 +19,7 @@ export default function App() {
 
   return (
     <>
-    {socket && (
+    {socket ? (
     <div className="container">
       <div className="row">
         <Search socket={socket} />
@@ -34,6 +34,10 @@ export default function App() {
         <Watchlist socket={socket} />
       </div>
     </div>
+    ):(
+      <div>
+        <p>Socket connection error.</p>
+      </div>
     )}
     </>
   );
