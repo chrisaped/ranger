@@ -1,15 +1,25 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   calculatProfitTarget,
   calculatePositionSize,
   calculateMoneyUpfront
 } from "../shared/calculations";
 
-export default function SearchResult({ socket, quote, setQuote }) {
-  const { Symbol, AskPrice } = quote;
-  const defaultStopPrice = AskPrice - .25;
+export default function SearchResult({ socket }) {
+  const [searchResult, setSearchResult] = useState({});
 
+  useEffect(() => {
+    socket.on("stockQuoteResponse", (quote) => {
+      setSearchResult(quote);
+    });
+  }, [socket]);
+
+  const searchResultPresent = Object.keys(searchResult).length > 0;
+
+  const { Symbol, AskPrice } = searchResult;
+  const defaultStopPrice = AskPrice - .25;
   const [stopPrice, setStopPrice] = useState(defaultStopPrice);
+
   const profitTarget = calculatProfitTarget(AskPrice, stopPrice);
   const positionSize = calculatePositionSize(AskPrice, stopPrice);
   const moneyUpfront = calculateMoneyUpfront(AskPrice, stopPrice);
@@ -31,16 +41,17 @@ export default function SearchResult({ socket, quote, setQuote }) {
 
   const createOrder = () => {
     socket.emit('createOrder', orderObject);
-    setQuote({});
+    setSearchResult({});
   };
 
   const addToWatchlist = () => {
     socket.emit('addToWatchlist', Symbol);
-    setQuote({});
+    setSearchResult({});
   }
 
   return (
     <div>
+    {searchResultPresent && ( 
       <table className="table table-bordered">
         <thead className="table-dark">
           <tr>
@@ -98,6 +109,7 @@ export default function SearchResult({ socket, quote, setQuote }) {
           </tr>
         </tbody>
       </table>
+    )}
     </div>
   );
 }
