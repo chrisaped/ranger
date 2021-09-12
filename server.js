@@ -25,25 +25,20 @@ io.on('connection', (socket) => {
   }  
   console.log('connected');
 
-  alpacaSocket.onConnect(() => {
-    let alpacaPositions;
-    let alpacaWatchlist;
-  
-    alpacaInstance.getPositions().then((response) => {
-      const symbolsArray = response.assets.map(obj => obj.symbol);
-      alpacaPositions = symbolsArray;
-      io.emit('getPositionsResponse', symbolsArray);
-    });
-
-    alpacaInstance.getWatchlist(process.env.ALPACA_WATCHLIST_ID).then((response) => {
-      const symbolsArray = response.assets.map(obj => obj.symbol);
-      alpacaWatchlist = symbolsArray;
-      io.emit('watchlistResponse', symbolsArray);
-    });
-
-    const allSymbols = [...alpacaPositions, ...alpacaWatchlist];    
-    alpacaSocket.subscribeForQuotes(allSymbols);
+  socket.on('disconnect', () => {
+    if (alpacaSocket.conn) {
+      alpacaSocket.disconnect();
+    }
+    console.log('disconnected');
   });
+
+  // alpacaSocket.onConnect(() => {
+  //   let alpacaPositions = [];
+  //   let alpacaWatchlist = [];
+
+  //   const allSymbols = [...alpacaPositions, ...alpacaWatchlist];    
+  //   alpacaSocket.subscribeForQuotes(allSymbols);
+  // });
   
   alpacaSocket.onStockQuote((quote) => {
     io.emit('stockQuoteResponse', quote);
@@ -61,6 +56,24 @@ io.on('connection', (socket) => {
     });
   });
 
+  socket.on('getPositions', () => {
+    alpacaInstance.getPositions().then((response) => {
+      const symbolsArray = response?.assets?.map(obj => obj.symbol) || [];
+      if (symbolsArray.length > 0) {
+        io.emit('getPositionsResponse', symbolsArray);
+      }
+    });    
+  });
+
+  socket.on('getWatchlist', () => {
+    alpacaInstance.getWatchlist(process.env.ALPACA_WATCHLIST_ID).then((response) => {
+      const symbolsArray = response?.assets?.map(obj => obj.symbol) || [];
+      if (symbolsArray.length > 0) {
+        io.emit('watchlistResponse', symbolsArray);
+      }
+    });
+  });
+
   socket.on('addToWatchlist', (symbol) => {
     alpacaInstance.addToWatchlist(process.env.ALPACA_WATCHLIST_ID, symbol).then((response) => {
       const symbolsArray = response.assets.map(obj => obj.symbol);
@@ -68,13 +81,6 @@ io.on('connection', (socket) => {
       const message = { quotes: symbolsArray };
       alpacaSocket.updateSubscriptions(message);
     });
-  });
-
-  socket.on('disconnect', () => {
-    if (alpacaSocket.conn) {
-      alpacaSocket.disconnect();
-    }
-    console.log('disconnected');
   });
 });
 

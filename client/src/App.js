@@ -47,12 +47,16 @@ export default function App() {
         />
       </div>
       {/* )} */}
-      <div className="row">
-        <Positions socket={socket} />
-      </div>      
-      <div className="row">
-        <Watchlist socket={socket} />
-      </div>
+      {socket && (
+        <div>
+          <div className="row">
+            <Positions socket={socket} />
+          </div>      
+          <div className="row">
+            <Watchlist socket={socket} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
