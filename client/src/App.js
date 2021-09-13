@@ -49,7 +49,11 @@ export default function App() {
         <Positions socket={socket} />
       </div>      
       <div className="row">
-        <Watchlist socket={socket} />
+        <Watchlist 
+          socket={socket}
+          quotes={quotes}
+          searchSymbol={searchSymbol}
+        />
       </div>
     </div>
     ):(

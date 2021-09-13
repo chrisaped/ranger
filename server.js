@@ -113,7 +113,7 @@ io.on('connection', (socket) => {
           };
           
           alpacaSocket.updateSubscriptions(message);
-          io.emit('watchlistResponse', symbolsArray);
+          // io.emit('watchlistResponse', symbolsArray);
         }
       }
     });
