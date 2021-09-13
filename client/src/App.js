@@ -7,25 +7,43 @@ import Watchlist from "./components/Watchlist";
 
 export default function App() {
   const [socket, setSocket] = useState(null);
+  const [quotes, setQuotes] = useState({});
+  const [searchSymbol, setSearchSymbol] = useState('');
 
   useEffect(() => {
     const newSocket = io(process.env.REACT_APP_SOCKET_ENDPOINT);
     setSocket(newSocket);
+
+    newSocket.on("stockQuoteResponse", (quote) => {
+      const { Symbol, AskPrice } = quote;
+      setQuotesState(Symbol, AskPrice);
+    });
   
     return () => {
       newSocket.disconnect();
     }
   }, []);
 
+  const setQuotesState = (symbol, price) => {
+    setQuotes((prevState) => ({ ...prevState, [symbol]: price }));
+  };
+
   return (
     <>
     {socket ? (
     <div className="container">
       <div className="row">
-        <Search socket={socket} />
+        <Search 
+          socket={socket} 
+          setSearchSymbol={setSearchSymbol} 
+        />
       </div>
       <div className="row">
-        <SearchResult socket={socket} />
+        <SearchResult
+          socket={socket}
+          searchSymbol={searchSymbol}
+          quotes={quotes} 
+        />
       </div>
       <div className="row">
         <Positions socket={socket} />

@@ -5,18 +5,21 @@ import {
   calculateMoneyUpfront
 } from "../shared/calculations";
 
-export default function SearchResult({ socket }) {
-  const [searchResult, setSearchResult] = useState({});
+export default function SearchResult({ socket, searchSymbol, quotes }) {
+  const [quote, setQuote] = useState({});
+
+  const searchResultPresent = searchSymbol && Object.keys(quotes).length > 0 
+    && searchSymbol in quotes;
 
   useEffect(() => {
-    socket.on("stockQuoteResponse", (quote) => {
-      setSearchResult(quote);
-    });
-  }, [socket]);
+    if (searchResultPresent) {
+      const quoteObj = { [searchSymbol]: quotes[searchSymbol] }
+      setQuote(quoteObj)
+    }
+  }, [quotes, searchResultPresent, searchSymbol]);
 
-  const searchResultPresent = Object.keys(searchResult).length > 0;
 
-  const { Symbol, AskPrice } = searchResult;
+  const { Symbol, AskPrice } = quote;
   const defaultStopPrice = AskPrice - .25;
   const [stopPrice, setStopPrice] = useState(defaultStopPrice);
 
@@ -41,12 +44,12 @@ export default function SearchResult({ socket }) {
 
   const createOrder = () => {
     socket.emit('createOrder', orderObject);
-    setSearchResult({});
+    setQuote({});
   };
 
   const addToWatchlist = () => {
     socket.emit('addToWatchlist', Symbol);
-    setSearchResult({});
+    setQuote({});
   }
 
   return (

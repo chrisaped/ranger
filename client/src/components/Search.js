@@ -1,9 +1,10 @@
 import { useState } from "react";
 
-export default function Search({ socket }) {
+export default function Search({ socket, setSearchSymbol }) {
   const [searchParams, setSearchParams] = useState('');
 
   const getStockQuote = () => {
+    setSearchSymbol(searchParams);
     socket.emit('getStockQuote', searchParams);
   }
 
