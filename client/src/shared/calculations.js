@@ -18,5 +18,5 @@ export const calculatePositionSize = (currentPrice, stopPrice) => {
 
 export const calculateMoneyUpfront = (currentPrice, stopPrice) => {
   const positionSize = calculatePositionSize(currentPrice, stopPrice);
-  return (currentPrice * positionSize).toLocaleString();
+  return Math.round(currentPrice * positionSize).toLocaleString();
 };
