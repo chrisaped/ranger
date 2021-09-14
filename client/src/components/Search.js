@@ -1,11 +1,12 @@
 import { useState } from "react";
 
-export default function Search({ socket, setSearchSymbol }) {
+export default function Search({ socket }) {
   const [searchParams, setSearchParams] = useState('');
 
   const getStockQuote = () => {
-    setSearchSymbol(searchParams);
-    socket.emit('getStockQuote', searchParams);
+    console.log('is this the fucker');
+    socket.emit('addToWatchlist', searchParams);
+    setSearchParams('');
   }
 
   const handleChange = (e) => {

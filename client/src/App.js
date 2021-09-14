@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { io } from 'socket.io-client';
 import Search from './components/Search';
-import SearchResult from "./components/SearchResult";
 import Positions from "./components/Positions";
 import Watchlist from "./components/Watchlist";
 
 export default function App() {
   const [socket, setSocket] = useState(null);
   const [quotes, setQuotes] = useState({});
-  const [searchSymbol, setSearchSymbol] = useState('');
 
   useEffect(() => {
     const newSocket = io(process.env.REACT_APP_SOCKET_ENDPOINT);
@@ -33,28 +31,17 @@ export default function App() {
     {socket ? (
     <div className="container">
       <div className="row">
-        <Search 
-          socket={socket} 
-          setSearchSymbol={setSearchSymbol} 
-        />
+        <Search socket={socket} />
       </div>
-      <div className="row">
-        <SearchResult
-          socket={socket}
-          searchSymbol={searchSymbol}
-          quotes={quotes} 
-        />
-      </div>
-      <div className="row">
-        <Positions socket={socket} />
-      </div>      
       <div className="row">
         <Watchlist 
           socket={socket}
           quotes={quotes}
-          searchSymbol={searchSymbol}
         />
-      </div>
+      </div>      
+      <div className="row">
+        <Positions socket={socket} />
+      </div>      
     </div>
     ):(
       <div>

@@ -47,20 +47,19 @@ io.on('connection', (socket) => {
     console.log(trade);
     io.emit('getPositionsResponse', trade);
   });
-  
-  // socket.on('getStockQuote', (symbol) => {
-  //   const symbolsArray = symbol.split(',');
-  // });
 
   // socket.on('createOrder', (orderObject) => {
   //   alpacaInstance.createOrder(orderObject).then((order) => {
   //     console.log('here is the order', order);
   //   });
+    // remove symbol in order object from watchlist
   // });
 
-  // socket.on('addToWatchlist', (symbol) => {
-
-  // });
+  socket.on('addToWatchlist', (symbol) => {
+    alpaca.addToWatchlist(alpacaInstance, symbol);
+    alpacaSocket.disconnect();
+    alpacaSocket.connect();
+  });
 });
 
 http.listen(port, () => console.log(`Listening on port ${port}`));

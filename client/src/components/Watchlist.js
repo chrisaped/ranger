@@ -1,26 +1,43 @@
 import { useEffect, useState } from "react";
+import QuotesTable from "./QuotesTable";
 
-export default function Watchlist({ socket, quotes, searchSymbol }) {
-  const [watchlist, setWatchlist] = useState({});
+export default function Watchlist({ socket, quotes }) {
+  const [stopPrices, setStopPrices] = useState({});
 
-  const watchlistIsReady = (Object.keys(quotes).length > 0) && searchSymbol;
+  const displayReady = (Object.keys(quotes).length > 0) 
+    && (Object.keys(stopPrices).length > 0);
+  const defaultStopPriceDifference = .25;
+
+  const createStopPricesObj = (quotes) => {
+    const stopPricesObj = {};
+    Object.entries(quotes).forEach(([symbol, price]) => {
+      stopPricesObj[symbol] = (price - defaultStopPriceDifference);
+    });
+    return stopPricesObj;
+  };
+
+  const onStopPriceChange = (symbol, newStopPrice) => {
+    setStopPrices((prevState) => ({ ...prevState, [symbol]: newStopPrice }));
+  };
 
   useEffect(() => {
-    socket.emit('getWatchlist');
-
-    if (watchlistIsReady) {
-      const { searchSymbol, ...newQuotes } = quotes;
-      setWatchlist(newQuotes);
+    if (Object.keys(quotes).length > 0) {
+      const stopPricesObj = createStopPricesObj(quotes);
+      setStopPrices(stopPricesObj);
     }
+  }, [quotes]);  
 
-  }, [socket, watchlistIsReady, quotes]);
 
   return (
     <div>
-      <h2>Watchlist</h2>
-      {Object.keys(watchlist).length > 0 ? (
+      {displayReady ? (
         <div>
-          <p>{`${watchlist}`}</p>
+          <QuotesTable 
+            socket={socket}
+            quotes={quotes}
+            stopPrices={stopPrices}
+            onStopPriceChange={onStopPriceChange}
+          />
         </div>
       ):(
         <div>

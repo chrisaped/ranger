@@ -4,9 +4,7 @@ export default function Positions({ socket }) {
   const [positions, setPositions] = useState([]);
 
   useEffect(() => {
-    socket.emit("getPositions");
-
-    socket.on("getPositionsResponse", (symbolsArray) => {
+    socket.on("positionsResponse", (symbolsArray) => {
       setPositions(symbolsArray);
     });
   }, [socket]);
