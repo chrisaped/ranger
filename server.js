@@ -9,6 +9,7 @@ const io = require('socket.io')(http, {
 });
 require('dotenv').config();
 const Alpaca = require("@alpacahq/alpaca-trade-api");
+const alpaca = require('./alpaca');
 
 const alpacaInstance = new Alpaca({
   keyId: process.env.ALPACA_API_KEY,
@@ -19,20 +20,10 @@ const alpacaInstance = new Alpaca({
 
 const alpacaSocket = alpacaInstance.data_stream_v2;
 
-function mergeArrays(...arrays) {
-  let jointArray = []
-
-  arrays.forEach(array => {
-      jointArray = [...jointArray, ...array]
-  })
-  const uniqueArray = jointArray.filter((item,index) => jointArray.indexOf(item) === index)
-  return uniqueArray
-}
-
 io.on('connection', (socket) => {
   if (!alpacaSocket.conn) {
     alpacaSocket.connect();
-  }  
+  }
   console.log('connected');
 
   socket.on('disconnect', () => {
@@ -42,102 +33,34 @@ io.on('connection', (socket) => {
     console.log('disconnected');
   });
 
-  // alpacaSocket.onConnect(() => {
-  //   let alpacaPositions = [];
-  //   let alpacaWatchlist = [];
-
-  //   const allSymbols = [...alpacaPositions, ...alpacaWatchlist];    
-  //   alpacaSocket.subscribeForQuotes(allSymbols);
-  // });
+  alpacaSocket.onConnect(() => {
+    alpaca.getWatchlist(alpacaInstance, io, alpacaSocket);
+    alpaca.getPositions(alpacaInstance, io);
+  });
   
   alpacaSocket.onStockQuote((quote) => {
+    console.log(quote);
     io.emit('stockQuoteResponse', quote);
   });
 
   alpacaSocket.onStockTrade((trade) => {
+    console.log(trade);
     io.emit('getPositionsResponse', trade);
   });
   
-  socket.on('getStockQuote', (symbol) => {
-    const symbolsArray = symbol.split(',');
-    const currentSubscriptions = alpacaSocket.getSubscriptions();
+  // socket.on('getStockQuote', (symbol) => {
+  //   const symbolsArray = symbol.split(',');
+  // });
 
-    if (currentSubscriptions) {
-      const message = {
-        trades: currentSubscriptions.trades,
-        quotes: mergeArrays(symbolsArray, currentSubscriptions.quotes)
-      };
+  // socket.on('createOrder', (orderObject) => {
+  //   alpacaInstance.createOrder(orderObject).then((order) => {
+  //     console.log('here is the order', order);
+  //   });
+  // });
 
-      alpacaSocket.updateSubscriptions(message);
-    }
-  });
+  // socket.on('addToWatchlist', (symbol) => {
 
-  socket.on('createOrder', (orderObject) => {
-    alpacaInstance.createOrder(orderObject).then((order) => {
-      console.log('here is the order', order);
-    });
-  });
-
-  socket.on('getPositions', () => {
-    alpacaInstance.getPositions().then((response) => {
-      const symbolsArray = response?.assets?.map(obj => obj.symbol) || [];
-  
-      if (symbolsArray.length > 0) {
-        const currentSubscriptions = alpacaSocket.getSubscriptions();
-
-        if (currentSubscriptions) {
-          const message = {
-            trades: symbolsArray,
-            quotes: currentSubscriptions.quotes
-          };
-
-          alpacaSocket.updateSubscriptions(message);
-          // io.emit('getPositionsResponse', symbolsArray);
-        }
-
-      }
-    });    
-  });
-
-  socket.on('getWatchlist', () => {
-    alpacaInstance.getWatchlist(process.env.ALPACA_WATCHLIST_ID).then((response) => {
-      const symbolsArray = response?.assets?.map(obj => obj.symbol) || [];
-
-      if (symbolsArray.length > 0) {
-        const currentSubscriptions = alpacaSocket.getSubscriptions();
-
-        if (currentSubscriptions) {
-          const message = {
-            trades: currentSubscriptions.trades,
-            quotes: mergeArrays(symbolsArray, currentSubscriptions.quotes)
-          };
-          
-          alpacaSocket.updateSubscriptions(message);
-          // io.emit('watchlistResponse', symbolsArray);
-        }
-      }
-    });
-  });
-
-  socket.on('addToWatchlist', (symbol) => {
-    alpacaInstance.addToWatchlist(process.env.ALPACA_WATCHLIST_ID, symbol).then((response) => {
-      const symbolsArray = response?.assets?.map(obj => obj.symbol) || [];
-
-      if (symbolsArray.length > 0) {
-        const currentSubscriptions = alpacaSocket.getSubscriptions();
-
-        if (currentSubscriptions) {
-          const message = {
-            trades: currentSubscriptions.trades,
-            quotes: mergeArrays(symbolsArray, currentSubscriptions.quotes)
-          };
-
-          alpacaSocket.updateSubscriptions(message);
-          io.emit('watchlistResponse', symbolsArray);
-        }
-      }
-    });
-  });
+  // });
 });
 
 http.listen(port, () => console.log(`Listening on port ${port}`));
