@@ -4,7 +4,6 @@ export default function Search({ socket }) {
   const [searchParams, setSearchParams] = useState('');
 
   const getStockQuote = () => {
-    console.log('is this the fucker');
     socket.emit('addToWatchlist', searchParams);
     setSearchParams('');
   }
