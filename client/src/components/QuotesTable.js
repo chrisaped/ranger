@@ -33,6 +33,10 @@ export default function QuotesTable({
     socket.emit('createOrder', orderObject);
   };
 
+  const deleteFromWatchlist = (symbol) => {
+    socket.emit('deleteFromWatchlist', symbol);
+  };
+
   return (
     <table className="table table-bordered">
       <thead className="table-dark">
@@ -43,7 +47,7 @@ export default function QuotesTable({
           <th>Target Price</th>
           <th>Shares</th>
           <th>Money Upfront</th>
-          <th colSpan="1">Actions</th>
+          <th colSpan="3">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -79,15 +83,23 @@ export default function QuotesTable({
                 Long
               </button>
             </td>
-            {/* <td>
+            <td>
               <button 
                 className="btn btn-danger m-2" 
                 // onClick={}
-                // disabled= if I dont have enough money
+                disabled
               >
                 Short
               </button>              
-            </td> */}
+            </td>
+            <td>
+              <button 
+                className="btn btn-secondary m-2" 
+                onClick={() => deleteFromWatchlist(symbol)}
+              >
+                Remove
+              </button>
+            </td>            
           </tr>
         );
       })}

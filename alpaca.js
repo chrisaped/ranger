@@ -12,6 +12,11 @@ module.exports = {
       console.log('addToWatchlist', symbolsArray);
     }
   },
+  deleteFromWatchlist: async function (alpacaInstance, symbol) {
+    const response = await alpacaInstance.deleteFromWatchlist(process.env.ALPACA_WATCHLIST_ID, symbol);
+    const symbolsArray = response?.assets?.map(obj => obj.symbol) || [];
+    console.log('deleteFromWatchlist', symbolsArray);
+  },
   updateWatchlist: async function (alpacaInstance, io, symbols) {
     const body = { symbols: symbols };
     const response = await alpacaInstance.updateWatchlist(process.env.ALPACA_WATCHLIST_ID, body);

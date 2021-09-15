@@ -57,8 +57,12 @@ io.on('connection', (socket) => {
 
   socket.on('addToWatchlist', (symbol) => {
     alpaca.addToWatchlist(alpacaInstance, symbol);
-    alpacaSocket.disconnect();
-    alpacaSocket.connect();
+    // alpacaSocket.disconnect();
+    // alpacaSocket.connect();
+  });
+
+  socket.on('deleteFromWatchlist', (symbol) => {
+    alpaca.deleteFromWatchlist(alpacaInstance, symbol);
   });
 });
 
