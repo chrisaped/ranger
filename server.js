@@ -62,6 +62,8 @@ io.on('connection', (socket) => {
 
   socket.on('deleteFromWatchlist', (symbol) => {
     alpaca.deleteFromWatchlist(alpacaInstance, symbol);
+    alpacaSocket.unsubscribeFromQuotes([symbol]);
+    io.emit('deleteFromWatchlist', symbol);
   });
 });
 

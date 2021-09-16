@@ -14,15 +14,21 @@ export default function App() {
 
     newSocket.on("stockQuoteResponse", (quote) => {
       const { Symbol, AskPrice } = quote;
-      setQuotesState(Symbol, AskPrice);
+      addQuote(Symbol, AskPrice);
+    });
+
+    newSocket.on("deleteFromWatchlist", (symbol) => {
+      const newQuotes = quotes;
+      delete newQuotes[symbol];
+      setQuotes(newQuotes);
     });
   
     return () => {
       newSocket.disconnect();
     }
-  }, []);
+  }, [quotes]);
 
-  const setQuotesState = (symbol, price) => {
+  const addQuote = (symbol, price) => {
     setQuotes((prevState) => ({ ...prevState, [symbol]: price }));
   };
 
