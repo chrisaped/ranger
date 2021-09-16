@@ -27,5 +27,10 @@ module.exports = {
     const response = await alpacaInstance.getPositions();
     console.log('getPositions', response);
     io.emit('getPositionsResponse', response);
+  },
+  getOrders: async function (alpacaInstance, io) {
+    const response = await alpacaInstance.getOrders({status: 'open'});
+    console.log('getOrders', response);
+    io.emit('getOrdersResponse', response);
   }
 }

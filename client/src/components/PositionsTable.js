@@ -1,4 +1,4 @@
-export default function PositionsTable({ socket, positions }) {
+export default function PositionsTable({ socket, positions, orders }) {
   const createOrderObject = (symbol, qty) => {
     return (
       {
@@ -14,6 +14,41 @@ export default function PositionsTable({ socket, positions }) {
   const createOrder = (orderObject) => {
     socket.emit('createOrder', orderObject);
   };
+
+  const getBracketPrices = (symbol) => {
+    let targetPrice;
+    let stopPrice;
+
+    orders.forEach((orderObj) => {
+      if (orderObj.symbol === symbol) {
+        targetPrice = orderObj.limit_price;
+        stopPrice = orderObj.stop_price;
+      }
+    })
+
+    targetPrice = displayPrice(targetPrice);
+    stopPrice = displayPrice(stopPrice);
+
+    return { targetPrice, stopPrice };
+  }
+
+  const isInProfit = (pl) => {
+    const plFloat = parseFloat(pl);
+    if (plFloat > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  const displayPrice = (price) => {
+    const priceFloat = parseFloat(price);
+    return priceFloat.toFixed(2);
+  }
+
+  const displayCost = (cost) => {
+    const costFloat = parseFloat(cost);
+    return Math.round(costFloat).toLocaleString();
+  }
   
   return (
     <table className="table table-bordered">
@@ -44,17 +79,25 @@ export default function PositionsTable({ socket, positions }) {
         } = positionObj;
 
         const orderObject = createOrderObject(symbol, qty);
+        const { targetPrice, stopPrice } = getBracketPrices(symbol);
+        const currentPrice = displayPrice(current_price);
+        const cost = displayCost(cost_basis);
 
         return (
-          <tr key={index}>
+          <tr 
+            key={index} 
+            className={
+              isInProfit(unrealized_intraday_pl) ? "table-success" : "table-danger"
+            }
+          >
             <td><strong>{symbol}</strong></td>
             <td>{side}</td>
-            <td>{current_price}</td>
-            <td>Target Price</td>
-            <td>Stop Price</td>
+            <td>{currentPrice}</td>
+            <td>{targetPrice}</td>
+            <td>{stopPrice}</td>
             <td>{avg_entry_price}</td>
             <td>{qty}</td>
-            <td>{cost_basis}</td>
+            <td>{cost}</td>
             <td>{unrealized_intraday_pl}</td>
             <td>
               <button 
