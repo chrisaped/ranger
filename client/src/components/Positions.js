@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import PositionsTable from "./PositionsTable";
 
 export default function Positions({ socket }) {
   const [positions, setPositions] = useState([]);
 
   useEffect(() => {
-    socket.on("positionsResponse", (symbolsArray) => {
-      setPositions(symbolsArray);
+    socket.on("getPositionsResponse", (array) => {
+      setPositions(array);
     });
   }, [socket]);
 
@@ -14,7 +15,7 @@ export default function Positions({ socket }) {
       <h2>Positions</h2>
       {positions.length > 0 ? (
         <div>
-          <p>{`${positions}`}</p>
+          <PositionsTable socket={socket} positions={positions} />
         </div>
       ):(
         <div>

@@ -39,21 +39,30 @@ io.on('connection', (socket) => {
   });
   
   alpacaSocket.onStockQuote((quote) => {
-    console.log(quote);
+    // console.log(quote);
     io.emit('stockQuoteResponse', quote);
   });
 
   alpacaSocket.onStockTrade((trade) => {
     console.log(trade);
-    io.emit('getPositionsResponse', trade);
+    // io.emit('getPositionsResponse', trade);
   });
 
-  // socket.on('createOrder', (orderObject) => {
-  //   alpacaInstance.createOrder(orderObject).then((order) => {
-  //     console.log('here is the order', order);
-  //   });
-    // remove symbol in order object from watchlist
-  // });
+  alpacaSocket.onError((err) => {
+    console.log(err);
+  });
+
+  socket.on('createOrder', (orderObject) => {
+    alpacaInstance.createOrder(orderObject).then((order) => {
+      console.log('here is the order', order);
+    });
+    const symbol = orderObject.symbol;
+    alpaca.getPositions(alpacaInstance, io);
+    alpacaSocket.subscribeForTrades([symbol]);
+    alpacaSocket.unsubscribeFromQuotes([symbol]);
+    alpaca.deleteFromWatchlist(alpacaInstance, symbol);
+    io.emit('deleteFromWatchlist', symbol);
+  });
 
   socket.on('addToWatchlist', (symbol) => {
     alpaca.addToWatchlist(alpacaInstance, symbol);

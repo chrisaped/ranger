@@ -25,8 +25,7 @@ module.exports = {
   },
   getPositions: async function (alpacaInstance, io) {
     const response = await alpacaInstance.getPositions();
-    const symbolsArray = response?.assets?.map(obj => obj.symbol) || [];
-    console.log('getPositions', symbolsArray);
-    io.emit('positionsResponse', symbolsArray);
+    console.log('getPositions', response);
+    io.emit('getPositionsResponse', response);
   }
 }
