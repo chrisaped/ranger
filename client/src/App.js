@@ -16,17 +16,11 @@ export default function App() {
       const { Symbol, AskPrice } = quote;
       addQuote(Symbol, AskPrice);
     });
-
-    newSocket.on("deleteFromWatchlist", (symbol) => {
-      const newQuotes = quotes;
-      delete newQuotes[symbol];
-      setQuotes(newQuotes);
-    });
   
     return () => {
       newSocket.disconnect();
     }
-  }, [quotes]);
+  }, []);
 
   const addQuote = (symbol, price) => {
     setQuotes((prevState) => ({ ...prevState, [symbol]: price }));
@@ -43,6 +37,7 @@ export default function App() {
         <Watchlist 
           socket={socket}
           quotes={quotes}
+          setQuotes={setQuotes}
         />
       </div>      
       <div className="row">

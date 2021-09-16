@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
 import QuotesTable from "./QuotesTable";
 
-export default function Watchlist({ socket, quotes }) {
+export default function Watchlist({ socket, quotes, setQuotes }) {
   const [stopPrices, setStopPrices] = useState({});
+
+  useEffect(() => {
+    socket.on("deleteFromWatchlist", (symbol) => {
+      const newQuotes = quotes;
+      delete newQuotes[symbol];
+      setQuotes(newQuotes);
+    });
+  }, [socket, quotes, setQuotes]);
 
   const displayReady = (Object.keys(quotes).length > 0) 
     && (Object.keys(stopPrices).length > 0);
