@@ -61,10 +61,7 @@ io.on('connection', (socket) => {
   socket.on('createOrder', (orderObject) => {
     console.log('here is the orderObject', orderObject);
     alpacaInstance.createOrder(orderObject);
-    const symbol = orderObject.symbol;
     alpaca.getOrders(alpacaInstance, io);
-    alpaca.deleteFromWatchlist(alpacaInstance, symbol);
-    io.emit('deleteFromWatchlist', symbol);
     alpaca.getPositions(alpacaInstance, io, alpacaSocket);
   });
 

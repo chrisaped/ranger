@@ -4,7 +4,7 @@ export default function Search({ socket, watchlist, setWatchlist }) {
   const [searchParams, setSearchParams] = useState('');
 
   const getStockQuote = () => {
-    const newWatchlist = watchlist.push(searchParams);
+    const newWatchlist = watchlist.concat([searchParams]);
     setWatchlist(newWatchlist);
 
     socket.emit('addToWatchlist', searchParams);

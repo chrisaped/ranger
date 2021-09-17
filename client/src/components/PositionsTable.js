@@ -69,7 +69,6 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
           unrealized_intraday_pl
         } = positionObj;
 
-        console.log('here are the quotes', quotes);
         const orderObject = createOrderObject(symbol, qty);
         const { targetPrice, stopPrice } = getBracketPrices(symbol);
         const currentPrice = displayPrice(quotes[symbol]);

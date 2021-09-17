@@ -49,7 +49,7 @@ export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWat
     return newQuotes;
   }
 
-  const displayReady = (Object.keys(filteredQuotes).length > 0) 
+  const displayReady = (Object.keys(filteredQuotes()).length > 0) 
   && (Object.keys(stopPrices).length > 0);
 
   return (
@@ -58,7 +58,7 @@ export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWat
         <div>
           <QuotesTable 
             socket={socket}
-            quotes={filteredQuotes}
+            quotes={filteredQuotes()}
             stopPrices={stopPrices}
             onStopPriceChange={onStopPriceChange}
             deleteFromWatchlist={deleteFromWatchlist}

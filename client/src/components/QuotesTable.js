@@ -26,13 +26,13 @@ export default function QuotesTable({
         },
         "stop_loss": {
           "stop_price": `${stopPrice}`,
-        },
-        "stop_price": `${stopPrice}`
+        }
       }
     );
   };
 
-  const createOrder = (orderObject) => {
+  const createOrder = (symbol, orderObject) => {
+    removeFromWatchlist(symbol);
     socket.emit('createOrder', orderObject);
   };
 
@@ -82,7 +82,7 @@ export default function QuotesTable({
             <td>
               <button 
                 className="btn btn-success m-2" 
-                onClick={() => createOrder(orderObject)}
+                onClick={() => createOrder(symbol, orderObject)}
                 // disabled= if I dont have enough money
               >
                 Long
