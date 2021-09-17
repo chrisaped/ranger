@@ -3,6 +3,7 @@ import QuotesTable from "./QuotesTable";
 
 export default function Watchlist({ socket, quotes, setQuotes }) {
   const [stopPrices, setStopPrices] = useState({});
+  const defaultStopPriceDifference = .25;
 
   useEffect(() => {
     socket.on("deleteFromWatchlist", (symbol) => {
@@ -10,31 +11,28 @@ export default function Watchlist({ socket, quotes, setQuotes }) {
       delete newQuotes[symbol];
       setQuotes(newQuotes);
     });
-  }, [socket, quotes, setQuotes]);
 
-  const displayReady = (Object.keys(quotes).length > 0) 
-    && (Object.keys(stopPrices).length > 0);
-  const defaultStopPriceDifference = .25;
-
-  const createStopPricesObj = (quotes) => {
-    const stopPricesObj = {};
-    Object.entries(quotes).forEach(([symbol, price]) => {
-      stopPricesObj[symbol] = (price - defaultStopPriceDifference);
-    });
-    return stopPricesObj;
-  };
+    if (Object.keys(quotes).length > 0) {
+      const stopPricesLength = Object.keys(stopPrices).length;
+      const newStopPrices = stopPrices;
+      Object.entries(quotes).forEach(([symbol, price]) => {
+        if (!(symbol in newStopPrices)) {
+          newStopPrices[symbol] = (price - defaultStopPriceDifference);
+        }
+      });
+      const newStopPricesLength = Object.keys(newStopPrices).length;
+      if (newStopPricesLength > stopPricesLength) {
+        setStopPrices(newStopPrices);
+      }
+    }
+  }, [socket, quotes, setQuotes, stopPrices]);
 
   const onStopPriceChange = (symbol, newStopPrice) => {
     setStopPrices((prevState) => ({ ...prevState, [symbol]: newStopPrice }));
   };
 
-  useEffect(() => {
-    if (Object.keys(quotes).length > 0) {
-      const stopPricesObj = createStopPricesObj(quotes);
-      setStopPrices(stopPricesObj);
-    }
-  }, [quotes]);  
-
+  const displayReady = (Object.keys(quotes).length > 0) 
+  && (Object.keys(stopPrices).length > 0);
 
   return (
     <div>

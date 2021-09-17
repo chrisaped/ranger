@@ -67,7 +67,7 @@ export default function QuotesTable({
                 className="form-control"
                 type="text" 
                 placeholder="Stop Price"
-                defaultValue={stopPrice} 
+                value={stopPrice} 
                 onChange={(e) => onStopPriceChange(symbol, e.target.value)} 
               />         
             </td>
