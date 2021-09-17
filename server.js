@@ -34,9 +34,10 @@ io.on('connection', (socket) => {
   });
 
   alpacaSocket.onConnect(() => {
-    alpaca.getWatchlist(alpacaInstance, io, alpacaSocket);
-    alpaca.getPositions(alpacaInstance, io);
+    alpaca.getWatchlist(alpacaInstance, alpacaSocket, io);
+    alpaca.getPositions(alpacaInstance, io, alpacaSocket);
     alpaca.getOrders(alpacaInstance, io);
+    alpacaSocket.subscribeForStatuses(["*"]);
   });
   
   alpacaSocket.onStockQuote((quote) => {
@@ -46,7 +47,11 @@ io.on('connection', (socket) => {
 
   alpacaSocket.onStockTrade((trade) => {
     console.log(trade);
-    // io.emit('getPositionsResponse', trade);
+    io.emit('stockTradeResponse', trade);
+  });
+
+  alpacaSocket.onStatuses((status) => {
+    console.log(status);
   });
 
   alpacaSocket.onError((err) => {
@@ -54,15 +59,13 @@ io.on('connection', (socket) => {
   });
 
   socket.on('createOrder', (orderObject) => {
-    alpacaInstance.createOrder(orderObject).then((order) => {
-      console.log('here is the order', order);
-    });
+    console.log('here is the orderObject', orderObject);
+    alpacaInstance.createOrder(orderObject);
     const symbol = orderObject.symbol;
-    alpaca.getPositions(alpacaInstance, io);
-    alpacaSocket.subscribeForTrades([symbol]);
-    alpacaSocket.unsubscribeFromQuotes([symbol]);
+    alpaca.getOrders(alpacaInstance, io);
     alpaca.deleteFromWatchlist(alpacaInstance, symbol);
     io.emit('deleteFromWatchlist', symbol);
+    alpaca.getPositions(alpacaInstance, io, alpacaSocket);
   });
 
   socket.on('addToWatchlist', (symbol) => {
@@ -73,7 +76,6 @@ io.on('connection', (socket) => {
   socket.on('deleteFromWatchlist', (symbol) => {
     alpacaSocket.unsubscribeFromQuotes([symbol]);
     alpaca.deleteFromWatchlist(alpacaInstance, symbol);
-    io.emit('deleteFromWatchlist', symbol);
   });
 });
 

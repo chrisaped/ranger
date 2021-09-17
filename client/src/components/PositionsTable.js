@@ -1,4 +1,6 @@
-export default function PositionsTable({ socket, positions, orders }) {
+import { displayCost, displayPrice } from "../shared/formatting";
+
+export default function PositionsTable({ socket, positions, orders, quotes }) {
   const createOrderObject = (symbol, qty) => {
     return (
       {
@@ -39,16 +41,6 @@ export default function PositionsTable({ socket, positions, orders }) {
     }
     return false;
   }
-
-  const displayPrice = (price) => {
-    const priceFloat = parseFloat(price);
-    return priceFloat.toFixed(2);
-  }
-
-  const displayCost = (cost) => {
-    const costFloat = parseFloat(cost);
-    return Math.round(costFloat).toLocaleString();
-  }
   
   return (
     <table className="table table-bordered">
@@ -71,16 +63,16 @@ export default function PositionsTable({ socket, positions, orders }) {
         const {
           symbol,
           side,
-          current_price,
           avg_entry_price,
           qty,
           cost_basis,
           unrealized_intraday_pl
         } = positionObj;
 
+        console.log('here are the quotes', quotes);
         const orderObject = createOrderObject(symbol, qty);
         const { targetPrice, stopPrice } = getBracketPrices(symbol);
-        const currentPrice = displayPrice(current_price);
+        const currentPrice = displayPrice(quotes[symbol]);
         const cost = displayCost(cost_basis);
 
         return (
@@ -91,13 +83,13 @@ export default function PositionsTable({ socket, positions, orders }) {
             }
           >
             <td><strong>{symbol}</strong></td>
-            <td>{side}</td>
-            <td>{currentPrice}</td>
+            <td>{side.toUpperCase()}</td>
+            <td><strong>{currentPrice}</strong></td>
             <td>{targetPrice}</td>
             <td>{stopPrice}</td>
             <td>{avg_entry_price}</td>
             <td>{qty}</td>
-            <td>{cost}</td>
+            <td>${cost}</td>
             <td>{unrealized_intraday_pl}</td>
             <td>
               <button 

@@ -7,6 +7,7 @@ import Watchlist from "./components/Watchlist";
 export default function App() {
   const [socket, setSocket] = useState(null);
   const [quotes, setQuotes] = useState({});
+  const [watchlist, setWatchlist] = useState([]);
 
   useEffect(() => {
     const newSocket = io(process.env.REACT_APP_SOCKET_ENDPOINT);
@@ -31,17 +32,26 @@ export default function App() {
     {socket ? (
     <div className="container">
       <div className="row">
-        <Search socket={socket} />
+        <Search 
+          socket={socket}
+          watchlist={watchlist}
+          setWatchlist={setWatchlist} 
+        />
       </div>
       <div className="row">
         <Watchlist 
           socket={socket}
           quotes={quotes}
           setQuotes={setQuotes}
+          watchlist={watchlist}
+          setWatchlist={setWatchlist}
         />
       </div>      
       <div className="row">
-        <Positions socket={socket} />
+        <Positions 
+          socket={socket}
+          quotes={quotes}
+        />
       </div>      
     </div>
     ):(

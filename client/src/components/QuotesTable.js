@@ -3,14 +3,16 @@ import {
   calculatePositionSize,
   calculateMoneyUpfront
 } from "../shared/calculations";
+import { displayPrice } from "../shared/formatting";
 
 export default function QuotesTable({ 
   socket, 
   quotes, 
   stopPrices,
-  onStopPriceChange
+  onStopPriceChange,
+  deleteFromWatchlist
 }) {
-  const createOrderObject = (symbol, positionSize, profitTarget, stopPrice) => {
+  const createOrderObject = (symbol, positionSize, profitTarget, stopPrice) => {  
     return (
       {
         "side": "buy",
@@ -23,8 +25,9 @@ export default function QuotesTable({
           "limit_price": `${profitTarget}`
         },
         "stop_loss": {
-          "stop_price": `${stopPrice}`
-        }
+          "stop_price": `${stopPrice}`,
+        },
+        "stop_price": `${stopPrice}`
       }
     );
   };
@@ -33,7 +36,8 @@ export default function QuotesTable({
     socket.emit('createOrder', orderObject);
   };
 
-  const deleteFromWatchlist = (symbol) => {
+  const removeFromWatchlist = (symbol) => {
+    deleteFromWatchlist(symbol);
     socket.emit('deleteFromWatchlist', symbol);
   };
 
@@ -57,11 +61,12 @@ export default function QuotesTable({
         const positionSize = calculatePositionSize(price, stopPrice);
         const moneyUpfront = calculateMoneyUpfront(price, stopPrice);
         const orderObject = createOrderObject(symbol, positionSize, profitTarget, stopPrice);
+        const currentPrice = displayPrice(price);
 
         return (
           <tr key={symbol}>
             <td><strong>{symbol}</strong></td>
-            <td>{price}</td>
+            <td>{currentPrice}</td>
             <td>
               <input 
                 className="form-control"
@@ -95,7 +100,7 @@ export default function QuotesTable({
             <td>
               <button 
                 className="btn btn-secondary m-2" 
-                onClick={() => deleteFromWatchlist(symbol)}
+                onClick={() => removeFromWatchlist(symbol)}
               >
                 Remove
               </button>

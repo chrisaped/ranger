@@ -1,23 +1,22 @@
 import { useEffect, useState } from "react";
 import QuotesTable from "./QuotesTable";
 
-export default function Watchlist({ socket, quotes, setQuotes }) {
+export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWatchlist }) {
   const [stopPrices, setStopPrices] = useState({});
   const defaultStopPriceDifference = .25;
 
   useEffect(() => {
-    socket.on("deleteFromWatchlist", (symbol) => {
-      const newQuotes = quotes;
-      delete newQuotes[symbol];
-      setQuotes(newQuotes);
+    socket.on('getWatchlist', (symbols) => {
+      setWatchlist(symbols);
     });
 
     if (Object.keys(quotes).length > 0) {
       const stopPricesLength = Object.keys(stopPrices).length;
       const newStopPrices = stopPrices;
       Object.entries(quotes).forEach(([symbol, price]) => {
-        if (!(symbol in newStopPrices)) {
-          newStopPrices[symbol] = (price - defaultStopPriceDifference);
+        if (!(symbol in newStopPrices) && watchlist.includes(symbol)) {
+          const stopPrice = (price - defaultStopPriceDifference).toFixed(2);
+          newStopPrices[symbol] = stopPrice;
         }
       });
       const newStopPricesLength = Object.keys(newStopPrices).length;
@@ -25,13 +24,32 @@ export default function Watchlist({ socket, quotes, setQuotes }) {
         setStopPrices(newStopPrices);
       }
     }
-  }, [socket, quotes, setQuotes, stopPrices]);
+  }, [socket, quotes, setQuotes, stopPrices, watchlist, setWatchlist]);
+
+  const deleteFromWatchlist = (symbol) => {
+    const newWatchlist = watchlist.filter(watchlistSymbol => watchlistSymbol !== symbol);
+    setWatchlist(newWatchlist);
+
+    const newQuotes = quotes;
+    delete newQuotes[symbol];
+    setQuotes(newQuotes);
+  }
 
   const onStopPriceChange = (symbol, newStopPrice) => {
     setStopPrices((prevState) => ({ ...prevState, [symbol]: newStopPrice }));
   };
 
-  const displayReady = (Object.keys(quotes).length > 0) 
+  const filteredQuotes = () => {
+    const newQuotes = {};
+    Object.entries(quotes).forEach(([symbol, price]) => {
+      if (watchlist.includes(symbol)) {
+        newQuotes[symbol] = price;
+      }
+    });
+    return newQuotes;
+  }
+
+  const displayReady = (Object.keys(filteredQuotes).length > 0) 
   && (Object.keys(stopPrices).length > 0);
 
   return (
@@ -40,9 +58,10 @@ export default function Watchlist({ socket, quotes, setQuotes }) {
         <div>
           <QuotesTable 
             socket={socket}
-            quotes={quotes}
+            quotes={filteredQuotes}
             stopPrices={stopPrices}
             onStopPriceChange={onStopPriceChange}
+            deleteFromWatchlist={deleteFromWatchlist}
           />
         </div>
       ):(

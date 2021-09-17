@@ -1,9 +1,11 @@
 module.exports = {
-  getWatchlist: async function (alpacaInstance, io, alpacaSocket) {
+  getWatchlist: async function (alpacaInstance, alpacaSocket, io) {
     const response = await alpacaInstance.getWatchlist(process.env.ALPACA_WATCHLIST_ID);
     const symbolsArray = response?.assets?.map(obj => obj.symbol) || [];
-    console.log('getWatchlist', symbolsArray);
-    alpacaSocket.subscribeForQuotes(symbolsArray);
+    io.emit('getWatchlist', symbolsArray);
+    if (symbolsArray.length > 0) {
+      alpacaSocket.subscribeForQuotes(symbolsArray);
+    }
   },
   addToWatchlist: async function (alpacaInstance, symbol) {
     const response = await alpacaInstance.addToWatchlist(process.env.ALPACA_WATCHLIST_ID, symbol);
@@ -17,19 +19,16 @@ module.exports = {
     const symbolsArray = response?.assets?.map(obj => obj.symbol) || [];
     console.log('deleteFromWatchlist', symbolsArray);
   },
-  updateWatchlist: async function (alpacaInstance, io, symbols) {
-    const body = { symbols: symbols };
-    const response = await alpacaInstance.updateWatchlist(process.env.ALPACA_WATCHLIST_ID, body);
-    const symbolsArray = response?.assets?.map(obj => obj.symbol) || [];
-    console.log('updateWatchlist', symbolsArray);
-  },
-  getPositions: async function (alpacaInstance, io) {
+  getPositions: async function (alpacaInstance, io, alpacaSocket) {
     const response = await alpacaInstance.getPositions();
-    console.log('getPositions', response);
-    io.emit('getPositionsResponse', response);
+    const symbolsArray = response?.map(obj => obj.symbol) || [];
+    if (symbolsArray.length > 0) {
+      alpacaSocket.subscribeForQuotes(symbolsArray);
+      io.emit('getPositionsResponse', response);
+    }
   },
   getOrders: async function (alpacaInstance, io) {
-    const response = await alpacaInstance.getOrders({status: 'open'});
+    const response = await alpacaInstance.getOrders();
     console.log('getOrders', response);
     io.emit('getOrdersResponse', response);
   }

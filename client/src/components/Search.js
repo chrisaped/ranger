@@ -1,9 +1,12 @@
 import { useState } from "react";
 
-export default function Search({ socket }) {
+export default function Search({ socket, watchlist, setWatchlist }) {
   const [searchParams, setSearchParams] = useState('');
 
   const getStockQuote = () => {
+    const newWatchlist = watchlist.push(searchParams);
+    setWatchlist(newWatchlist);
+
     socket.emit('addToWatchlist', searchParams);
     setSearchParams('');
   }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import PositionsTable from "./PositionsTable";
 
-export default function Positions({ socket }) {
+export default function Positions({ socket, quotes }) {
   const [positions, setPositions] = useState([]);
   const [orders, setOrders] = useState([]);
 
@@ -24,6 +24,7 @@ export default function Positions({ socket }) {
             socket={socket} 
             positions={positions} 
             orders={orders}
+            quotes={quotes}
           />
         </div>
       ):(
