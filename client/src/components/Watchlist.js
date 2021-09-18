@@ -30,10 +30,12 @@ export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWat
   const deleteFromWatchlist = (symbol) => {
     const newWatchlist = watchlist.filter(watchlistSymbol => watchlistSymbol !== symbol);
     setWatchlist(newWatchlist);
-
-    const newQuotes = quotes;
-    delete newQuotes[symbol];
-    setQuotes(newQuotes);
+    if (Object.keys(quotes).length > 0) {
+      const newQuotes = quotes;
+      delete newQuotes[symbol];
+      setQuotes(newQuotes);
+    }
+    socket.emit('deleteFromWatchlist', symbol);
   }
 
   const onStopPriceChange = (symbol, newStopPrice) => {
@@ -71,11 +73,14 @@ export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWat
     )}
     {offMarketHoursReady && (
       <div>
-        <WatchlistTable />
+        <WatchlistTable 
+          watchlist={watchlist} 
+          deleteFromWatchlist={deleteFromWatchlist}
+        />
       </div>
     )}
     {watchlist.length === 0 && (
-      <div>
+      <div className="d-flex justify-content-center m-3">
         <p>The watchlist is empty.</p>
       </div>
     )}

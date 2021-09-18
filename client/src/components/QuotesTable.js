@@ -32,13 +32,8 @@ export default function QuotesTable({
   };
 
   const createOrder = (symbol, orderObject) => {
-    removeFromWatchlist(symbol);
-    socket.emit('createOrder', orderObject);
-  };
-
-  const removeFromWatchlist = (symbol) => {
     deleteFromWatchlist(symbol);
-    socket.emit('deleteFromWatchlist', symbol);
+    socket.emit('createOrder', orderObject);
   };
 
   return (
@@ -100,11 +95,11 @@ export default function QuotesTable({
             <td>
               <button 
                 className="btn btn-secondary m-2" 
-                onClick={() => removeFromWatchlist(symbol)}
+                onClick={() => deleteFromWatchlist(symbol)}
               >
                 Remove
               </button>
-            </td>            
+            </td>      
           </tr>
         );
       })}

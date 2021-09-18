@@ -30,7 +30,7 @@ export default function Positions({ socket, quotes }) {
           />
         </div>
       ):(
-        <div>
+        <div className="d-flex justify-content-center m-3">
           <p>There are no open positions.</p>
         </div>
       )}
