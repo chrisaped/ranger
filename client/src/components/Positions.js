@@ -17,7 +17,9 @@ export default function Positions({ socket, quotes }) {
 
   return (
     <div>
-      <h2>Positions</h2>
+      <div className="d-flex justify-content-center">
+        <h2>Positions</h2>
+      </div>
       {positions.length > 0 ? (
         <div>
           <PositionsTable 

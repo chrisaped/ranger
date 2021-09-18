@@ -20,6 +20,7 @@ export default function Search({ socket, watchlist, setWatchlist }) {
       socket.emit('addToWatchlist', searchParams);
       setSearchParams('');
     } else {
+      setSearchParams('');
       setSearchError('Not a valid asset');
     }
   }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import QuotesTable from "./QuotesTable";
+import WatchlistTable from "./WatchlistTable";
 
 export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWatchlist }) {
   const [stopPrices, setStopPrices] = useState({});
@@ -49,26 +50,35 @@ export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWat
     return newQuotes;
   }
 
-  const displayReady = (Object.keys(filteredQuotes()).length > 0) 
-  && (Object.keys(stopPrices).length > 0);
+  const marketHoursReady = watchlist.length > 0 && (Object.keys(filteredQuotes()).length > 0) 
+    && (Object.keys(stopPrices).length > 0);
+
+  const offMarketHoursReady = watchlist.length > 0 && (Object.keys(filteredQuotes()).length === 0) 
+    && (Object.keys(stopPrices).length === 0);
 
   return (
     <div>
-      {displayReady ? (
-        <div>
-          <QuotesTable 
-            socket={socket}
-            quotes={filteredQuotes()}
-            stopPrices={stopPrices}
-            onStopPriceChange={onStopPriceChange}
-            deleteFromWatchlist={deleteFromWatchlist}
-          />
-        </div>
-      ):(
-        <div>
-          <p>The watchlist is empty.</p>
-        </div>
-      )}
+    {marketHoursReady && (
+      <div>
+        <QuotesTable 
+          socket={socket}
+          quotes={filteredQuotes()}
+          stopPrices={stopPrices}
+          onStopPriceChange={onStopPriceChange}
+          deleteFromWatchlist={deleteFromWatchlist}
+        />
+      </div>
+    )}
+    {offMarketHoursReady && (
+      <div>
+        <WatchlistTable />
+      </div>
+    )}
+    {watchlist.length === 0 && (
+      <div>
+        <p>The watchlist is empty.</p>
+      </div>
+    )}
     </div>
   );
 }
