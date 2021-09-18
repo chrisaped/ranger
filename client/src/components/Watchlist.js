@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import QuotesTable from "./QuotesTable";
-import WatchlistTable from "./WatchlistTable";
+import WatchlistList from "./WatchlistList";
 
 export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWatchlist }) {
   const [stopPrices, setStopPrices] = useState({});
@@ -72,8 +72,8 @@ export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWat
       </div>
     )}
     {offMarketHoursReady && (
-      <div>
-        <WatchlistTable 
+      <div className="d-flex justify-content-center m-3">
+        <WatchlistList
           watchlist={watchlist} 
           deleteFromWatchlist={deleteFromWatchlist}
         />
