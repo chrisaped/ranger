@@ -37,6 +37,7 @@ io.on('connection', (socket) => {
     alpaca.getWatchlist(alpacaInstance, alpacaSocket, io);
     alpaca.getPositions(alpacaInstance, io, alpacaSocket);
     alpaca.getOrders(alpacaInstance, io);
+    alpaca.getAssets(alpacaInstance, io);
     alpacaSocket.subscribeForStatuses(["*"]);
   });
   

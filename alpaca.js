@@ -31,5 +31,16 @@ module.exports = {
     const response = await alpacaInstance.getOrders();
     console.log('getOrders', response);
     io.emit('getOrdersResponse', response);
+  },
+  getAssets: async function (alpacaInstance, io) {
+    const response = await alpacaInstance.getAssets({ status: 'active' });
+    const assetsObject = () => {
+      newObj = {};
+      response.forEach((assetObj) => {
+        newObj[assetObj.symbol] = assetObj;
+      });
+      return newObj;
+    }
+    io.emit('getAssetsResponse', assetsObject);
   }
 }
