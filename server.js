@@ -38,21 +38,14 @@ io.on('connection', (socket) => {
     alpaca.getPositions(alpacaInstance, io, alpacaSocket);
     alpaca.getOrders(alpacaInstance, io);
     alpaca.getAssets(alpacaInstance, io);
-    alpacaSocket.subscribeForStatuses(["*"]);
   });
   
   alpacaSocket.onStockQuote((quote) => {
-    // console.log(quote);
     io.emit('stockQuoteResponse', quote);
   });
 
-  alpacaSocket.onStockTrade((trade) => {
-    console.log(trade);
-    io.emit('stockTradeResponse', trade);
-  });
-
-  alpacaSocket.onStatuses((status) => {
-    console.log(status);
+  alpacaSocket.onOrderUpdate((order) => {
+    console.log('onOrderUpdate', order);
   });
 
   alpacaSocket.onError((err) => {
