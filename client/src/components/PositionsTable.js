@@ -49,12 +49,11 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
           <th>Symbol</th>
           <th>Side</th>
           <th>Current Price</th>
-          <th>Target Price</th>
-          <th>Stop Price</th>
           <th>Entry Price</th>
           <th>Shares</th>
           <th>Cost</th>
           <th>P/L</th>
+          <th>Status</th>
           <th colSpan="1">Actions</th>
         </tr>
       </thead>
@@ -68,38 +67,73 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
           cost_basis,
           unrealized_intraday_pl
         } = positionObj;
-
+        let currentPrice = displayPrice(quotes[symbol]);
         const orderObject = createOrderObject(symbol, qty);
         const { targetPrice, stopPrice } = getBracketPrices(symbol);
-        const currentPrice = displayPrice(quotes[symbol]);
         const cost = displayCost(cost_basis);
 
         return (
-          <tr 
-            key={index} 
-            className={
-              isInProfit(unrealized_intraday_pl) ? "table-success" : "table-danger"
-            }
-          >
-            <td><strong>{symbol}</strong></td>
-            <td>{side.toUpperCase()}</td>
-            <td><strong>{currentPrice}</strong></td>
-            <td>{targetPrice}</td>
-            <td>{stopPrice}</td>
-            <td>{avg_entry_price}</td>
-            <td>{qty}</td>
-            <td>${cost}</td>
-            <td>{unrealized_intraday_pl}</td>
-            <td>
-              <button 
-                className="btn btn-dark m-2" 
-                onClick={() => createOrder(orderObject)}
-                // disabled= if I dont have enough money
-              >
-                Sell
-              </button>
-            </td>            
-          </tr>
+          <>
+            <tr 
+              key={index} 
+              className={
+                isInProfit(unrealized_intraday_pl) ? "table-success" : "table-danger"
+              }
+            >
+              <td><strong>{symbol}</strong></td>
+              <td>{side.toUpperCase()}</td>
+              <td><strong>{currentPrice}</strong></td>
+              <td>{avg_entry_price}</td>
+              <td>{qty}</td>
+              <td>${cost}</td>
+              <td>{unrealized_intraday_pl}</td>
+              <td>status here</td>
+              <td>
+                <button 
+                  className="btn btn-dark m-2" 
+                  onClick={() => createOrder(orderObject)}
+                  // disabled= if I dont have enough money
+                >
+                  Sell
+                </button>
+              </td>            
+            </tr>
+            <tr>
+              <td className="bg-dark text-white fw-bold">
+                Take Profit
+              </td>
+              <td className="bg-secondary text-white">Price</td>
+              <td>{targetPrice}</td>
+              <td className="bg-secondary text-white">Status</td>
+              <td>status here</td>
+              <td className="bg-light" colSpan="4">
+                <button 
+                  className="btn btn-outline-dark btn-sm m-2" 
+                >
+                  Cancel
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td className="bg-dark text-white fw-bold">
+                Stop Loss
+              </td>
+              <td className="bg-secondary text-white">Price</td>
+              <td>{stopPrice}</td>
+              <td className="bg-secondary text-white">Status</td>
+              <td>status here</td>
+              <td className="bg-light" colSpan="4">
+                <button 
+                  className="btn btn-outline-dark btn-sm m-2" 
+                >
+                  Cancel
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td className="bg-dark" colSpan="9"></td>
+            </tr>
+          </>
         );
       })}
       </tbody>

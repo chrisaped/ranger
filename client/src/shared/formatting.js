@@ -1,4 +1,7 @@
 export const displayPrice = (price) => {
+  if (isNaN(price)) {
+    return 'N/A';
+  }
   const priceFloat = parseFloat(price);
   return priceFloat.toFixed(2);
 }
