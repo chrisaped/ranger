@@ -1,7 +1,7 @@
 import { displayCost, displayPrice } from "../shared/formatting";
 
 export default function PositionsTable({ socket, positions, orders, quotes }) {
-  const createOrderObject = (symbol, qty) => {
+  const createOrderSellObject = (symbol, qty) => {
     return (
       {
         "side": "sell",
@@ -17,21 +17,47 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
     socket.emit('createOrder', orderObject);
   };
 
-  const getBracketPrices = (symbol) => {
+  const getOrderObj = (symbol, qty, avg_entry_price) => {
+    let parentOrderStatus;
+    let legs = [];
     let targetPrice;
     let stopPrice;
+    let targetOrderStatus;
+    let stopOrderStatus;
 
     orders.forEach((orderObj) => {
-      if (orderObj.symbol === symbol) {
-        targetPrice = orderObj.limit_price;
-        stopPrice = orderObj.stop_price;
+      if (
+        (orderObj.symbol === symbol) && 
+        (orderObj.qty === qty) &&
+        (orderObj.filled_avg_price === avg_entry_price) &&
+        orderObj.status === "filled"
+      ) {
+        parentOrderStatus = orderObj.status;
+        legs = orderObj.legs;
       }
-    })
+    });
+
+    legs.forEach((leg) => {
+      if (leg.type === 'limit') {
+        targetPrice = leg.limit_price;
+        targetOrderStatus = leg.status;
+      }
+      if (leg.type === 'stop') {
+        stopPrice = leg.stop_price;
+        stopOrderStatus = leg.status;
+      }
+    });
 
     targetPrice = displayPrice(targetPrice);
     stopPrice = displayPrice(stopPrice);
 
-    return { targetPrice, stopPrice };
+    return { 
+      parentOrderStatus, 
+      targetPrice, 
+      targetOrderStatus,
+      stopPrice,
+      stopOrderStatus
+    };
   }
 
   const isInProfit = (pl) => {
@@ -67,9 +93,15 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
           cost_basis,
           unrealized_intraday_pl
         } = positionObj;
+        const { 
+          parentOrderStatus, 
+          targetPrice, 
+          targetOrderStatus,
+          stopPrice,
+          stopOrderStatus
+        } = getOrderObj(symbol, qty, avg_entry_price);
         let currentPrice = displayPrice(quotes[symbol]);
-        const orderObject = createOrderObject(symbol, qty);
-        const { targetPrice, stopPrice } = getBracketPrices(symbol);
+        const orderSellObject = createOrderSellObject(symbol, qty);
         const cost = displayCost(cost_basis);
 
         return (
@@ -87,11 +119,11 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
               <td>{qty}</td>
               <td>${cost}</td>
               <td>{unrealized_intraday_pl}</td>
-              <td>status here</td>
+              <td>{parentOrderStatus}</td>
               <td>
                 <button 
                   className="btn btn-dark m-2" 
-                  onClick={() => createOrder(orderObject)}
+                  onClick={() => createOrder(orderSellObject)}
                   // disabled= if I dont have enough money
                 >
                   Sell
@@ -105,7 +137,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
               <td className="bg-secondary text-white">Price</td>
               <td>{targetPrice}</td>
               <td className="bg-secondary text-white">Status</td>
-              <td>status here</td>
+              <td>{targetOrderStatus}</td>
               <td className="bg-light" colSpan="4">
                 <button 
                   className="btn btn-outline-dark btn-sm m-2" 
@@ -121,7 +153,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
               <td className="bg-secondary text-white">Price</td>
               <td>{stopPrice}</td>
               <td className="bg-secondary text-white">Status</td>
-              <td>status here</td>
+              <td>{stopOrderStatus}</td>
               <td className="bg-light" colSpan="4">
                 <button 
                   className="btn btn-outline-dark btn-sm m-2" 
