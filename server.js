@@ -44,9 +44,10 @@ io.on('connection', (socket) => {
     io.emit('stockQuoteResponse', quote);
   });
 
-  alpacaSocket.onOrderUpdate((order) => {
-    console.log('onOrderUpdate', order);
-  });
+  // this does not work with the current api
+  // alpacaSocket.onOrderUpdate((order) => {
+  //   console.log('onOrderUpdate', order);
+  // });
 
   alpacaSocket.onError((err) => {
     console.log(err);
