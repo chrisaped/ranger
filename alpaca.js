@@ -28,7 +28,9 @@ module.exports = {
     }
   },
   getOrders: async function (alpacaInstance, io) {
-    const response = await alpacaInstance.getOrders();
+    const today = new Date().toISOString().slice(0, 10);
+    const orderObj = { status: 'all', after: today, nested: true };
+    const response = await alpacaInstance.getOrders(orderObj);
     console.log('getOrders', response);
     io.emit('getOrdersResponse', response);
   },
