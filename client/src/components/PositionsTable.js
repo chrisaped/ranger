@@ -22,7 +22,9 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
     let legs = [];
     let targetPrice;
     let stopPrice;
+    let targetOrderId;
     let targetOrderStatus;
+    let stopOrderId;
     let stopOrderStatus;
 
     orders.forEach((orderObj) => {
@@ -40,10 +42,12 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
     legs.forEach((leg) => {
       if (leg.type === 'limit') {
         targetPrice = leg.limit_price;
+        targetOrderId = leg.id;
         targetOrderStatus = leg.status;
       }
       if (leg.type === 'stop') {
         stopPrice = leg.stop_price;
+        stopOrderId = leg.id
         stopOrderStatus = leg.status;
       }
     });
@@ -56,7 +60,9 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
       targetPrice, 
       targetOrderStatus,
       stopPrice,
-      stopOrderStatus
+      stopOrderStatus,
+      targetOrderId,
+      stopOrderId
     };
   }
 
@@ -66,7 +72,11 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
       return true;
     }
     return false;
-  }
+  };
+
+  const cancelOrder = (orderId) => {
+    socket.emit('cancelOrder', orderId);
+  };
   
   return (
     <table className="table table-bordered">
@@ -84,7 +94,9 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
           targetPrice, 
           targetOrderStatus,
           stopPrice,
-          stopOrderStatus
+          stopOrderStatus,
+          targetOrderId,
+          stopOrderId
         } = getOrderObj(symbol, qty, avg_entry_price);
         let currentPrice = displayPrice(quotes[symbol]);
         const orderSellObject = createOrderSellObject(symbol, qty);
@@ -142,6 +154,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
                   <button 
                     className="btn btn-outline-dark btn-sm m-2"
                     disabled={targetOrderStatus === "filled" || "canceled"}
+                    onClick={() => cancelOrder(targetOrderId)}
                   >
                     Cancel
                   </button>
@@ -159,6 +172,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
                   <button 
                     className="btn btn-outline-dark btn-sm m-2"
                     disabled={stopOrderStatus === "filled" || "canceled"}
+                    onClick={() => cancelOrder(stopOrderId)}
                   >
                     Cancel
                   </button>

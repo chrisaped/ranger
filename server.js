@@ -69,6 +69,10 @@ io.on('connection', (socket) => {
     alpacaSocket.unsubscribeFromQuotes([symbol]);
     alpaca.deleteFromWatchlist(alpacaInstance, symbol);
   });
+
+  socket.on('cancelOrder', (orderId) => {
+    alpaca.cancelOrder(alpacaInstance, orderId);
+  });
 });
 
 http.listen(port, () => console.log(`Listening on port ${port}`));

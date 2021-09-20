@@ -44,5 +44,9 @@ module.exports = {
       return newObj;
     }
     io.emit('getAssetsResponse', assetsObject());
+  },
+  cancelOrder: async function (alpacaInstance, orderId) {
+    const response = await alpacaInstance.cancelOrder(orderId);
+    console.log('cancelOrder', response);
   }
 }
