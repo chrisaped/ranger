@@ -1,9 +1,6 @@
-import { useState } from "react";
 import { displayCost, displayPrice } from "../shared/formatting";
 
 export default function PositionsTable({ socket, positions, orders, quotes }) {
-  const [submitted, setSubmitted] = useState({});
-
   const createOrderSellObject = (symbol, qty) => {
     return (
       {
@@ -17,12 +14,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
   };
 
   const createOrder = (orderObject, clientOrderId) => {
-    updateSubmitted(clientOrderId, true);
     socket.emit('createOrder', orderObject);
-  };
-
-  const updateSubmitted = (clientOrderId, boolean) => {
-    setSubmitted((prevState) => ({ ...prevState, [clientOrderId]: boolean }));
   };
 
   const getOrderObj = (symbol, qty, avg_entry_price) => {
@@ -43,7 +35,6 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
         orderObj.status === "filled"
       ) {
         clientOrderId = orderObj.client_order_id;
-        updateSubmitted(clientOrderId, false);
         legs = orderObj.legs;
       }
     });
@@ -124,10 +115,12 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
                 <th>Side</th>
                 <th>Current Price</th>
                 <th>Entry Price</th>
+                <th>Target Price</th>
+                <th>Stop Loss</th>
                 <th>Shares</th>
                 <th>Cost</th>
                 <th>P/L</th>
-                <th colSpan="1">Actions</th>
+                <th colSpan="2">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -139,66 +132,31 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
               >
                 <td><strong>{symbol}</strong></td>
                 <td>{side.toUpperCase()}</td>
-                <td><strong>{currentPrice}</strong></td>
-                <td>{entryPrice}</td>
+                <td className="bg-warning"><strong>{currentPrice}</strong></td>
+                <td className="bg-info">{entryPrice}</td>
+                <td className={targetOrderStatus === "canceled" ? 'bg-dark' : "bg-success text-white"}>{targetPrice}</td>
+                <td className="bg-danger text-white">{stopPrice}</td>
                 <td>{qty} shares</td>
                 <td>${cost}</td>
                 <td>${unrealized_intraday_pl}</td>
                 <td>
-                {submitted[clientOrderId] === true ? (
-                  <div class="spinner-border" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                ):(
+                  <button 
+                    className="btn btn-secondary m-2"
+                    disabled={targetOrderStatus === "filled" || "canceled"}
+                    onClick={() => cancelOrder(targetOrderId)}
+                  >
+                    Cancel Bracket
+                  </button>
+                </td>                
+                <td>
                   <button 
                     className="btn btn-dark m-2" 
                     onClick={() => createOrder(orderSellObject, clientOrderId)}
                   >
                     Sell
                   </button>
-                )}
                 </td>            
               </tr>
-              {hasLegs && (
-              <>
-                <tr>
-                  <td className="bg-dark text-white fw-bold">
-                    Take Profit
-                  </td>
-                  <td className="bg-secondary text-white">Price</td>
-                  <td>{targetPrice}</td>
-                  <td className="bg-secondary text-white">Status</td>
-                  <td>{targetOrderStatus}</td>
-                  <td className="bg-light" colSpan="3">
-                    <button 
-                      className="btn btn-outline-dark btn-sm m-2"
-                      disabled={targetOrderStatus === "filled" || "canceled"}
-                      onClick={() => cancelOrder(targetOrderId)}
-                    >
-                      Cancel
-                    </button>
-                  </td>
-                </tr>
-                <tr>
-                  <td className="bg-dark text-white fw-bold">
-                    Stop Loss
-                  </td>
-                  <td className="bg-secondary text-white">Price</td>
-                  <td>{stopPrice}</td>
-                  <td className="bg-secondary text-white">Status</td>
-                  <td>{stopOrderStatus}</td>
-                  <td className="bg-light" colSpan="3">
-                    <button 
-                      className="btn btn-outline-dark btn-sm m-2"
-                      disabled={stopOrderStatus === "filled" || "canceled"}
-                      onClick={() => cancelOrder(stopOrderId)}
-                    >
-                      Cancel
-                    </button>
-                  </td>
-                </tr>
-              </>
-              )}
             </tbody>
           </>
         );
