@@ -19,18 +19,39 @@ const alpacaInstance = new Alpaca({
 });
 
 const alpacaSocket = alpacaInstance.data_stream_v2;
+const alpacaTradeSocket = alpacaInstance.trade_ws;
 
 io.on('connection', (socket) => {
   if (!alpacaSocket.conn) {
     alpacaSocket.connect();
   }
+
+  alpacaTradeSocket.connect();
   console.log('connected');
 
   socket.on('disconnect', () => {
     if (alpacaSocket.conn) {
       alpacaSocket.disconnect();
     }
+    alpacaTradeSocket.disconnect();
     console.log('disconnected');
+  });
+
+  alpacaTradeSocket.onConnect(() => {
+    const tradeKeys = ['trade_updates', 'account_updates'];
+    alpacaTradeSocket.subscribe(tradeKeys);
+  });
+
+  alpacaTradeSocket.onOrderUpdate(data => {
+    console.log(`Order updates: ${JSON.stringify(data)}`)
+    if (data.event === 'fill') {
+      alpaca.getPositions(alpacaInstance, io, alpacaSocket);
+      alpaca.getOrders(alpacaInstance, io);      
+    }
+  });
+
+  alpacaTradeSocket.onAccountUpdate(data => {
+    console.log(`Account updates: ${JSON.stringify(data)}`)
   });
 
   alpacaSocket.onConnect(() => {
