@@ -1,4 +1,5 @@
 import { displayCost, displayPrice } from "../shared/formatting";
+import SpinnerButton from "./SpinnerButton";
 
 export default function PositionsTable({ socket, positions, orders, quotes }) {
   const createOrderSellObject = (symbol, qty) => {
@@ -13,7 +14,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
     );
   };
 
-  const createOrder = (orderObject, clientOrderId) => {
+  const createOrder = (orderObject) => {
     socket.emit('createOrder', orderObject);
   };
 
@@ -24,8 +25,6 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
     let stopPrice;
     let targetOrderId;
     let targetOrderStatus;
-    let stopOrderId;
-    let stopOrderStatus;
 
     orders.forEach((orderObj) => {
       if (
@@ -47,8 +46,6 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
       }
       if (leg.type === 'stop') {
         stopPrice = leg.stop_price;
-        stopOrderId = leg.id
-        stopOrderStatus = leg.status;
       }
     });
 
@@ -62,9 +59,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
       targetPrice, 
       targetOrderStatus,
       stopPrice,
-      stopOrderStatus,
       targetOrderId,
-      stopOrderId,
       hasLegs
     };
   }
@@ -97,14 +92,13 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
           targetPrice, 
           targetOrderStatus,
           stopPrice,
-          stopOrderStatus,
           targetOrderId,
-          stopOrderId,
           hasLegs
         } = getOrderObj(symbol, qty, avg_entry_price);
         const currentPrice = displayPrice(quotes[symbol]);
         const entryPrice = displayPrice(avg_entry_price);
         const orderSellObject = createOrderSellObject(symbol, qty);
+        const submitOrder = createOrder(orderSellObject);
         const cost = displayCost(cost_basis);
 
         return (
@@ -149,12 +143,10 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
                   </button>
                 </td>                
                 <td>
-                  <button 
-                    className="btn btn-dark m-2" 
-                    onClick={() => createOrder(orderSellObject, clientOrderId)}
-                  >
-                    Sell
-                  </button>
+                  <SpinnerButton 
+                    buttonText="Sell"
+                    onClickFunction={submitOrder}
+                  />
                 </td>            
               </tr>
             </tbody>
