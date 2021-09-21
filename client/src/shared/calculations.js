@@ -20,3 +20,9 @@ export const calculateMoneyUpfront = (currentPrice, stopPrice) => {
   const positionSize = calculatePositionSize(currentPrice, stopPrice);
   return Math.round(currentPrice * positionSize).toLocaleString();
 };
+
+export const calculateProfitLoss = (currentPrice, entryPrice, shares) => {
+  const purchaseValue = shares * entryPrice;
+  const currentValue = shares * currentPrice;
+  return (currentValue - purchaseValue).toFixed(2);
+}

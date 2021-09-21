@@ -1,4 +1,5 @@
 import { displayCost, displayPrice } from "../shared/formatting";
+import { calculateProfitLoss } from "../shared/calculations";
 import SpinnerButton from "./SpinnerButton";
 
 export default function PositionsTable({ socket, positions, orders, quotes }) {
@@ -84,8 +85,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
           side,
           avg_entry_price,
           qty,
-          cost_basis,
-          unrealized_intraday_pl
+          cost_basis
         } = positionObj;
         const { 
           clientOrderId,
@@ -101,6 +101,8 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
         const submitOrder = () => createOrder(orderSellObject);
         const cost = displayCost(cost_basis);
         const cancelBracket = () => cancelOrder(targetOrderId);
+        const profitOrLoss = calculateProfitLoss(currentPrice, entryPrice, qty);
+        const hasNoBracketOrder = !hasLegs || (targetOrderStatus === "canceled") 
 
         return (
           <>
@@ -122,23 +124,23 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
               <tr 
                 key={index} 
                 className={
-                  isInProfit(unrealized_intraday_pl) ? "table-success" : "table-danger"
+                  isInProfit(profitOrLoss) ? "table-success" : "table-danger"
                 }
               >
                 <td><strong>{symbol}</strong></td>
                 <td>{side.toUpperCase()}</td>
                 <td className="bg-warning"><strong>{currentPrice}</strong></td>
                 <td className="bg-info">{entryPrice}</td>
-                <td className={targetOrderStatus === "canceled" ? 'bg-dark' : "bg-success text-white"}>{targetPrice}</td>
-                <td className="bg-danger text-white">{stopPrice}</td>
+                <td className={hasNoBracketOrder ? 'bg-secondary' : "bg-success text-white"}>{targetPrice}</td>
+                <td className={hasNoBracketOrder ? 'bg-secondary' : "bg-danger text-white"}>{stopPrice}</td>
                 <td>{qty} shares</td>
                 <td>${cost}</td>
-                <td>${unrealized_intraday_pl}</td>
+                <td>${profitOrLoss}</td>
                 <td>
                   <SpinnerButton 
                     buttonClass="btn btn-secondary m-2"
                     buttonText="Cancel Bracket"
-                    buttonDisabled={targetOrderStatus === "canceled"}
+                    buttonDisabled={hasNoBracketOrder}
                     onClickFunction={cancelBracket}
                   />
                 </td>                
