@@ -61,11 +61,11 @@ export default function QuotesTable({
         return (
           <tr key={symbol}>
             <td><strong>{symbol}</strong></td>
-            <td>{currentPrice}</td>
-            <td>{profitTarget}</td>
+            <td className="bg-warning"><strong>{currentPrice}</strong></td>
+            <td className="bg-success text-white">{profitTarget}</td>
             <td>
               <input 
-                className="form-control"
+                className="form-control border border-danger"
                 type="text" 
                 placeholder="Stop Price"
                 value={stopPrice} 
