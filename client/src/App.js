@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { io } from 'socket.io-client';
 import Search from './components/Search';
+import ProfitLoss from "./components/ProfitLoss";
 import Positions from "./components/Positions";
 import Watchlist from "./components/Watchlist";
 
@@ -32,11 +33,17 @@ export default function App() {
     {socket ? (
     <div className="container">
       <div className="row">
-        <Search 
-          socket={socket}
-          watchlist={watchlist}
-          setWatchlist={setWatchlist} 
-        />
+        <div class="col"></div>
+        <div class="col">
+          <Search 
+            socket={socket}
+            watchlist={watchlist}
+            setWatchlist={setWatchlist} 
+          />
+        </div>
+        <div class="col d-flex justify-content-end align-items-center">
+          <ProfitLoss socket={socket} />
+        </div>
       </div>
       <div className="row">
         <Watchlist 
