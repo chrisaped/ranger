@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function SpinnerButton({buttonText, onClickFunction}) {
+export default function SpinnerButton({buttonClass, buttonText, buttonDisabled, onClickFunction}) {
   const [submitted, setSubmitted] = useState(false);
 
   const handleOnClick = () => {
@@ -19,8 +19,9 @@ export default function SpinnerButton({buttonText, onClickFunction}) {
       </div>
     ):(
       <button 
-        className="btn btn-dark m-2" 
+        className={buttonClass} 
         onClick={handleOnClick}
+        disabled={buttonDisabled}
       >
         {buttonText}
       </button>

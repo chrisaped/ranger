@@ -98,8 +98,9 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
         const currentPrice = displayPrice(quotes[symbol]);
         const entryPrice = displayPrice(avg_entry_price);
         const orderSellObject = createOrderSellObject(symbol, qty);
-        const submitOrder = createOrder(orderSellObject);
+        const submitOrder = () => createOrder(orderSellObject);
         const cost = displayCost(cost_basis);
+        const cancelBracket = () => cancelOrder(targetOrderId);
 
         return (
           <>
@@ -134,16 +135,16 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
                 <td>${cost}</td>
                 <td>${unrealized_intraday_pl}</td>
                 <td>
-                  <button 
-                    className="btn btn-secondary m-2"
-                    disabled={targetOrderStatus === "filled" || "canceled"}
-                    onClick={() => cancelOrder(targetOrderId)}
-                  >
-                    Cancel Bracket
-                  </button>
+                  <SpinnerButton 
+                    buttonClass="btn btn-secondary m-2"
+                    buttonText="Cancel Bracket"
+                    buttonDisabled={targetOrderStatus === "canceled"}
+                    onClickFunction={cancelBracket}
+                  />
                 </td>                
                 <td>
                   <SpinnerButton 
+                    buttonClass="btn btn-dark m-2"
                     buttonText="Sell"
                     onClickFunction={submitOrder}
                   />
