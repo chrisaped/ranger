@@ -78,34 +78,34 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
   };
   
   return (
-    <table className="table table-bordered">
-      {positions.map((positionObj, index) => {
-        const {
-          symbol,
-          side,
-          avg_entry_price,
-          qty,
-          cost_basis
-        } = positionObj;
-        const { 
-          clientOrderId,
-          targetPrice, 
-          targetOrderStatus,
-          stopPrice,
-          targetOrderId,
-          hasLegs
-        } = getOrderObj(symbol, qty, avg_entry_price);
-        const currentPrice = displayPrice(quotes[symbol]);
-        const entryPrice = displayPrice(avg_entry_price);
-        const orderSellObject = createOrderSellObject(symbol, qty);
-        const submitOrder = () => createOrder(orderSellObject);
-        const cost = displayCost(cost_basis);
-        const cancelBracket = () => cancelOrder(targetOrderId);
-        const profitOrLoss = calculateProfitLoss(currentPrice, entryPrice, qty);
-        const hasNoBracketOrder = !hasLegs || (targetOrderStatus === "canceled") 
-
-        return (
-          <>
+    <div>
+    {positions.map((positionObj, index) => {
+      const {
+        symbol,
+        side,
+        avg_entry_price,
+        qty,
+        cost_basis
+      } = positionObj;
+      const { 
+        clientOrderId,
+        targetPrice, 
+        targetOrderStatus,
+        stopPrice,
+        targetOrderId,
+        hasLegs
+      } = getOrderObj(symbol, qty, avg_entry_price);
+      const currentPrice = displayPrice(quotes[symbol]);
+      const entryPrice = displayPrice(avg_entry_price);
+      const orderSellObject = createOrderSellObject(symbol, qty);
+      const submitOrder = () => createOrder(orderSellObject);
+      const cost = displayCost(cost_basis);
+      const cancelBracket = () => cancelOrder(targetOrderId);
+      const profitOrLoss = calculateProfitLoss(currentPrice, entryPrice, qty);
+      const hasNoBracketOrder = !hasLegs || (targetOrderStatus === "canceled") 
+      
+      return (
+        <table className="table table-bordered" key={clientOrderId}>
             <thead className="table-dark">
               <tr>
                 <th>Symbol</th>
@@ -137,8 +137,9 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
                 <td>${cost}</td>
                 <td>${profitOrLoss}</td>
                 <td>
-                  <SpinnerButton 
-                    buttonClass="btn btn-secondary m-2"
+                  <SpinnerButton
+                    socket={socket}
+                    buttonClass="btn btn-dark m-2"
                     buttonText="Cancel Bracket"
                     buttonDisabled={hasNoBracketOrder}
                     onClickFunction={cancelBracket}
@@ -146,16 +147,18 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
                 </td>                
                 <td>
                   <SpinnerButton 
+                    socket={socket}
                     buttonClass="btn btn-dark m-2"
                     buttonText="Sell"
+                    buttonDisabled={!hasNoBracketOrder}
                     onClickFunction={submitOrder}
                   />
                 </td>            
               </tr>
             </tbody>
-          </>
+            </table>
         );
       })}
-    </table>
+      </div>
   );
 }

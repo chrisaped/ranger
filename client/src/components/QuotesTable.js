@@ -42,8 +42,8 @@ export default function QuotesTable({
         <tr>
           <th>Symbol</th>
           <th>Current Price</th>
-          <th>Stop Price</th>
           <th>Target Price</th>
+          <th>Stop Price</th>
           <th>Shares</th>
           <th>Money Upfront</th>
           <th colSpan="3">Actions</th>
@@ -62,6 +62,7 @@ export default function QuotesTable({
           <tr key={symbol}>
             <td><strong>{symbol}</strong></td>
             <td>{currentPrice}</td>
+            <td>{profitTarget}</td>
             <td>
               <input 
                 className="form-control"
@@ -71,8 +72,7 @@ export default function QuotesTable({
                 onChange={(e) => onStopPriceChange(symbol, e.target.value)} 
               />         
             </td>
-            <td>{profitTarget}</td>
-            <td>{positionSize}</td>
+            <td>{positionSize} shares</td>
             <td>${moneyUpfront}</td>
             <td>
               <button 

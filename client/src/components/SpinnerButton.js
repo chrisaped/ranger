@@ -1,7 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function SpinnerButton({buttonClass, buttonText, buttonDisabled, onClickFunction}) {
+export default function SpinnerButton({
+  socket,
+  buttonClass, 
+  buttonText, 
+  buttonDisabled, 
+  onClickFunction
+}) {
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    socket.on("orderUpdateResponse", (_data) => {
+      setSubmitted(false);
+    });  
+  }, [socket]);
 
   const handleOnClick = () => {
     setSubmitted(true);
@@ -12,11 +24,12 @@ export default function SpinnerButton({buttonClass, buttonText, buttonDisabled, 
   }
 
   return (
-    <>
+    <div className="text-center align-middle">
     {submitted ? (
-      <div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
+      <button className={buttonClass} type="button" disabled>
+        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        {" "}Submitting...
+      </button>
     ):(
       <button 
         className={buttonClass} 
@@ -26,6 +39,6 @@ export default function SpinnerButton({buttonClass, buttonText, buttonDisabled, 
         {buttonText}
       </button>
     )}
-    </>
+    </div>
   );
 }
