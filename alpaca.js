@@ -60,5 +60,10 @@ module.exports = {
     };
     const response = await alpacaInstance.getPortfolioHistory(portfolioHistoryObj);
     io.emit('portfolioHistoryResponse', response);
+  },
+  getClock: async function (alpacaInstance, io) {
+    const response = await alpacaInstance.getClock();
+    const marketIsOpenBoolean = response?.is_open;
+    io.emit('getClockResponse', marketIsOpenBoolean);
   }
 }

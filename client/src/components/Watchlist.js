@@ -4,11 +4,16 @@ import WatchlistList from "./WatchlistList";
 
 export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWatchlist }) {
   const [stopPrices, setStopPrices] = useState({});
+  const [marketIsOpen, setMarketIsOpen] = useState(false);
   const defaultStopPriceDifference = .25;
 
   useEffect(() => {
     socket.on('getWatchlist', (symbols) => {
       setWatchlist(symbols);
+    });
+
+    socket.on('getClockResponse', (marketIsOpenBoolean) => {
+      setMarketIsOpen(marketIsOpenBoolean);
     });
 
     if (Object.keys(quotes).length > 0) {
@@ -52,11 +57,8 @@ export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWat
     return newQuotes;
   }
 
-  const marketHoursReady = watchlist.length > 0 && (Object.keys(filteredQuotes()).length > 0) 
-    && (Object.keys(stopPrices).length > 0);
-
-  const offMarketHoursReady = watchlist.length > 0 && (Object.keys(filteredQuotes()).length === 0) 
-    && (Object.keys(stopPrices).length === 0);
+  const marketHoursReady = watchlist.length > 0 && marketIsOpen;
+  const offMarketHoursReady = watchlist.length > 0 && !marketIsOpen;
 
   return (
     <div>

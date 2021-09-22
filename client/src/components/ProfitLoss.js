@@ -19,9 +19,13 @@ export default function ProfitLoss({ socket }) {
   } 
 
   return (
-    <div>
-      <span className="p-2"><strong>Daily P/L:</strong></span>
-      <span className={badgeClass}>{profitLoss}</span>
-    </div>
+    <>
+    {profitLoss !== 0 && (
+      <div>
+        <span className="p-2"><strong>Daily P/L:</strong></span>
+        <span className={badgeClass}>{profitLoss}</span>
+      </div>
+    )}
+    </>
   );
 }
