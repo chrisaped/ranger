@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { io } from 'socket.io-client';
+import { updateObjectState } from "./shared/state";
 import Search from './components/Search';
 import ProfitLoss from "./components/ProfitLoss";
 import Positions from "./components/Positions";
@@ -25,7 +26,7 @@ export default function App() {
   }, []);
 
   const addQuote = (symbol, price) => {
-    setQuotes((prevState) => ({ ...prevState, [symbol]: price }));
+    updateObjectState(setQuotes, symbol, price);
   };
 
   return (
