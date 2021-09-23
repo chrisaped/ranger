@@ -108,7 +108,7 @@ export default function QuotesTable({
       {Object.entries(quotes).map(([symbol, price]) => {
         const stopPrice = stopPrices[symbol];
         const side = sides[symbol];
-        const profitTarget = calculatProfitTarget(price, stopPrice);
+        const profitTarget = calculatProfitTarget(price, stopPrice, side);
         const positionSize = calculatePositionSize(price, stopPrice);
         const moneyUpfront = calculateMoneyUpfront(price, stopPrice);
         const orderObject = createBracketOrder(symbol, side, positionSize, profitTarget, stopPrice);

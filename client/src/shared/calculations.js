@@ -6,8 +6,11 @@ const calculateRiskPerShare = (currentPrice, stopPrice) => {
   return currentPrice - stopPrice;
 };
 
-export const calculatProfitTarget = (currentPrice, stopPrice) => {
+export const calculatProfitTarget = (currentPrice, stopPrice, side) => {
   const riskPerShare = calculateRiskPerShare(currentPrice, stopPrice);
+  if (side === 'sell') {
+    return (currentPrice - (riskPerShare * 1.5)).toFixed(2);  
+  }
   return (currentPrice + (riskPerShare * 1.5)).toFixed(2);
 };
 
