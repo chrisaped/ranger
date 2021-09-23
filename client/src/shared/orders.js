@@ -22,3 +22,20 @@ export const createBracketOrder = (
     }
   );
 };
+
+export const createMarketOrder = (symbol, qty, side) => {
+  let action = "sell";
+  if (side === "sell") {
+    action = "buy";
+  }
+
+  return (
+    {
+      "side": action,
+      "symbol": symbol,
+      "type": "market",
+      "qty": `${qty}`,
+      "time_in_force": "day"
+    }
+  );
+};

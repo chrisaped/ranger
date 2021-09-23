@@ -1,20 +1,9 @@
 import { displayCost, displayPrice } from "../shared/formatting";
 import { calculateProfitLoss } from "../shared/calculations";
+import { createMarketOrder } from "../shared/orders";
 import SpinnerButton from "./SpinnerButton";
 
 export default function PositionsTable({ socket, positions, orders, quotes }) {
-  const createOrderSellObject = (symbol, qty) => {
-    return (
-      {
-        "side": "sell",
-        "symbol": symbol,
-        "type": "market",
-        "qty": `${qty}`,
-        "time_in_force": "day"
-      }
-    );
-  };
-
   const createOrder = (orderObject) => {
     socket.emit('createOrder', orderObject);
   };
@@ -97,8 +86,8 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
       } = getOrderObj(symbol, qty, avg_entry_price);
       const currentPrice = displayPrice(quotes[symbol]);
       const entryPrice = displayPrice(avg_entry_price);
-      const orderSellObject = createOrderSellObject(symbol, qty);
-      const submitOrder = () => createOrder(orderSellObject);
+      const marketOrder = createMarketOrder(symbol, qty, side);
+      const submitOrder = () => createOrder(marketOrder);
       const cost = displayCost(cost_basis);
       const cancelBracket = () => cancelOrder(targetOrderId);
       const profitOrLoss = calculateProfitLoss(currentPrice, entryPrice, qty);
@@ -149,7 +138,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
                 <SpinnerButton 
                   socket={socket}
                   buttonClass="btn btn-dark m-2"
-                  buttonText="Sell"
+                  buttonText={side === "buy" ? "Sell" : "Buy"}
                   buttonDisabled={!hasNoBracketOrder}
                   onClickFunction={submitOrder}
                 />
