@@ -28,7 +28,6 @@ export const createMarketOrder = (symbol, qty, side) => {
   if (side === "sell") {
     action = "buy";
   }
-
   return (
     {
       "side": action,
@@ -38,4 +37,12 @@ export const createMarketOrder = (symbol, qty, side) => {
       "time_in_force": "day"
     }
   );
+};
+
+export const createOrder = (socket, orderObject) => {
+  socket.emit('createOrder', orderObject);
+};
+
+export const cancelOrder = (socket, orderId) => {
+  socket.emit('cancelOrder', orderId);
 };

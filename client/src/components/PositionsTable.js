@@ -1,13 +1,19 @@
-import { displayCost, displayPrice } from "../shared/formatting";
-import { calculateProfitLoss } from "../shared/calculations";
-import { createMarketOrder } from "../shared/orders";
+import { 
+  displayCost, 
+  displayPrice
+} from "../shared/formatting";
+import { 
+  calculateProfitLoss,
+  isInProfit
+} from "../shared/calculations";
+import { 
+  createMarketOrder,
+  createOrder,
+  cancelOrder
+} from "../shared/orders";
 import SpinnerButton from "./SpinnerButton";
 
 export default function PositionsTable({ socket, positions, orders, quotes }) {
-  const createOrder = (orderObject) => {
-    socket.emit('createOrder', orderObject);
-  };
-
   const getOrderObj = (symbol, qty, avg_entry_price) => {
     let clientOrderId;
     let legs = [];
@@ -53,18 +59,6 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
       hasLegs
     };
   }
-
-  const isInProfit = (pl) => {
-    const plFloat = parseFloat(pl);
-    if (plFloat > 0) {
-      return true;
-    }
-    return false;
-  };
-
-  const cancelOrder = (orderId) => {
-    socket.emit('cancelOrder', orderId);
-  };
   
   return (
     <div>
@@ -87,9 +81,9 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
       const currentPrice = displayPrice(quotes[symbol]);
       const entryPrice = displayPrice(avg_entry_price);
       const marketOrder = createMarketOrder(symbol, qty, side);
-      const submitOrder = () => createOrder(marketOrder);
+      const submitOrder = () => createOrder(socket, marketOrder);
       const cost = displayCost(cost_basis);
-      const cancelBracket = () => cancelOrder(targetOrderId);
+      const cancelBracket = () => cancelOrder(socket, targetOrderId);
       const profitOrLoss = calculateProfitLoss(currentPrice, entryPrice, qty);
       const hasNoBracketOrder = !hasLegs || (targetOrderStatus === "canceled") 
       
