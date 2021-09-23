@@ -44,7 +44,7 @@ io.on('connection', (socket) => {
 
   alpacaTradeSocket.onOrderUpdate(data => {
     console.log(`Order updates: ${JSON.stringify(data)}`)
-    if (['fill', 'canceled'].includes(data.event)) {
+    if (['filled', 'canceled'].includes(data.event)) {
       alpaca.getClock(alpacaInstance, io);
       alpaca.getPortfolioHistory(alpacaInstance, io);
       alpaca.getOrders(alpacaInstance, io);
