@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   calculatProfitTarget,
   calculatePositionSize,
@@ -6,8 +7,6 @@ import {
 import { displayPrice } from "../shared/formatting";
 import { createBracketOrder } from "../shared/orders";
 import { updateObjectState } from "../shared/state";
-
-import { useState, useEffect } from "react";
 
 export default function QuotesTable({ 
   socket, 
