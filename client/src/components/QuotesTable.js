@@ -81,6 +81,16 @@ export default function QuotesTable({
     return { buttonText, buttonClass };
   }
 
+  const isForbiddenStopPrice = (side, stopPrice, price) => {
+    if ((side === 'buy') && (stopPrice > price)) {
+      return true;
+    }
+    if ((side === 'sell') && (stopPrice < price)) {
+      return true;
+    }
+    return false;    
+  }
+
   return (
     <table className="table table-bordered">
       <thead className="table-dark">
@@ -98,12 +108,13 @@ export default function QuotesTable({
       <tbody>
       {Object.entries(quotes).map(([symbol, price]) => {
         const stopPrice = stopPrices[symbol];
+        const side = sides[symbol];
         const profitTarget = calculatProfitTarget(price, stopPrice);
         const positionSize = calculatePositionSize(price, stopPrice);
         const moneyUpfront = calculateMoneyUpfront(price, stopPrice);
-        const orderObject = createBracketOrder(symbol, sides[symbol], positionSize, profitTarget, stopPrice);
+        const orderObject = createBracketOrder(symbol, side, positionSize, profitTarget, stopPrice);
         const currentPrice = displayPrice(price);
-        const { buttonClass, buttonText } = displayOrderButton(sides[symbol]);
+        const { buttonClass, buttonText } = displayOrderButton(side);
 
         return (
           <tr key={symbol}>
@@ -111,7 +122,7 @@ export default function QuotesTable({
             <td className="p-3">
               <select 
                 className="form-select" 
-                value={sides[symbol]}
+                value={side}
                 onChange={(e) => onSelectChange(symbol, e.target.value, price)}
               >
                 <option value="buy">Long</option>
@@ -122,7 +133,11 @@ export default function QuotesTable({
             <td className="bg-success text-white">{profitTarget}</td>
             <td>
               <input 
-                className="form-control border border-danger"
+                className={
+                  isForbiddenStopPrice(side, stopPrice, currentPrice)
+                  ? "form-control border border-danger"
+                  : "form-control"
+                }
                 type="text"
                 size="4"
                 placeholder="Stop Price"
@@ -136,7 +151,7 @@ export default function QuotesTable({
               <button 
                 className={buttonClass}
                 onClick={() => createOrder(symbol, orderObject)}
-                // disabled= if I dont have enough money
+                disabled={isForbiddenStopPrice(side, stopPrice, currentPrice)}
               >
                 {buttonText}
               </button>
