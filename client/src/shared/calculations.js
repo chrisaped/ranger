@@ -4,7 +4,7 @@ const risk = accountSize * riskPercentage;
 export const defaultStopPriceDifference = .25;
 
 const calculateRiskPerShare = (currentPrice, stopPrice) => {
-  return currentPrice - stopPrice;
+  return Math.abs(currentPrice - stopPrice);
 };
 
 export const calculatProfitTarget = (currentPrice, stopPrice, side) => {

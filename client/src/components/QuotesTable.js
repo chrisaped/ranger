@@ -18,7 +18,6 @@ export default function QuotesTable({
 }) {
   const [sides, setSides] = useState({});
   const [stopPrices, setStopPrices] = useState({});
-  const [targetPrices, setTargetPrices] = useState({});
 
   useEffect(() => {
     if (watchlist.length > 0) {
