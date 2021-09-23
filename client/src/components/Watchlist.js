@@ -70,6 +70,7 @@ export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWat
           stopPrices={stopPrices}
           onStopPriceChange={onStopPriceChange}
           deleteFromWatchlist={deleteFromWatchlist}
+          watchlist={watchlist}
         />
       </div>
     )}
