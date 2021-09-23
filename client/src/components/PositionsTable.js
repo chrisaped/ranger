@@ -82,7 +82,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
                 <SpinnerButton 
                   socket={socket}
                   buttonClass="btn btn-dark m-2"
-                  buttonText={side === "buy" ? "Sell" : "Buy"}
+                  buttonText={side === "long" ? "Sell" : "Buy"}
                   buttonDisabled={!hasNoBracketOrder}
                   onClickFunction={submitOrder}
                 />

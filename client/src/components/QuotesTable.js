@@ -2,7 +2,9 @@ import { useState, useEffect } from "react";
 import {
   calculatProfitTarget,
   calculatePositionSize,
-  calculateMoneyUpfront
+  calculateMoneyUpfront,
+  calculateDefaultStopPrice,
+  defaultStopPriceDifference
 } from "../shared/calculations";
 import { displayPrice } from "../shared/formatting";
 import { createBracketOrder } from "../shared/orders";
@@ -16,7 +18,7 @@ export default function QuotesTable({
 }) {
   const [sides, setSides] = useState({});
   const [stopPrices, setStopPrices] = useState({});
-  const defaultStopPriceDifference = .25;
+  const [targetPrices, setTargetPrices] = useState({});
 
   useEffect(() => {
     if (watchlist.length > 0) {
@@ -59,14 +61,6 @@ export default function QuotesTable({
     const newDefaultStopPrice = calculateDefaultStopPrice(side, price);
     updateObjectState(setStopPrices, symbol, newDefaultStopPrice);
   };
-
-  const calculateDefaultStopPrice = (side, price) => {
-    let defaultStopPrice = price - defaultStopPriceDifference;
-    if (side === 'sell') {
-      defaultStopPrice = price + defaultStopPriceDifference;
-    }
-    return defaultStopPrice;
-  }
 
   const displayOrderButton = (side) => {
     let buttonText = 'Long';

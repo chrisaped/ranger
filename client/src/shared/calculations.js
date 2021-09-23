@@ -1,6 +1,7 @@
 const accountSize = 5900;
 const riskPercentage = .005;
 const risk = accountSize * riskPercentage;
+export const defaultStopPriceDifference = .25;
 
 const calculateRiskPerShare = (currentPrice, stopPrice) => {
   return currentPrice - stopPrice;
@@ -8,10 +9,10 @@ const calculateRiskPerShare = (currentPrice, stopPrice) => {
 
 export const calculatProfitTarget = (currentPrice, stopPrice, side) => {
   const riskPerShare = calculateRiskPerShare(currentPrice, stopPrice);
-  if (side === 'sell') {
-    return (currentPrice - (riskPerShare * 1.5)).toFixed(2);  
+  if (side === 'buy') {
+    return (currentPrice + (riskPerShare * 1.5)).toFixed(2);
   }
-  return (currentPrice + (riskPerShare * 1.5)).toFixed(2);
+  return (currentPrice - (riskPerShare * 1.5)).toFixed(2);  
 };
 
 export const calculatePositionSize = (currentPrice, stopPrice) => {
@@ -24,10 +25,13 @@ export const calculateMoneyUpfront = (currentPrice, stopPrice) => {
   return Math.round(currentPrice * positionSize).toLocaleString();
 };
 
-export const calculateProfitLoss = (currentPrice, entryPrice, shares) => {
+export const calculateProfitLoss = (currentPrice, entryPrice, shares, side) => {
   const purchaseValue = shares * entryPrice;
   const currentValue = shares * currentPrice;
-  return (currentValue - purchaseValue).toFixed(2);
+  if (side === 'long') {
+    return (currentValue - purchaseValue).toFixed(2);
+  }
+  return (purchaseValue - currentValue).toFixed(2);
 }
 
 export const isInProfit = (calculatedProfitLoss) => {
@@ -37,3 +41,11 @@ export const isInProfit = (calculatedProfitLoss) => {
   }
   return false;
 };
+
+export const calculateDefaultStopPrice = (side, price) => {
+  let defaultStopPrice = price - defaultStopPriceDifference;
+  if (side === 'sell') {
+    defaultStopPrice = price + defaultStopPriceDifference;
+  }
+  return defaultStopPrice.toFixed(2);
+}
