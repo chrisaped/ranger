@@ -12,12 +12,12 @@ import { useState, useEffect } from "react";
 export default function QuotesTable({ 
   socket, 
   quotes, 
-  stopPrices,
-  onStopPriceChange,
   deleteFromWatchlist,
   watchlist
 }) {
   const [sides, setSides] = useState({});
+  const [stopPrices, setStopPrices] = useState({});
+  const defaultStopPriceDifference = .25;
 
   useEffect(() => {
     if (watchlist.length > 0) {
@@ -29,7 +29,26 @@ export default function QuotesTable({
       })
       setSides(newSetSidesObj);
     }
-  }, [watchlist, sides]);
+
+    if (Object.keys(quotes).length > 0) {
+      const stopPricesLength = Object.keys(stopPrices).length;
+      const newStopPrices = stopPrices;
+      Object.entries(quotes).forEach(([symbol, price]) => {
+        if (!(symbol in newStopPrices) && watchlist.includes(symbol)) {
+          const stopPrice = (price - defaultStopPriceDifference).toFixed(2);
+          newStopPrices[symbol] = stopPrice;
+        }
+      });
+      const newStopPricesLength = Object.keys(newStopPrices).length;
+      if (newStopPricesLength > stopPricesLength) {
+        setStopPrices(newStopPrices);
+      }
+    }
+  }, [watchlist, quotes, sides, stopPrices]);
+
+  const onStopPriceChange = (symbol, newStopPrice) => {
+    updateObjectState(setStopPrices, symbol, newStopPrice);
+  };
 
   const createOrder = (symbol, orderObject) => {
     deleteFromWatchlist(symbol);

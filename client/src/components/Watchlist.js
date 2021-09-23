@@ -3,9 +3,7 @@ import QuotesTable from "./QuotesTable";
 import WatchlistList from "./WatchlistList";
 
 export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWatchlist }) {
-  const [stopPrices, setStopPrices] = useState({});
   const [marketIsOpen, setMarketIsOpen] = useState(false);
-  const defaultStopPriceDifference = .25;
 
   useEffect(() => {
     socket.on('getWatchlist', (symbols) => {
@@ -16,21 +14,7 @@ export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWat
       setMarketIsOpen(marketIsOpenBoolean);
     });
 
-    if (Object.keys(quotes).length > 0) {
-      const stopPricesLength = Object.keys(stopPrices).length;
-      const newStopPrices = stopPrices;
-      Object.entries(quotes).forEach(([symbol, price]) => {
-        if (!(symbol in newStopPrices) && watchlist.includes(symbol)) {
-          const stopPrice = (price - defaultStopPriceDifference).toFixed(2);
-          newStopPrices[symbol] = stopPrice;
-        }
-      });
-      const newStopPricesLength = Object.keys(newStopPrices).length;
-      if (newStopPricesLength > stopPricesLength) {
-        setStopPrices(newStopPrices);
-      }
-    }
-  }, [socket, quotes, setQuotes, stopPrices, watchlist, setWatchlist]);
+  }, [socket, setWatchlist]);
 
   const deleteFromWatchlist = (symbol) => {
     const newWatchlist = watchlist.filter(watchlistSymbol => watchlistSymbol !== symbol);
@@ -42,10 +26,6 @@ export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWat
     }
     socket.emit('deleteFromWatchlist', symbol);
   }
-
-  const onStopPriceChange = (symbol, newStopPrice) => {
-    setStopPrices((prevState) => ({ ...prevState, [symbol]: newStopPrice }));
-  };
 
   const filteredQuotes = () => {
     const newQuotes = {};
@@ -67,8 +47,6 @@ export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWat
         <QuotesTable 
           socket={socket}
           quotes={filteredQuotes()}
-          stopPrices={stopPrices}
-          onStopPriceChange={onStopPriceChange}
           deleteFromWatchlist={deleteFromWatchlist}
           watchlist={watchlist}
         />
