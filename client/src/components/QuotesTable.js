@@ -55,9 +55,19 @@ export default function QuotesTable({
     socket.emit('createOrder', orderObject);
   };
 
-  const onSelectChange = (symbol, side) => {
+  const onSelectChange = (symbol, side, price) => {
     updateObjectState(setSides, symbol, side);
+    const newDefaultStopPrice = calculateDefaultStopPrice(side, price);
+    updateObjectState(setStopPrices, symbol, newDefaultStopPrice);
   };
+
+  const calculateDefaultStopPrice = (side, price) => {
+    let defaultStopPrice = price - defaultStopPriceDifference;
+    if (side === 'sell') {
+      defaultStopPrice = price + defaultStopPriceDifference;
+    }
+    return defaultStopPrice;
+  }
 
   const displayOrderButton = (side) => {
     let buttonText = 'Long';
@@ -102,7 +112,7 @@ export default function QuotesTable({
               <select 
                 className="form-select" 
                 value={sides[symbol]}
-                onChange={(e) => onSelectChange(symbol, e.target.value)}
+                onChange={(e) => onSelectChange(symbol, e.target.value, price)}
               >
                 <option value="buy">Long</option>
                 <option value="sell">Short</option>
