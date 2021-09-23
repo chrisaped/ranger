@@ -9,60 +9,15 @@ import {
 import { 
   createMarketOrder,
   createOrder,
-  cancelOrder
+  cancelOrder,
+  extractBracketOrderInfo
 } from "../shared/orders";
 import SpinnerButton from "./SpinnerButton";
 
 export default function PositionsTable({ socket, positions, orders, quotes }) {
-  const getOrderObj = (symbol, qty, avg_entry_price) => {
-    let clientOrderId;
-    let legs = [];
-    let targetPrice;
-    let stopPrice;
-    let targetOrderId;
-    let targetOrderStatus;
-
-    orders.forEach((orderObj) => {
-      if (
-        (orderObj.symbol === symbol) && 
-        (orderObj.qty === qty) &&
-        (orderObj.filled_avg_price === avg_entry_price) &&
-        orderObj.status === "filled"
-      ) {
-        clientOrderId = orderObj.client_order_id;
-        legs = orderObj.legs;
-      }
-    });
-
-    legs.forEach((leg) => {
-      if (leg.type === 'limit') {
-        targetPrice = leg.limit_price;
-        targetOrderId = leg.id;
-        targetOrderStatus = leg.status;
-      }
-      if (leg.type === 'stop') {
-        stopPrice = leg.stop_price;
-      }
-    });
-
-    targetPrice = displayPrice(targetPrice);
-    stopPrice = displayPrice(stopPrice);
-    
-    const hasLegs = legs.length > 0;
-
-    return { 
-      clientOrderId,
-      targetPrice, 
-      targetOrderStatus,
-      stopPrice,
-      targetOrderId,
-      hasLegs
-    };
-  }
-  
   return (
     <div>
-    {positions.map((positionObj, index) => {
+    {positions.map((positionObj) => {
       const {
         symbol,
         side,
@@ -77,7 +32,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
         stopPrice,
         targetOrderId,
         hasLegs
-      } = getOrderObj(symbol, qty, avg_entry_price);
+      } = extractBracketOrderInfo(symbol, qty, avg_entry_price, orders);
       const currentPrice = displayPrice(quotes[symbol]);
       const entryPrice = displayPrice(avg_entry_price);
       const marketOrder = createMarketOrder(symbol, qty, side);
@@ -104,12 +59,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
             </tr>
           </thead>
           <tbody>
-            <tr 
-              key={index} 
-              className={
-                isInProfit(profitOrLoss) ? "table-success" : "table-danger"
-              }
-            >
+            <tr className={isInProfit(profitOrLoss) ? "table-success" : "table-danger"}>
               <td><strong>{symbol}</strong></td>
               <td>{side.toUpperCase()}</td>
               <td className="bg-warning"><strong>{currentPrice}</strong></td>
@@ -142,6 +92,6 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
         </table>
         );
       })}
-      </div>
+    </div>
   );
 }
