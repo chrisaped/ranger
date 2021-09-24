@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import QuotesTable from "./QuotesTable";
 import WatchlistList from "./WatchlistList";
 
-export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWatchlist }) {
+export default function Watchlist({ 
+  socket, 
+  quotes, 
+  setQuotes, 
+  watchlist, 
+  setWatchlist,
+  tradeableAssets
+}) {
   const [marketIsOpen, setMarketIsOpen] = useState(false);
 
   useEffect(() => {
@@ -49,6 +56,7 @@ export default function Watchlist({ socket, quotes, setQuotes, watchlist, setWat
           quotes={filteredQuotes()}
           deleteFromWatchlist={deleteFromWatchlist}
           watchlist={watchlist}
+          tradeableAssets={tradeableAssets}
         />
       </div>
     )}

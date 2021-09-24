@@ -14,7 +14,8 @@ export default function QuotesTable({
   socket, 
   quotes, 
   deleteFromWatchlist,
-  watchlist
+  watchlist,
+  tradeableAssets
 }) {
   const [sides, setSides] = useState({});
   const [stopPrices, setStopPrices] = useState({});
@@ -61,13 +62,16 @@ export default function QuotesTable({
     updateObjectState(setStopPrices, symbol, newDefaultStopPrice);
   };
 
-  const displayOrderButton = (side) => {
+  const displayOrderButton = (side, symbol) => {
     let buttonText = 'Long';
     let buttonClass = "btn btn-success m-2";
 
     if (side === 'sell') {
       buttonText = 'Short';
       buttonClass = "btn btn-danger m-2";
+      if (!isShortable(symbol)) {
+        buttonText = 'Not Shortable'
+      }
     }
 
     return { buttonText, buttonClass };
@@ -81,6 +85,11 @@ export default function QuotesTable({
       return true;
     }
     return false;    
+  }
+
+  const isShortable = (symbol) => {
+    const assetsObject = tradeableAssets[symbol];
+    return assetsObject.shortable;
   }
 
   return (
@@ -106,7 +115,7 @@ export default function QuotesTable({
         const moneyUpfront = calculateMoneyUpfront(price, stopPrice);
         const orderObject = createBracketOrder(symbol, side, positionSize, profitTarget, stopPrice);
         const currentPrice = displayPrice(price);
-        const { buttonClass, buttonText } = displayOrderButton(side);
+        const { buttonClass, buttonText } = displayOrderButton(side, symbol);
 
         return (
           <tr key={symbol}>
@@ -143,7 +152,7 @@ export default function QuotesTable({
               <button 
                 className={buttonClass}
                 onClick={() => createOrder(symbol, orderObject)}
-                disabled={isForbiddenStopPrice(side, stopPrice, currentPrice)}
+                disabled={isForbiddenStopPrice(side, stopPrice, currentPrice) || !isShortable(symbol)}
               >
                 {buttonText}
               </button>

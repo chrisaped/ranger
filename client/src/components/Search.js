@@ -1,15 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-export default function Search({ socket, watchlist, setWatchlist }) {
+export default function Search({ 
+  socket, 
+  watchlist, 
+  setWatchlist,
+  tradeableAssets
+}) {
   const [searchParams, setSearchParams] = useState('');
-  const [tradeableAssets, setTradeableAssets] = useState({});
   const [searchError, setSearchError] = useState('');
-
-  useEffect(() => {
-    socket.on('getAssetsResponse', (assets) => {
-      setTradeableAssets(assets);
-    });
-  }, [socket]);
 
   const getStockQuote = () => {
     setSearchError('');
