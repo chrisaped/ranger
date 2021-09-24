@@ -1,4 +1,5 @@
 import { displayPrice } from "./formatting";
+import { calculateProfitLoss } from "./calculations";
 
 export const createBracketOrder = (
   symbol, 
@@ -94,3 +95,57 @@ export const extractBracketOrderInfo = (symbol, qty, avg_entry_price, orders) =>
     hasLegs
   };
 };
+
+
+export const extractProfitLoss = (orders, symbol, currentPrice) => {
+  // orders from alpaca need to be in ascending order
+  const ordersArray = [];
+
+  orders.forEach(orderObj => {
+    if ((orderObj.symbol === symbol) && (orderObj.status === 'filled')) {
+      ordersArray.push(orderObj);
+    }
+    if (orderObj.legs?.length > 0) {
+      ordersArray.concat(orderObj.legs);
+    }
+  })
+
+  let totalProfitLoss;
+
+  const parentOrderObj = ordersArray[0];
+  const parentQuantity = parentOrderObj.filled_qty;
+  const parentSide = parentOrderObj.side;
+  const parentPrice = parentOrderObj.filled_avg_price;
+  
+  // closed position
+  if (ordersArray.length > 1) {
+    const purchaseValue = parentQuantity * parentPrice;
+    let childOrdersTotalQuantity = 0;
+    let childOrdersTotalValue = 0;
+
+    for (let i = 1; i < ordersArray.length; i += 1) {
+      const orderObj = ordersArray[i];
+      const quantity = orderObj.filled_qty;
+      const price = orderObj.filled_avg_price;
+
+      const value = quantity * price;
+      childOrdersTotalValue += value;
+      childOrdersTotalQuantity += quantity;
+      if (childOrdersTotalQuantity === parentQuantity) {
+        break;
+      }
+    }
+
+    if (parentSide === 'long') {
+      totalProfitLoss = (childOrdersTotalValue - purchaseValue).toFixed(2);
+    }
+    totalProfitLoss = (purchaseValue - childOrdersTotalValue).toFixed(2);
+  }
+
+  // current position
+  if (ordersArray.length === 1) {
+    totalProfitLoss = calculateProfitLoss(currentPrice, parentPrice, parentQuantity, parentSide);
+  }
+
+  return totalProfitLoss;
+}
