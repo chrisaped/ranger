@@ -40,7 +40,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
       const cost = displayCost(cost_basis);
       const cancelBracket = () => cancelOrder(socket, targetOrderId);
       const profitOrLoss = calculateProfitLoss(currentPrice, entryPrice, qty, side);
-      const hasNoBracketOrder = !hasLegs || (targetOrderStatus === "canceled") 
+      const hasNoBracketOrder = !hasLegs || (targetOrderStatus === "canceled");
       
       return (
         <table className="table table-bordered" key={clientOrderId}>
