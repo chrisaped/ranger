@@ -32,7 +32,14 @@ export const calculateProfitLoss = (currentPrice, entryPrice, shares, side) => {
     return (currentValue - purchaseValue).toFixed(2);
   }
   return (purchaseValue - currentValue).toFixed(2);
-}
+};
+
+export const calculateProfitLossByValues = (purchaseValue, childValue, side) => {
+  if (side === 'long') {
+    return (childValue - purchaseValue).toFixed(2);
+  }
+  return (purchaseValue - childValue).toFixed(2);
+};
 
 export const isInProfit = (calculatedProfitLoss) => {
   const plFloat = parseFloat(calculatedProfitLoss);
