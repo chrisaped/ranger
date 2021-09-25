@@ -49,18 +49,6 @@ module.exports = {
     const response = await alpacaInstance.cancelOrder(orderId);
     console.log('cancelOrder', response);
   },
-  getPortfolioHistory: async function (alpacaInstance, io) {
-    const today = new Date().toISOString().slice(0, 10);
-    const portfolioHistoryObj = { 
-      date_start: today,
-      date_end: today, 
-      period: 'intraday', 
-      timeframe: '1D',
-      extended_hours: false 
-    };
-    const response = await alpacaInstance.getPortfolioHistory(portfolioHistoryObj);
-    io.emit('portfolioHistoryResponse', response);
-  },
   getClock: async function (alpacaInstance, io) {
     const response = await alpacaInstance.getClock();
     const marketIsOpenBoolean = response?.is_open;
