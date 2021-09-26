@@ -56,3 +56,5 @@ export const calculateDefaultStopPrice = (side, price) => {
   }
   return defaultStopPrice.toFixed(2);
 }
+
+export const sumObjectValues = obj => Object.values(obj).reduce((a, b) => a + b);

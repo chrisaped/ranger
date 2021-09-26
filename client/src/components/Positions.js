@@ -1,20 +1,6 @@
-import { useEffect, useState } from "react";
 import PositionsTable from "./PositionsTable";
 
-export default function Positions({ socket, quotes }) {
-  const [positions, setPositions] = useState([]);
-  const [orders, setOrders] = useState([]);
-
-  useEffect(() => {
-    socket.on("getPositionsResponse", (array) => {
-      setPositions(array);
-    });
-
-    socket.on("getOrdersResponse", (array) => {
-      setOrders(array);
-    });
-  }, [socket]);
-
+export default function Positions({ socket, quotes, orders, positions }) {
   return (
     <div>
       <div className="d-flex justify-content-center">

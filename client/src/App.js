@@ -11,6 +11,8 @@ export default function App() {
   const [quotes, setQuotes] = useState({});
   const [watchlist, setWatchlist] = useState([]);
   const [tradeableAssets, setTradeableAssets] = useState({});
+  const [orders, setOrders] = useState([]);
+  const [positions, setPositions] = useState([]);
 
   useEffect(() => {
     const newSocket = io(process.env.REACT_APP_SOCKET_ENDPOINT);
@@ -23,6 +25,14 @@ export default function App() {
 
     newSocket.on('getAssetsResponse', (assets) => {
       setTradeableAssets(assets);
+    });
+
+    newSocket.on("getOrdersResponse", (array) => {
+      setOrders(array);
+    });
+
+    newSocket.on("getPositionsResponse", (array) => {
+      setPositions(array);
     });
   
     return () => {
@@ -49,7 +59,12 @@ export default function App() {
           />
         </div>
         <div class="col d-flex justify-content-end align-items-center">
-          <ProfitLoss socket={socket} />
+          <ProfitLoss 
+            socket={socket}
+            orders={orders}
+            positions={positions}
+            quotes={quotes}
+          />
         </div>
       </div>
       <div className="row">
@@ -66,6 +81,8 @@ export default function App() {
         <Positions 
           socket={socket}
           quotes={quotes}
+          orders={orders}
+          positions={positions}
         />
       </div>      
     </div>
