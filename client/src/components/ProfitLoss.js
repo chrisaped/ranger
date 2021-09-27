@@ -22,7 +22,7 @@ export default function ProfitLoss({ orders, positions, quotes }) {
     return newObj;
   };
   const currentPositionsWithQuotes = createCurrentPositionsWithQuotes(quotes);
-  const currentPositionsProfitLoss = sumObjectValues(currentPositionsWithQuotes);
+  const currentPositionsProfitLoss = sumObjectValues(currentPositionsWithQuotes) || 0;
   const closedPositionsProfitLoss = extractTotalProfitLossFromClosedOrders(orders);
   const profitLoss = currentPositionsProfitLoss + closedPositionsProfitLoss;
 
