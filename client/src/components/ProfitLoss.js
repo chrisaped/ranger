@@ -1,7 +1,7 @@
 import { sumObjectValues } from "../shared/calculations";
 import { extractTotalProfitLossFromClosedOrders } from "../shared/orders";
 
-export default function ProfitLoss({ socket, orders, positions, quotes }) {
+export default function ProfitLoss({ orders, positions, quotes }) {
   const currentPositionsSymbols = positions.map(positionObj => positionObj.symbol);
   const currentPositionsWithQuotes = currentPositionsSymbols.reduce((ac, symbol) => (
     {...ac,[symbol]: quotes[symbol]}

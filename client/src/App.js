@@ -55,8 +55,8 @@ export default function App() {
     {socket ? (
     <div className="container">
       <div className="row">
-        <div class="col"></div>
-        <div class="col">
+        <div className="col"></div>
+        <div className="col">
           <Search 
             socket={socket}
             watchlist={watchlist}
@@ -64,13 +64,14 @@ export default function App() {
             tradeableAssets={tradeableAssets}
           />
         </div>
-        <div class="col d-flex justify-content-end align-items-center">
-          <ProfitLoss 
-            socket={socket}
-            orders={orders}
-            positions={positions}
-            quotes={quotes}
-          />
+        <div className="col d-flex justify-content-end align-items-center">
+          {positions.length > 0 && (
+            <ProfitLoss 
+              orders={orders}
+              positions={positions}
+              quotes={quotes}
+            />
+          )}
         </div>
       </div>
       <div className="row">
