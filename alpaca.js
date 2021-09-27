@@ -22,10 +22,8 @@ module.exports = {
   getPositions: async function (alpacaInstance, io, alpacaSocket) {
     const response = await alpacaInstance.getPositions();
     const symbolsArray = response?.map(obj => obj.symbol) || [];
-    if (symbolsArray.length > 0) {
-      alpacaSocket.subscribeForQuotes(symbolsArray);
-      io.emit('getPositionsResponse', response);
-    }
+    alpacaSocket.subscribeForQuotes(symbolsArray);
+    io.emit('getPositionsResponse', response);
   },
   getOrders: async function (alpacaInstance, io) {
     const today = new Date().toISOString().slice(0, 10);
