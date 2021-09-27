@@ -5,6 +5,7 @@ import Search from './components/Search';
 import ProfitLoss from "./components/ProfitLoss";
 import Positions from "./components/Positions";
 import Watchlist from "./components/Watchlist";
+import Alert from "./components/Alert";
 
 export default function App() {
   const [socket, setSocket] = useState(null);
@@ -25,7 +26,7 @@ export default function App() {
 
     newSocket.on('getLatestQuoteResponse', (response) => {
       const symbol = response.symbol;
-      const askPrice = response.quote.ap;
+      const askPrice = response.last.askprice;
       addQuote(symbol, askPrice);
     });    
 
@@ -53,46 +54,49 @@ export default function App() {
   return (
     <>
     {socket ? (
-    <div className="container">
-      <div className="row">
-        <div className="col"></div>
-        <div className="col">
-          <Search 
+    <div>
+      <Alert socket={socket} />
+      <div className="container">
+        <div className="row">
+          <div className="col"></div>
+          <div className="col">
+            <Search 
+              socket={socket}
+              watchlist={watchlist}
+              setWatchlist={setWatchlist} 
+              tradeableAssets={tradeableAssets}
+            />
+          </div>
+          <div className="col d-flex justify-content-end align-items-center">
+            {orders.length > 0 && (
+              <ProfitLoss 
+                orders={orders}
+                positions={positions}
+                quotes={quotes}
+              />
+            )}
+          </div>
+        </div>
+        <div className="row">
+          <Watchlist 
             socket={socket}
+            quotes={quotes}
+            setQuotes={setQuotes}
             watchlist={watchlist}
-            setWatchlist={setWatchlist} 
+            setWatchlist={setWatchlist}
             tradeableAssets={tradeableAssets}
           />
-        </div>
-        <div className="col d-flex justify-content-end align-items-center">
-          {positions.length > 0 && (
-            <ProfitLoss 
-              orders={orders}
-              positions={positions}
-              quotes={quotes}
-            />
-          )}
-        </div>
+        </div>      
+        <div className="row">
+          <Positions 
+            socket={socket}
+            quotes={quotes}
+            orders={orders}
+            positions={positions}
+          />
+        </div>      
       </div>
-      <div className="row">
-        <Watchlist 
-          socket={socket}
-          quotes={quotes}
-          setQuotes={setQuotes}
-          watchlist={watchlist}
-          setWatchlist={setWatchlist}
-          tradeableAssets={tradeableAssets}
-        />
-      </div>      
-      <div className="row">
-        <Positions 
-          socket={socket}
-          quotes={quotes}
-          orders={orders}
-          positions={positions}
-        />
-      </div>      
-    </div>
+    </div>      
     ):(
       <div>
         <p>Socket connection error.</p>

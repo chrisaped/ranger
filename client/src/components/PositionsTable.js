@@ -69,15 +69,17 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
               <td>{qty} shares</td>
               <td>${cost}</td>
               <td>${profitOrLoss}</td>
-              <td>
-                <SpinnerButton
-                  socket={socket}
-                  buttonClass="btn btn-dark m-2"
-                  buttonText="Cancel Bracket"
-                  buttonDisabled={hasNoBracketOrder}
-                  onClickFunction={cancelBracket}
-                />
-              </td>                
+              {!hasNoBracketOrder && (
+                <td>
+                  <SpinnerButton
+                    socket={socket}
+                    buttonClass="btn btn-dark m-2"
+                    buttonText="Cancel Bracket"
+                    buttonDisabled={hasNoBracketOrder}
+                    onClickFunction={cancelBracket}
+                  />
+                </td>
+              )}
               <td>
                 <SpinnerButton 
                   socket={socket}
