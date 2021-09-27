@@ -18,6 +18,13 @@ const alpacaInstance = new Alpaca({
   paper: true
 });
 
+// for getLatestQuote
+// const alpacaConfig = {
+//   baseUrl: "https://data.alpaca.markets",
+//   keyId: process.env.ALPACA_API_KEY,
+//   secretKey: process.env.ALPACA_API_SECRET  
+// };
+
 const alpacaSocket = alpacaInstance.data_stream_v2;
 const alpacaTradeSocket = alpacaInstance.trade_ws;
 
@@ -44,10 +51,10 @@ io.on('connection', (socket) => {
 
   alpacaTradeSocket.onOrderUpdate(data => {
     console.log(`Order updates: ${JSON.stringify(data)}`)
-    if (['filled', 'canceled'].includes(data.event)) {
+    if (['fill', 'canceled'].includes(data.event)) {
       alpaca.getClock(alpacaInstance, io);
-      alpaca.getOrders(alpacaInstance, io);
       alpaca.getPositions(alpacaInstance, io, alpacaSocket);
+      alpaca.getOrders(alpacaInstance, io);
       io.emit('orderUpdateResponse', data);
     }
   });
