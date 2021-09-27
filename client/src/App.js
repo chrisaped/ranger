@@ -23,6 +23,12 @@ export default function App() {
       addQuote(Symbol, AskPrice);
     });
 
+    newSocket.on('getLatestQuoteResponse', (response) => {
+      const symbol = response.symbol;
+      const askPrice = response.quote.ap;
+      addQuote(symbol, askPrice);
+    });    
+
     newSocket.on('getAssetsResponse', (assets) => {
       setTradeableAssets(assets);
     });

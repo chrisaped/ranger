@@ -68,11 +68,6 @@ io.on('connection', (socket) => {
     io.emit('stockQuoteResponse', quote);
   });
 
-  // this does not work with the current api
-  // alpacaSocket.onOrderUpdate((order) => {
-  //   console.log('onOrderUpdate', order);
-  // });
-
   alpacaSocket.onError((err) => {
     console.log(err);
   });
@@ -85,6 +80,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('addToWatchlist', (symbol) => {
+    alpaca.getLatestQuote(alpacaInstance, io, symbol);
     alpaca.addToWatchlist(alpacaInstance, symbol);
     alpacaSocket.subscribeForQuotes([symbol]);
   });

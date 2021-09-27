@@ -53,5 +53,9 @@ module.exports = {
     const response = await alpacaInstance.getClock();
     const marketIsOpenBoolean = response?.is_open;
     io.emit('getClockResponse', marketIsOpenBoolean);
+  },
+  getLatestQuote: async function (alpacaInstance, io, symbol) {
+    const response = await alpacaInstance.getLatestQuote(symbol);
+    io.emit('getLatestQuoteResponse', response);
   }
 }
