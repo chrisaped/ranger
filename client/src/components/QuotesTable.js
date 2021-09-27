@@ -89,7 +89,7 @@ export default function QuotesTable({
 
   const isShortable = (symbol) => {
     const assetsObject = tradeableAssets[symbol];
-    return assetsObject.shortable;
+    return assetsObject?.shortable;
   }
 
   return (
@@ -149,13 +149,23 @@ export default function QuotesTable({
             <td>{positionSize} shares</td>
             <td>${moneyUpfront}</td>
             <td>
-              <button 
-                className={buttonClass}
-                onClick={() => createOrder(symbol, orderObject)}
-                disabled={isForbiddenStopPrice(side, stopPrice, currentPrice) || !isShortable(symbol)}
-              >
-                {buttonText}
-              </button>
+              {side === 'sell' ? (
+                <button 
+                  className={buttonClass}
+                  onClick={() => createOrder(symbol, orderObject)}
+                  disabled={isForbiddenStopPrice(side, stopPrice, currentPrice) || !isShortable(symbol)}
+                >
+                  {buttonText}
+                </button>
+              ):(
+                <button 
+                  className={buttonClass}
+                  onClick={() => createOrder(symbol, orderObject)}
+                  disabled={isForbiddenStopPrice(side, stopPrice, currentPrice)}
+                >
+                  {buttonText}
+                </button>                
+              )}
             </td>
             <td>
               <button 
