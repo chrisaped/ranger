@@ -1,11 +1,27 @@
-import { sumObjectValues } from "../shared/calculations";
+import { sumObjectValues, calculateProfitLoss } from "../shared/calculations";
 import { extractTotalProfitLossFromClosedOrders } from "../shared/orders";
 
 export default function ProfitLoss({ orders, positions, quotes }) {
-  const currentPositionsSymbols = positions.map(positionObj => positionObj.symbol);
-  const currentPositionsWithQuotes = currentPositionsSymbols.reduce((ac, symbol) => (
-    {...ac,[symbol]: quotes[symbol]}
-  ),{});
+  const createCurrentPositions = (positions) => {
+    const newObj = {};
+    positions.forEach(positionObj => {
+      newObj[positionObj.symbol] = { 
+        shares: positionObj.qty, 
+        entryPrice: positionObj.avg_entry_price,
+        side: positionObj.side
+      };
+    })
+    return newObj;
+  };
+  const currentPositions = createCurrentPositions(positions);
+  const createCurrentPositionsWithQuotes = (quotes) => {
+    const newObj = {};
+    Object.entries(currentPositions).forEach(([symbol, infoObj]) => {
+      newObj[symbol] = calculateProfitLoss(quotes[symbol], infoObj.entryPrice, infoObj.shares, infoObj.side);
+    })
+    return newObj;
+  };
+  const currentPositionsWithQuotes = createCurrentPositionsWithQuotes(quotes);
   const currentPositionsProfitLoss = sumObjectValues(currentPositionsWithQuotes);
   const closedPositionsProfitLoss = extractTotalProfitLossFromClosedOrders(orders);
   const profitLoss = currentPositionsProfitLoss + closedPositionsProfitLoss;
