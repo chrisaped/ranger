@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { CSSTransition } from "react-transition-group";
+import "../styles/alert.scss";
 
 export default function Alert({ socket }) {
   const [alert, setAlert] = useState('');
@@ -25,11 +27,11 @@ export default function Alert({ socket }) {
 
   return (
     <>
-      {alert !== '' && (
+      <CSSTransition in={alert !== ''} timeout={300} classNames="alert">
         <div className="alert alert-primary fade show text-center" role="alert">
           {alert}
         </div>
-      )}
+      </CSSTransition>
     </>
   );
 }
