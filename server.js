@@ -87,7 +87,8 @@ io.on('connection', (socket) => {
   });
 
   socket.on('addToWatchlist', (symbol) => {
-    alpaca.getLatestQuote(alpacaInstance, io, symbol);
+    // getLatestQuote does not get accurate data
+    // alpaca.getLatestQuote(alpacaInstance, io, symbol);
     alpaca.addToWatchlist(alpacaInstance, symbol);
     alpacaSocket.subscribeForQuotes([symbol]);
   });

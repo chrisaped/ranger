@@ -6,8 +6,8 @@ export default function ProfitLoss({ orders, positions, quotes }) {
     const newObj = {};
     positions.forEach(positionObj => {
       newObj[positionObj.symbol] = { 
-        shares: positionObj.qty, 
-        entryPrice: positionObj.avg_entry_price,
+        shares: Math.abs(parseInt(positionObj.qty)), 
+        entryPrice: parseFloat(positionObj.avg_entry_price),
         side: positionObj.side
       };
     })
@@ -17,15 +17,21 @@ export default function ProfitLoss({ orders, positions, quotes }) {
   const createCurrentPositionsWithQuotes = (quotes) => {
     const newObj = {};
     Object.entries(currentPositions).forEach(([symbol, infoObj]) => {
-      newObj[symbol] = calculateProfitLoss(quotes[symbol], infoObj.entryPrice, infoObj.shares, infoObj.side);
+      const calculatedProfitLoss = calculateProfitLoss(quotes[symbol], infoObj.entryPrice, infoObj.shares, infoObj.side);
+      newObj[symbol] = parseFloat(calculatedProfitLoss);
     })
     return newObj;
   };
   const currentPositionsWithQuotes = createCurrentPositionsWithQuotes(quotes);
-  const currentPositionsProfitLoss = sumObjectValues(currentPositionsWithQuotes) || 0;
+  let currentPositionsProfitLoss = 0;
+  if (Object.keys(currentPositionsWithQuotes).length > 0) {
+    currentPositionsProfitLoss = sumObjectValues(currentPositionsWithQuotes);
+  }  
   const closedPositionsProfitLoss = extractTotalProfitLossFromClosedOrders(orders);
-  const profitLoss = currentPositionsProfitLoss + closedPositionsProfitLoss;
-
+  let profitLoss = (currentPositionsProfitLoss + closedPositionsProfitLoss);
+  if (!isNaN(profitLoss)) {
+    profitLoss = profitLoss.toFixed(2);
+  }
   let badgeClass;  
 
   if (profitLoss < 0) {

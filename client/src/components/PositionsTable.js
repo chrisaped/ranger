@@ -1,11 +1,5 @@
-import { 
-  displayCost, 
-  displayPrice
-} from "../shared/formatting";
-import { 
-  calculateProfitLoss,
-  isInProfit
-} from "../shared/calculations";
+import { displayPrice } from "../shared/formatting";
+import { calculateProfitLoss } from "../shared/calculations";
 import { 
   createMarketOrder,
   createOrder,
@@ -15,6 +9,18 @@ import {
 import SpinnerButton from "./SpinnerButton";
 
 export default function PositionsTable({ socket, positions, orders, quotes }) {
+  const rowClassName = (profitOrLoss) => {
+    let rowClass;
+    if (profitOrLoss > 0) {
+      rowClass = "table-success";
+    } else if (profitOrLoss < 0) {
+      rowClass = "table-danger";
+    } else {
+      rowClass = "table-light";
+    }
+    return rowClass;
+  }
+
   return (
     <div>
     {positions.map((positionObj) => {
@@ -22,9 +28,9 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
         symbol,
         side,
         avg_entry_price,
-        qty,
-        cost_basis
+        qty
       } = positionObj;
+      const quantity = Math.abs(qty);
       const { 
         clientOrderId,
         targetPrice, 
@@ -32,14 +38,14 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
         stopPrice,
         targetOrderId,
         hasLegs
-      } = extractBracketOrderInfo(symbol, qty, avg_entry_price, orders);
+      } = extractBracketOrderInfo(symbol, quantity, avg_entry_price, orders);
       const currentPrice = displayPrice(quotes[symbol]);
       const entryPrice = displayPrice(avg_entry_price);
-      const marketOrder = createMarketOrder(symbol, qty, side);
+      const marketOrder = createMarketOrder(symbol, quantity, side);
       const submitOrder = () => createOrder(socket, marketOrder);
-      const cost = displayCost(cost_basis);
+      const cost = entryPrice * quantity;
       const cancelBracket = () => cancelOrder(socket, targetOrderId);
-      const profitOrLoss = calculateProfitLoss(currentPrice, entryPrice, qty, side);
+      const profitOrLoss = (calculateProfitLoss(currentPrice, entryPrice, quantity, side)).toFixed(2);
       const hasNoBracketOrder = !hasLegs || (targetOrderStatus === "canceled");
       
       return (
@@ -59,14 +65,14 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
             </tr>
           </thead>
           <tbody>
-            <tr className={isInProfit(profitOrLoss) ? "table-success" : "table-danger"}>
+            <tr className={rowClassName(profitOrLoss)}>
               <td><strong>{symbol}</strong></td>
               <td>{side.toUpperCase()}</td>
               <td className="bg-warning"><strong>{currentPrice}</strong></td>
               <td className="bg-info">{entryPrice}</td>
               <td className={hasNoBracketOrder ? 'bg-secondary' : "bg-success text-white"}>{targetPrice}</td>
               <td className={hasNoBracketOrder ? 'bg-secondary' : "bg-danger text-white"}>{stopPrice}</td>
-              <td>{qty} shares</td>
+              <td>{quantity} shares</td>
               <td>${cost}</td>
               <td>${profitOrLoss}</td>
               {!hasNoBracketOrder && (

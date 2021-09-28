@@ -141,7 +141,6 @@ export default function QuotesTable({
                 }
                 type="text"
                 size="4"
-                placeholder="Stop Price"
                 value={stopPrice} 
                 onChange={(e) => onStopPriceChange(symbol, e.target.value)} 
               />         

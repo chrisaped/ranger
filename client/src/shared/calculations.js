@@ -29,9 +29,9 @@ export const calculateProfitLoss = (currentPrice, entryPrice, shares, side) => {
   const purchaseValue = shares * entryPrice;
   const currentValue = shares * currentPrice;
   if (side === 'long') {
-    return (currentValue - purchaseValue).toFixed(2);
+    return (currentValue - purchaseValue);
   }
-  return (purchaseValue - currentValue).toFixed(2);
+  return (purchaseValue - currentValue);
 };
 
 export const calculateProfitLossByValues = (purchaseValue, childValue, side) => {
@@ -57,4 +57,4 @@ export const calculateDefaultStopPrice = (side, price) => {
   return defaultStopPrice.toFixed(2);
 }
 
-export const sumObjectValues = obj => Object.values(obj).reduce((a, b) => (parseFloat(a) + parseFloat(b)).toFixed(2));
+export const sumObjectValues = obj => Object.values(obj).reduce((a, b) => a + b);
