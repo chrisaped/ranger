@@ -22,14 +22,15 @@ module.exports = {
   getPositions: async function (alpacaInstance, io, alpacaSocket) {
     const response = await alpacaInstance.getPositions();
     const symbolsArray = response?.map(obj => obj.symbol) || [];
-    alpacaSocket.subscribeForQuotes(symbolsArray);
+    if (symbolsArray.length > 0) {
+      alpacaSocket.subscribeForQuotes(symbolsArray);
+    }
     io.emit('getPositionsResponse', response);
   },
   getOrders: async function (alpacaInstance, io) {
     const today = new Date().toISOString().slice(0, 10);
     const orderObj = { status: 'all', after: today, nested: true, direction: 'asc' };
     const response = await alpacaInstance.getOrders(orderObj);
-    console.log('getOrders', response);
     io.emit('getOrdersResponse', response);
   },
   getAssets: async function (alpacaInstance, io) {
