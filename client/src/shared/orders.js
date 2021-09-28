@@ -61,7 +61,7 @@ export const extractBracketOrderInfo = (symbol, qty, avg_entry_price, orders) =>
   orders.forEach((orderObj) => {
     if (
       (orderObj.symbol === symbol) && 
-      (orderObj.qty === qty) &&
+      (orderObj.qty === `${qty}`) &&
       (orderObj.filled_avg_price === avg_entry_price) &&
       orderObj.status === "filled"
     ) {
