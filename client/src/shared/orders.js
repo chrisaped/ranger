@@ -99,12 +99,12 @@ export const extractBracketOrderInfo = (symbol, qty, avg_entry_price, orders) =>
 
 const createFilledOrderObjectsArray = (orders) => {
   // orders from alpaca need to be in ascending order
-  const filledOrdersWithLegsArray = [];
+  let filledOrdersWithLegsArray = [];
   orders.forEach(orderObj => {
     if ((orderObj.status === 'filled')) {
       filledOrdersWithLegsArray.push(orderObj);
       if (orderObj.legs?.length > 0) {
-        filledOrdersWithLegsArray.concat(orderObj.legs);
+        filledOrdersWithLegsArray = filledOrdersWithLegsArray.concat(orderObj.legs);
       }
     }
   });
@@ -116,17 +116,14 @@ const createFilledOrderObjectsArray = (orders) => {
 
   const filledOrdersWithSelectFields = [];
   allFilledOrdersArray.forEach(orderObj => {
-    const newOrderObj = (({
-      symbol, 
-      side, 
-      filled_qty, 
-      filled_avg_price
-    }) => ({
-      symbol, 
-      side, 
-      filled_qty, 
-      filled_avg_price
-    }))(orderObj);
+    const newOrderObj = {};
+    const { symbol, side, filled_qty, filled_avg_price } = orderObj;
+
+    newOrderObj['symbol'] = symbol;
+    newOrderObj['side'] = side;
+    newOrderObj['filled_qty'] = parseInt(filled_qty);
+    newOrderObj['filled_avg_price'] = (parseFloat(filled_avg_price)).toFixed(2);
+
     filledOrdersWithSelectFields.push(newOrderObj);
   });
 
@@ -141,7 +138,7 @@ const handleSymbolInfo = (filled_qty, filled_avg_price, symbolObj) => {
     const totalProfitLoss = calculateProfitLossByValues(
       symbolObj.purchase_value, symbolObj.child_value_total, symbolObj.side
     );
-    symbolObj.total_profit_loss = totalProfitLoss;
+    symbolObj.total_profit_loss = parseFloat(totalProfitLoss);
     symbolObj.more_order_info_needed = false;
   }
 }
@@ -151,7 +148,7 @@ const newSymbolInfoObj = (side, filled_qty, filled_avg_price) => {
     side: side,
     quantity: filled_qty,
     price: filled_avg_price,
-    purchase_value: filled_qty * filled_avg_price,
+    purchase_value: (parseFloat(filled_qty * filled_avg_price)).toFixed(2),
     child_quantity_total: 0,
     child_value_total: 0,
     more_order_info_needed: true,

@@ -35,7 +35,7 @@ export const calculateProfitLoss = (currentPrice, entryPrice, shares, side) => {
 };
 
 export const calculateProfitLossByValues = (purchaseValue, childValue, side) => {
-  if (side === 'long') {
+  if (side === 'buy') {
     return (childValue - purchaseValue).toFixed(2);
   }
   return (purchaseValue - childValue).toFixed(2);

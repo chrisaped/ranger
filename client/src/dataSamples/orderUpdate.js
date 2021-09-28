@@ -1,4 +1,4 @@
-{
+export const orderUpdate = {
   "event":"fill",
   "execution_id":"987b4852-9a3e-4bac-9962-fdf3bf7e879c",
   "order":{
