@@ -38,13 +38,15 @@ export default function Watchlist({
 
   return (
     <div>
-      <QuotesTable 
-        socket={socket}
-        quotes={filteredQuotes()}
-        deleteFromWatchlist={deleteFromWatchlist}
-        watchlist={watchlist}
-        tradeableAssets={tradeableAssets}
-      />
+      {watchlist.length > 0 && (
+        <QuotesTable 
+          socket={socket}
+          quotes={filteredQuotes()}
+          deleteFromWatchlist={deleteFromWatchlist}
+          watchlist={watchlist}
+          tradeableAssets={tradeableAssets}
+        />
+      )}
     </div>
   );
 }

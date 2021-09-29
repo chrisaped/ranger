@@ -128,11 +128,11 @@ export default function QuotesTable({
         <tr>
           <th>Symbol</th>
           <th>Side</th>
-          <th>Current Price</th>
-          <th>Target Price</th>
-          <th>Stop Price</th>
+          <th>Price</th>
+          <th>Target</th>
+          <th>Stop</th>
           <th>Shares</th>
-          <th>Money Upfront</th>
+          <th>Cost</th>
           <th colSpan="2">Actions</th>
         </tr>
       </thead>
