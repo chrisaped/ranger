@@ -29,17 +29,17 @@ export default function ProfitLoss({ orders, positions, quotes }) {
   }  
   const closedPositionsProfitLoss = extractTotalProfitLossFromClosedOrders(orders);
   let profitLoss = (currentPositionsProfitLoss + closedPositionsProfitLoss);
-  if (!isNaN(profitLoss)) {
-    profitLoss = profitLoss.toFixed(2);
-  }
-  let badgeClass;  
-
+  let badgeClass;
   if (profitLoss < 0) {
     badgeClass = "badge bg-danger fs-6 text";
   } else if (profitLoss === 0) {
     badgeClass = "badge bg-secondary fs-6 text";
   } else {
     badgeClass = "badge bg-success fs-6 text";
+  }
+
+  if (!isNaN(profitLoss)) {
+    profitLoss = profitLoss.toFixed(2);
   }
 
   return (
