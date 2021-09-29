@@ -3,6 +3,6 @@ import App from './App';
 
 test('renders learn react link', () => {
   render(<App />);
-  const positionsText = screen.getByText(/There are no open positions/i);
+  const positionsText = screen.getByText(/Search/i);
   expect(positionsText).toBeInTheDocument();
 });

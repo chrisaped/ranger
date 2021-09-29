@@ -27,10 +27,19 @@ export default function Alert({ socket }) {
   }, [socket, alert]);
 
   return (
-    <div className={displayAlert ? 'fadeIn' : 'fadeOut'}>
-      <div className="alert alert-primary fade show text-center" role="alert">
-        {alert}
+    <>
+    {displayAlert && (
+      <div class="position-fixed bottom-0 end-0 p-3" style={{ "z-index": 11 }}>
+        <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+          <div className="d-flex">
+            <div class="toast-body">
+              {alert}
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+        </div>
       </div>
-    </div>
+    )}
+    </>
   );
 }

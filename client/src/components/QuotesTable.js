@@ -64,11 +64,11 @@ export default function QuotesTable({
 
   const displayOrderButton = (side, symbol) => {
     let buttonText = 'Long';
-    let buttonClass = "btn btn-success m-2";
+    let buttonClass = "btn btn-success";
 
     if (side === 'sell') {
       buttonText = 'Short';
-      buttonClass = "btn btn-danger m-2";
+      buttonClass = "btn btn-danger";
       if (!isShortable(symbol)) {
         buttonText = 'Not Shortable'
       }
@@ -85,15 +85,45 @@ export default function QuotesTable({
       return true;
     }
     return false;    
-  }
+  };
 
   const isShortable = (symbol) => {
     const assetsObject = tradeableAssets[symbol];
     return assetsObject?.shortable;
-  }
+  };
+
+  const isProperPositionSize = (positionSize) => {
+    if (positionSize === 0) {
+      return false;
+    }
+    return true;
+  };
+
+  const isDisabled = (side, stopPrice, currentPrice, symbol, positionSize) => {
+    if (side === 'sell') {
+      if (
+        isForbiddenStopPrice(side, stopPrice, currentPrice) || 
+        !isShortable(symbol) ||
+        !isProperPositionSize(positionSize)
+      ) {
+        return true;
+      }
+    }
+
+    if (side === 'buy') {
+      if (
+        isForbiddenStopPrice(side, stopPrice, currentPrice) ||
+        !isProperPositionSize(positionSize)
+      ) {
+        return true;
+      }
+    }
+
+    return false;
+  };
 
   return (
-    <table className="table table-bordered">
+    <table className="table table-bordered align-middle text-center">
       <thead className="table-dark">
         <tr>
           <th>Symbol</th>
@@ -107,7 +137,8 @@ export default function QuotesTable({
         </tr>
       </thead>
       <tbody>
-      {Object.entries(quotes).map(([symbol, price]) => {
+      {watchlist.map(symbol => {
+        const price = quotes[symbol];
         const stopPrice = stopPrices[symbol];
         const side = sides[symbol];
         const profitTarget = calculatProfitTarget(price, stopPrice, side);
@@ -120,55 +151,65 @@ export default function QuotesTable({
         return (
           <tr key={symbol}>
             <td><strong>{symbol}</strong></td>
-            <td className="p-3">
-              <select 
-                className="form-select" 
-                value={side}
-                onChange={(e) => onSelectChange(symbol, e.target.value, price)}
-              >
-                <option value="buy">Long</option>
-                <option value="sell">Short</option>
-              </select>
-            </td>
-            <td className="bg-warning"><strong>{currentPrice}</strong></td>
-            <td className="bg-success text-white">{profitTarget}</td>
-            <td>
-              <input 
-                className={
-                  isForbiddenStopPrice(side, stopPrice, currentPrice)
-                  ? "form-control border border-danger"
-                  : "form-control"
-                }
-                type="text"
-                size="4"
-                value={stopPrice} 
-                onChange={(e) => onStopPriceChange(symbol, e.target.value)} 
-              />         
-            </td>
-            <td>{positionSize} shares</td>
-            <td>${moneyUpfront}</td>
-            <td>
-              {side === 'sell' ? (
-                <button 
-                  className={buttonClass}
-                  onClick={() => createOrder(symbol, orderObject)}
-                  disabled={isForbiddenStopPrice(side, stopPrice, currentPrice) || !isShortable(symbol)}
-                >
-                  {buttonText}
-                </button>
-              ):(
-                <button 
-                  className={buttonClass}
-                  onClick={() => createOrder(symbol, orderObject)}
-                  disabled={isForbiddenStopPrice(side, stopPrice, currentPrice)}
-                >
-                  {buttonText}
-                </button>                
-              )}
-            </td>
+            {price ? (
+              <>
+                <td>
+                  <select 
+                    className="form-select" 
+                    value={side}
+                    onChange={(e) => onSelectChange(symbol, e.target.value, price)}
+                  >
+                    <option value="buy">Long</option>
+                    <option value="sell">Short</option>
+                  </select>
+                </td>
+                <td className="bg-warning"><strong>{currentPrice}</strong></td>
+                <td className="bg-success text-white">{profitTarget}</td>
+                <td>
+                  <input 
+                    className={
+                      isForbiddenStopPrice(side, stopPrice, currentPrice)
+                      ? "form-control border border-danger"
+                      : "form-control"
+                    }
+                    type="text"
+                    size="4"
+                    value={stopPrice} 
+                    onChange={(e) => onStopPriceChange(symbol, e.target.value)} 
+                  />         
+                </td>
+                <td>{positionSize} shares</td>
+                <td>${moneyUpfront}</td>
+                <td>
+                  {side === 'sell' ? (
+                    <button 
+                      className={buttonClass}
+                      onClick={() => createOrder(symbol, orderObject)}
+                      disabled={isDisabled(side, stopPrice, currentPrice, symbol, positionSize)}
+                    >
+                      {buttonText}
+                    </button>
+                  ):(
+                    <button 
+                      className={buttonClass}
+                      onClick={() => createOrder(symbol, orderObject)}
+                      disabled={isDisabled(side, stopPrice, currentPrice, symbol, positionSize)}
+                    >
+                      {buttonText}
+                    </button>                
+                  )}
+                </td>              
+              </>
+            ):(
+              <>
+                <td className="bg-light" colSpan="7">
+                  Awaiting price data...
+                </td>
+              </>
+            )}
             <td>
               <button 
-                className="btn btn-secondary m-2" 
+                className="btn btn-secondary" 
                 onClick={() => deleteFromWatchlist(symbol)}
               >
                 Remove

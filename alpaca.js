@@ -48,11 +48,6 @@ module.exports = {
     const response = await alpacaInstance.cancelOrder(orderId);
     console.log('cancelOrder', response);
   },
-  getClock: async function (alpacaInstance, io) {
-    const response = await alpacaInstance.getClock();
-    const marketIsOpenBoolean = response?.is_open;
-    io.emit('getClockResponse', marketIsOpenBoolean);
-  },
   getLatestQuote: async function (alpacaInstance, io, symbol) {
     // this does not work yet
     // const response = await alpacaInstance.getLatestQuote(symbol, alpacaConfig);
