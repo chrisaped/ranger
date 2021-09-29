@@ -35,6 +35,12 @@ export default function Search({
     setSearchParams(params.toUpperCase());
   }
 
+  const handleKeyPress = e => {
+    if (e.key === 'Enter' && searchParams) {
+      getStockQuote();
+    }
+  };
+
   return (
     <div>
       <div className="d-flex justify-content-center">
@@ -44,7 +50,8 @@ export default function Search({
             type="text" 
             placeholder="Symbol" 
             value={searchParams} 
-            onChange={handleChange} 
+            onChange={handleChange}
+            onKeyPress={(e) => handleKeyPress(e)} 
           />
           <button 
             className="btn btn-primary m-2" 
