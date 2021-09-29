@@ -68,11 +68,6 @@ export default function Watchlist({
         />
       </div>
     )}
-    {watchlist.length === 0 && (
-      <div className="d-flex justify-content-center m-3">
-        <p>The watchlist is empty.</p>
-      </div>
-    )}
     </div>
   );
 }

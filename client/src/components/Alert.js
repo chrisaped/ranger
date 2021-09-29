@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { CSSTransition } from "react-transition-group";
 import "../styles/alert.css";
 
 export default function Alert({ socket }) {
   const [alert, setAlert] = useState('');
+  const [displayAlert, setDisplayAlert] = useState(false);
 
   useEffect(() => {
     socket.on("orderUpdateResponse", (data) => {
@@ -13,11 +13,12 @@ export default function Alert({ socket }) {
         const status = data.order.status;
         const alertString = `${symbol} order ${status}`;
         setAlert(alertString);
+        setDisplayAlert(true);
       }
     });
 
     const timer = setTimeout(() => {
-      setAlert('');
+      setDisplayAlert(false);
     }, 5000)
 
     return () => {
@@ -26,14 +27,10 @@ export default function Alert({ socket }) {
   }, [socket, alert]);
 
   return (
-    <>
-    {alert !== '' && (
-      <CSSTransition in={alert !== ''} timeout={300} classNames="alert">
-        <div className="alert alert-primary fade show text-center" role="alert">
-          {alert}
-        </div>
-      </CSSTransition>
-    )}
-    </>
+    <div className={displayAlert ? 'fadeIn' : 'fadeOut'}>
+      <div className="alert alert-primary fade show text-center" role="alert">
+        {alert}
+      </div>
+    </div>
   );
 }

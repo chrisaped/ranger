@@ -54,49 +54,48 @@ export default function App() {
   return (
     <>
     {socket ? (
-    <div>
-      <Alert socket={socket} />
-      <div className="container">
-        <div className="row">
-          <div className="col"></div>
-          <div className="col">
-            <Search 
-              socket={socket}
-              watchlist={watchlist}
-              setWatchlist={setWatchlist} 
-              tradeableAssets={tradeableAssets}
-            />
-          </div>
-          <div className="col d-flex justify-content-end align-items-center">
-            {orders.length > 0 && (
-              <ProfitLoss 
-                orders={orders}
-                positions={positions}
-                quotes={quotes}
-              />
-            )}
-          </div>
+    <div className="container">
+      <div className="row">
+        <div className="col">
+          <Alert socket={socket} />
         </div>
-        <div className="row">
-          <Watchlist 
+        <div className="col">
+          <Search 
             socket={socket}
-            quotes={quotes}
-            setQuotes={setQuotes}
             watchlist={watchlist}
-            setWatchlist={setWatchlist}
+            setWatchlist={setWatchlist} 
             tradeableAssets={tradeableAssets}
           />
-        </div>      
-        <div className="row">
-          <Positions 
-            socket={socket}
-            quotes={quotes}
-            orders={orders}
-            positions={positions}
-          />
-        </div>      
+        </div>
+        <div className="col d-flex justify-content-end align-items-center">
+          {orders.length > 0 && (
+            <ProfitLoss 
+              orders={orders}
+              positions={positions}
+              quotes={quotes}
+            />
+          )}
+        </div>
       </div>
-    </div>      
+      <div className="row">
+        <Watchlist 
+          socket={socket}
+          quotes={quotes}
+          setQuotes={setQuotes}
+          watchlist={watchlist}
+          setWatchlist={setWatchlist}
+          tradeableAssets={tradeableAssets}
+        />
+      </div>      
+      <div className="row">
+        <Positions 
+          socket={socket}
+          quotes={quotes}
+          orders={orders}
+          positions={positions}
+        />
+      </div>      
+    </div>
     ):(
       <div>
         <p>Socket connection error.</p>
