@@ -14,14 +14,13 @@ export default function Search({
     if (isAnAsset(searchParams)) {
       const newWatchlist = watchlist.concat([searchParams]);
       setWatchlist(newWatchlist);
-  
       socket.emit('addToWatchlist', searchParams);
       setSearchParams('');
     } else {
       setSearchParams('');
       setSearchError('Not a valid asset');
     }
-  }
+  };
 
   const isAnAsset = (searchParams) => {
     if (searchParams in tradeableAssets) {
@@ -33,7 +32,7 @@ export default function Search({
   const handleChange = (e) => {
     const params = e.target.value;
     setSearchParams(params.toUpperCase());
-  }
+  };
 
   const handleKeyPress = e => {
     if (e.key === 'Enter' && searchParams) {
