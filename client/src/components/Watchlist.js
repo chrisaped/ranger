@@ -45,6 +45,7 @@ export default function Watchlist({
           deleteFromWatchlist={deleteFromWatchlist}
           watchlist={watchlist}
           tradeableAssets={tradeableAssets}
+          setWatchlist={setWatchlist}
         />
       )}
     </div>

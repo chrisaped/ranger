@@ -10,7 +10,7 @@ import {
 import { displayPrice } from "../shared/formatting";
 import { 
   cancelOrder, 
-  createBracketOrder,
+  createBracketOrderObject,
   createOrder
 } from "../shared/orders";
 import { updateObjectState } from "../shared/state";
@@ -20,7 +20,8 @@ export default function QuotesTable({
   quotes, 
   deleteFromWatchlist,
   watchlist,
-  tradeableAssets
+  tradeableAssets,
+  setWatchlist
 }) {
   const [sides, setSides] = useState({});
   const [stopPrices, setStopPrices] = useState({});
@@ -65,17 +66,27 @@ export default function QuotesTable({
       const symbol = data.order.symbol;
       const orderStatus = data.order.status;
       if (watchlist.includes(symbol) && orderStatus === 'filled') {
-        deleteFromWatchlist(symbol);
-        const newOrderIds = orderIds.filter(orderIdSymbol => orderIdSymbol !== symbol);
-        setOrderIds(newOrderIds);
+        const newWatchlist = watchlist.filter(watchlistSymbol => watchlistSymbol !== symbol);
+        setWatchlist(newWatchlist);
+        console.log('WHOA!');
+        // need to uncomment this, but this is getting fired too many times
+        // socket.emit('removeFromWatchlist', symbol);
+        if (Object.keys(orderIds).length > 0) {
+          const newOrderIds = orderIds;
+          delete newOrderIds[symbol];
+          setOrderIds(newOrderIds);
+        }
       }
     });
-  }, [watchlist, quotes, sides, stopPrices, socket, deleteFromWatchlist, orderIds]);
+  }, [watchlist, quotes, sides, stopPrices, socket, orderIds, setWatchlist]);
 
   const cancelNewOrder = (symbol, orderId) => {
     cancelOrder(socket, orderId);
-    const newOrderIds = orderIds.filter(orderIdSymbol => orderIdSymbol !== symbol);
-    setOrderIds(newOrderIds);
+    if (Object.keys(orderIds).length > 0) {
+      const newOrderIds = orderIds;
+      delete newOrderIds[symbol];
+      setOrderIds(newOrderIds);
+    }
   };
 
   const onSelectChange = (symbol, side, price) => {
@@ -159,17 +170,19 @@ export default function QuotesTable({
         </tr>
       </thead>
       <tbody>
-      {watchlist.map(symbol => {
+      {watchlist.map((symbol, index) => {
         const price = quotes[symbol];
         const stopPrice = stopPrices[symbol];
         const side = sides[symbol];
+        const orderId = orderIds[symbol];
         const profitTarget = calculatProfitTarget(price, stopPrice, side);
         const positionSize = calculatePositionSize(price, stopPrice);
         const moneyUpfront = calculateMoneyUpfront(price, stopPrice);
-        const orderObject = createBracketOrder(symbol, side, positionSize, profitTarget, stopPrice);
+        const orderObject = createBracketOrderObject(symbol, side, positionSize, profitTarget, stopPrice);
+        const createBracketOrder = () => createOrder(socket, orderObject);
+        const cancelOrder = () => cancelNewOrder(symbol, orderId);
         const currentPrice = displayPrice(price);
         const { buttonClass, buttonText } = displayOrderButton(side, symbol);
-        const orderId = orderIds[symbol];
 
         return (
           <tr key={symbol}>
@@ -209,8 +222,9 @@ export default function QuotesTable({
                     buttonClass={buttonClass}
                     buttonText={buttonText}
                     buttonDisabled={isDisabled(side, stopPrice, currentPrice, symbol, positionSize)}
-                    onClickFunction={createOrder(socket, orderObject)}
+                    onClickFunction={createBracketOrder}
                     orderId={orderId}
+                    key={index}
                   />
                 </td>       
               </>
@@ -227,8 +241,9 @@ export default function QuotesTable({
                   socket={socket}
                   buttonClass="btn btn-dark"
                   buttonText='Cancel Order'
-                  onClickFunction={cancelNewOrder(symbol, orderId)}
+                  onClickFunction={cancelOrder}
                   orderId={orderId}
+                  key={index}
                 />
               ):(
                 <button 

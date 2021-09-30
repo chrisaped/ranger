@@ -65,6 +65,7 @@ export default function App() {
             watchlist={watchlist}
             setWatchlist={setWatchlist} 
             tradeableAssets={tradeableAssets}
+            positions={positions}
           />
         </div>
         <div className="col d-flex justify-content-end align-items-center">

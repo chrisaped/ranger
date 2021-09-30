@@ -1,7 +1,7 @@
 import { displayPrice } from "./formatting";
 import { calculateProfitLossByValues } from "./calculations";
 
-export const createBracketOrder = (
+export const createBracketOrderObject = (
   symbol, 
   side,
   positionSize, 
@@ -63,7 +63,7 @@ export const extractBracketOrderInfo = (symbol, qty, avg_entry_price, orders) =>
       (orderObj.symbol === symbol) && 
       (orderObj.qty === `${qty}`) &&
       (orderObj.filled_avg_price === avg_entry_price) &&
-      orderObj.status === "filled"
+      (orderObj.status === "filled")
     ) {
       clientOrderId = orderObj.client_order_id;
       legs = orderObj.legs;

@@ -38,7 +38,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
         </tr>
       </thead>
       <tbody>
-      {positions.map((positionObj) => {
+      {positions.map((positionObj, index) => {
         const {
           symbol,
           side,
@@ -62,7 +62,6 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
         const cancelBracket = () => cancelOrder(socket, targetOrderId);
         const profitOrLoss = (calculateProfitLoss(currentPrice, entryPrice, quantity, side)).toFixed(2);
         const hasNoBracketOrder = !hasLegs || (targetOrderStatus === "canceled");
-      
         return (
           <tr className={rowClassName(profitOrLoss)} key={clientOrderId}>
             <td><strong>{symbol}</strong></td>
@@ -74,26 +73,28 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
             <td>${profitOrLoss}</td>
             <td>{quantity} shares</td>
             <td>${cost}</td>
-            {!hasNoBracketOrder && (
-              <td>
-                <SpinnerButton
-                  socket={socket}
-                  buttonClass="btn btn-dark"
-                  buttonText="Cancel Bracket"
-                  buttonDisabled={hasNoBracketOrder}
-                  onClickFunction={cancelBracket}
-                />
-              </td>
-            )}
             <td>
+            {hasNoBracketOrder ? (
               <SpinnerButton 
                 socket={socket}
                 buttonClass="btn btn-dark"
                 buttonText={side === "long" ? "Sell" : "Buy"}
                 buttonDisabled={!hasNoBracketOrder}
                 onClickFunction={submitOrder}
+                key={index}
               />
-            </td>            
+            ):(
+              <SpinnerButton
+                socket={socket}
+                buttonClass="btn btn-dark"
+                buttonText="Cancel Bracket"
+                buttonDisabled={hasNoBracketOrder}
+                onClickFunction={cancelBracket}
+                key={index}
+                orderId={targetOrderId}
+              />              
+            )}
+            </td>
           </tr>
         );
       })}

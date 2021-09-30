@@ -4,7 +4,8 @@ export default function Search({
   socket, 
   watchlist, 
   setWatchlist,
-  tradeableAssets
+  tradeableAssets,
+  positions
 }) {
   const [searchParams, setSearchParams] = useState('');
   const [searchError, setSearchError] = useState('');
@@ -28,6 +29,17 @@ export default function Search({
     }
     return false;
   };
+
+  const isAPosition = () => {
+    const symbolsArray = [];
+    positions.forEach(positionObj => {
+      symbolsArray.push(positionObj.symbol);
+    });
+    if (symbolsArray.includes(searchParams)) {
+      return true;
+    }
+    return false;
+  }
 
   const handleChange = (e) => {
     const params = e.target.value;
@@ -55,7 +67,7 @@ export default function Search({
           <button 
             className="btn btn-primary m-2" 
             onClick={getStockQuote}
-            disabled={!searchParams}
+            disabled={!searchParams || watchlist.includes(searchParams) || isAPosition()}
           >
             Search
           </button>

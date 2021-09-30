@@ -6,7 +6,8 @@ export default function SpinnerButton({
   buttonText, 
   buttonDisabled = false, 
   onClickFunction,
-  orderId = ''
+  orderId = '',
+  key
 }) {
   const [submitted, setSubmitted] = useState(false);
 
@@ -16,7 +17,7 @@ export default function SpinnerButton({
       if (orderId === responseOrderId) {
         setSubmitted(false);
       }
-    });  
+    });
   }, [socket, orderId]);
 
   const handleOnClick = () => {
@@ -28,7 +29,7 @@ export default function SpinnerButton({
   }
 
   return (
-    <div className="text-center align-middle">
+    <div className="text-center align-middle" key={key}>
     {submitted ? (
       <button className={buttonClass} type="button" disabled>
         <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

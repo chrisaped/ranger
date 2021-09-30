@@ -51,13 +51,16 @@ io.on('connection', (socket) => {
 
   alpacaTradeSocket.onOrderUpdate(data => {
     console.log(`Order updates: ${JSON.stringify(data)}`)
-    (data.event === 'new') && io.emit('newOrderUpdateResponse', data);
-    if (data.event === 'canceled') {
+    const event = data.event;
+    if (event === 'new') {
+      io.emit('newOrderUpdateResponse', data);
+    }
+    if (event === 'canceled') {
       alpaca.getPositions(alpacaInstance, io, alpacaSocket);
       alpaca.getOrders(alpacaInstance, io);
       io.emit('canceledOrderUpdateResponse', data);      
     }
-    if (data.event === 'fill') {
+    if (event === 'fill') {
       alpaca.getPositions(alpacaInstance, io, alpacaSocket);
       alpaca.getOrders(alpacaInstance, io);
       io.emit('fillOrderUpdateResponse', data);      
@@ -99,6 +102,10 @@ io.on('connection', (socket) => {
 
   socket.on('deleteFromWatchlist', (symbol) => {
     alpacaSocket.unsubscribeFromQuotes([symbol]);
+    alpaca.deleteFromWatchlist(alpacaInstance, symbol);
+  });
+
+  socket.on('removeFromWatchlist', (symbol) => {
     alpaca.deleteFromWatchlist(alpacaInstance, symbol);
   });
 
