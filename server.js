@@ -84,7 +84,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('createOrder', (orderObject) => {
-    console.log('here is the orderObject', orderObject);
+    console.log('createOrder', orderObject);
     alpacaInstance.createOrder(orderObject);
     alpaca.getOrders(alpacaInstance, io);
     alpaca.getPositions(alpacaInstance, io, alpacaSocket);
