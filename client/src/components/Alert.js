@@ -6,16 +6,20 @@ export default function Alert({ socket }) {
   const [displayAlert, setDisplayAlert] = useState(false);
 
   useEffect(() => {
-    socket.on("orderUpdateResponse", (data) => {
-      const orderEvent = data.event;
-      if (['fill', 'canceled'].includes(orderEvent)) {
-        const symbol = data.order.symbol;
-        const status = data.order.status;
-        const alertString = `${symbol} order ${status}`;
-        setAlert(alertString);
-        setDisplayAlert(true);
-      }
+    socket.on('newOrderUpdateResponse', (data) => {
+      const symbol = data.order.symbol;
+      const alertString = `${symbol} order initiated`;
+      setAlert(alertString);
+      setDisplayAlert(true);
     });
+
+    socket.on("canceledOrderUpdateResponse", (data) => {
+      handleOrderUpdateResponse(data);
+    });
+
+    socket.on("fillOrderUpdateResponse", (data) => {
+      handleOrderUpdateResponse(data);
+    });    
 
     const timer = setTimeout(() => {
       setDisplayAlert(false);
@@ -25,6 +29,14 @@ export default function Alert({ socket }) {
       clearTimeout(timer);
     }
   }, [socket, alert]);
+
+  const handleOrderUpdateResponse = (data) => {
+    const symbol = data.order.symbol;
+    const status = data.order.status;
+    const alertString = `${symbol} order ${status}`;
+    setAlert(alertString);
+    setDisplayAlert(true);
+  }
 
   return (
     <>
