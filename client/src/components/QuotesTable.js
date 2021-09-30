@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import SpinnerButton from "./SpinnerButton";
 import {
   calculatProfitTarget,
   calculatePositionSize,
@@ -7,7 +8,11 @@ import {
   defaultStopPriceDifference
 } from "../shared/calculations";
 import { displayPrice } from "../shared/formatting";
-import { createBracketOrder } from "../shared/orders";
+import { 
+  cancelOrder, 
+  createBracketOrder,
+  createOrder
+} from "../shared/orders";
 import { updateObjectState } from "../shared/state";
 
 export default function QuotesTable({ 
@@ -19,6 +24,7 @@ export default function QuotesTable({
 }) {
   const [sides, setSides] = useState({});
   const [stopPrices, setStopPrices] = useState({});
+  const [orderIds, setOrderIds] = useState({});
 
   useEffect(() => {
     if (watchlist.length > 0) {
@@ -45,15 +51,31 @@ export default function QuotesTable({
         setStopPrices(newStopPrices);
       }
     }
-  }, [watchlist, quotes, sides, stopPrices]);
 
-  const onStopPriceChange = (symbol, newStopPrice) => {
-    updateObjectState(setStopPrices, symbol, newStopPrice);
-  };
+    socket.on('newOrderUpdateResponse', (data) => {
+      const symbol = data.order.symbol;
+      const orderStatus = data.order.status;
+      if (watchlist.includes(symbol) && orderStatus === 'new') {
+        const orderId = data.order.id;
+        updateObjectState(setOrderIds, symbol, orderId);
+      }
+    });
 
-  const createOrder = (symbol, orderObject) => {
-    deleteFromWatchlist(symbol);
-    socket.emit('createOrder', orderObject);
+    socket.on('fillOrderUpdateResponse', (data) => {
+      const symbol = data.order.symbol;
+      const orderStatus = data.order.status;
+      if (watchlist.includes(symbol) && orderStatus === 'filled') {
+        deleteFromWatchlist(symbol);
+        const newOrderIds = orderIds.filter(orderIdSymbol => orderIdSymbol !== symbol);
+        setOrderIds(newOrderIds);
+      }
+    });
+  }, [watchlist, quotes, sides, stopPrices, socket, deleteFromWatchlist, orderIds]);
+
+  const cancelNewOrder = (symbol, orderId) => {
+    cancelOrder(socket, orderId);
+    const newOrderIds = orderIds.filter(orderIdSymbol => orderIdSymbol !== symbol);
+    setOrderIds(newOrderIds);
   };
 
   const onSelectChange = (symbol, side, price) => {
@@ -147,6 +169,7 @@ export default function QuotesTable({
         const orderObject = createBracketOrder(symbol, side, positionSize, profitTarget, stopPrice);
         const currentPrice = displayPrice(price);
         const { buttonClass, buttonText } = displayOrderButton(side, symbol);
+        const orderId = orderIds[symbol];
 
         return (
           <tr key={symbol}>
@@ -175,30 +198,21 @@ export default function QuotesTable({
                     type="text"
                     size="4"
                     value={stopPrice} 
-                    onChange={(e) => onStopPriceChange(symbol, e.target.value)} 
+                    onChange={(e) => updateObjectState(setStopPrices, symbol, e.target.value)} 
                   />         
                 </td>
                 <td>{positionSize} shares</td>
                 <td>${moneyUpfront}</td>
                 <td>
-                  {side === 'sell' ? (
-                    <button 
-                      className={buttonClass}
-                      onClick={() => createOrder(symbol, orderObject)}
-                      disabled={isDisabled(side, stopPrice, currentPrice, symbol, positionSize)}
-                    >
-                      {buttonText}
-                    </button>
-                  ):(
-                    <button 
-                      className={buttonClass}
-                      onClick={() => createOrder(symbol, orderObject)}
-                      disabled={isDisabled(side, stopPrice, currentPrice, symbol, positionSize)}
-                    >
-                      {buttonText}
-                    </button>                
-                  )}
-                </td>              
+                  <SpinnerButton 
+                    socket={socket}
+                    buttonClass={buttonClass}
+                    buttonText={buttonText}
+                    buttonDisabled={isDisabled(side, stopPrice, currentPrice, symbol, positionSize)}
+                    onClickFunction={createOrder(socket, orderObject)}
+                    orderId={orderId}
+                  />
+                </td>       
               </>
             ):(
               <>
@@ -208,12 +222,22 @@ export default function QuotesTable({
               </>
             )}
             <td>
-              <button 
-                className="btn btn-secondary" 
-                onClick={() => deleteFromWatchlist(symbol)}
-              >
-                Remove
-              </button>
+              {orderId ? (
+                <SpinnerButton 
+                  socket={socket}
+                  buttonClass="btn btn-dark"
+                  buttonText='Cancel Order'
+                  onClickFunction={cancelNewOrder(symbol, orderId)}
+                  orderId={orderId}
+                />
+              ):(
+                <button 
+                  className="btn btn-secondary" 
+                  onClick={() => deleteFromWatchlist(symbol)}
+                >
+                  Remove
+                </button>
+              )}
             </td>      
           </tr>
         );

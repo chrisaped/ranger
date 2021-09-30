@@ -4,16 +4,20 @@ export default function SpinnerButton({
   socket,
   buttonClass, 
   buttonText, 
-  buttonDisabled, 
-  onClickFunction
+  buttonDisabled = false, 
+  onClickFunction,
+  orderId = ''
 }) {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    socket.on("orderUpdateResponse", (_data) => {
-      setSubmitted(false);
+    socket.on("canceledOrderUpdateResponse", (data) => {
+      const responseOrderId = data.order.id;
+      if (orderId === responseOrderId) {
+        setSubmitted(false);
+      }
     });  
-  }, [socket]);
+  }, [socket, orderId]);
 
   const handleOnClick = () => {
     setSubmitted(true);
