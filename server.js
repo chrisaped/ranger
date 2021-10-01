@@ -52,18 +52,20 @@ io.on('connection', (socket) => {
   alpacaTradeSocket.onOrderUpdate(data => {
     console.log(`Order updates: ${JSON.stringify(data)}`)
     const event = data.event;
-    if (event === 'new') {
-      io.emit('newOrderUpdateResponse', data);
+    const symbol = data.order.symbol;
+  
+    if (symbol && (event === 'new')) {
+      io.emit(`${symbol} newOrderResponse`, data);
     }
-    if (event === 'canceled') {
+    if (symbol && (event === 'canceled')) {
       alpaca.getPositions(alpacaInstance, io, alpacaSocket);
       alpaca.getOrders(alpacaInstance, io);
-      io.emit('canceledOrderUpdateResponse', data);      
+      io.emit(`${symbol} canceledOrderResponse`, data);      
     }
-    if (event === 'fill') {
+    if (symbol && (event === 'fill')) {
       alpaca.getPositions(alpacaInstance, io, alpacaSocket);
       alpaca.getOrders(alpacaInstance, io);
-      io.emit('fillOrderUpdateResponse', data);      
+      io.emit(`${symbol} fillOrderResponse`, data);      
     }
   });
 

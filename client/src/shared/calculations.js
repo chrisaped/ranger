@@ -7,7 +7,7 @@ const calculateRiskPerShare = (currentPrice, stopPrice) => {
   return Math.abs(currentPrice - stopPrice);
 };
 
-export const calculatProfitTarget = (currentPrice, stopPrice, side) => {
+export const calculateProfitTarget = (currentPrice, stopPrice, side) => {
   const riskPerShare = calculateRiskPerShare(currentPrice, stopPrice);
   if (side === 'buy') {
     return (currentPrice + (riskPerShare * 1.5)).toFixed(2);

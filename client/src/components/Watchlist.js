@@ -26,6 +26,12 @@ export default function Watchlist({
     socket.emit('deleteFromWatchlist', symbol);
   }
 
+  const removeFromWatchlist = (symbol) => {
+    const newWatchlist = watchlist.filter(watchlistSymbol => watchlistSymbol !== symbol);
+    setWatchlist(newWatchlist);
+    socket.emit('removeFromWatchlist', symbol);
+  };
+
   const filteredQuotes = () => {
     const newQuotes = {};
     Object.entries(quotes).forEach(([symbol, price]) => {
@@ -46,6 +52,7 @@ export default function Watchlist({
           watchlist={watchlist}
           tradeableAssets={tradeableAssets}
           setWatchlist={setWatchlist}
+          removeFromWatchlist={removeFromWatchlist}
         />
       )}
     </div>
