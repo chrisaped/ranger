@@ -1,4 +1,4 @@
-import QuotesTableRow from "./QuotesTableRow";
+import QuotesTableRowData from "./QuotesTableRowData";
 
 export default function QuotesTable({ 
   socket, 
@@ -87,16 +87,18 @@ export default function QuotesTable({
         const price = quotes[symbol];
 
         return (
-          <QuotesTableRow
-            socket={socket}
-            symbol={symbol} 
-            price={price} 
-            removeFromWatchlist={removeFromWatchlist}
-            deleteFromWatchlist={deleteFromWatchlist}
-            isForbiddenStopPrice={isForbiddenStopPrice}
-            displayOrderButton={displayOrderButton}
-            isDisabled={isDisabled}
-          />
+          <tr key={symbol}>
+            <QuotesTableRowData
+              socket={socket}
+              symbol={symbol} 
+              price={price} 
+              removeFromWatchlist={removeFromWatchlist}
+              deleteFromWatchlist={deleteFromWatchlist}
+              isForbiddenStopPrice={isForbiddenStopPrice}
+              displayOrderButton={displayOrderButton}
+              isDisabled={isDisabled}
+            />
+          </tr>
         );
       })}
       </tbody>

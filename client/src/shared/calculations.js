@@ -50,9 +50,9 @@ export const isInProfit = (calculatedProfitLoss) => {
 };
 
 export const calculateDefaultStopPrice = (side, price) => {
-  let defaultStopPrice = price - defaultStopPriceDifference;
+  let defaultStopPrice = price + defaultStopPriceDifference;
   if (side === 'sell') {
-    defaultStopPrice = price + defaultStopPriceDifference;
+    defaultStopPrice = price - defaultStopPriceDifference;
   }
   return defaultStopPrice.toFixed(2);
 }

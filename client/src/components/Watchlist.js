@@ -27,9 +27,11 @@ export default function Watchlist({
   }
 
   const removeFromWatchlist = (symbol) => {
-    const newWatchlist = watchlist.filter(watchlistSymbol => watchlistSymbol !== symbol);
-    setWatchlist(newWatchlist);
-    socket.emit('removeFromWatchlist', symbol);
+    if (watchlist.includes(symbol)) {
+      const newWatchlist = watchlist.filter(watchlistSymbol => watchlistSymbol !== symbol);
+      setWatchlist(newWatchlist);
+      socket.emit('removeFromWatchlist', symbol);
+    }
   };
 
   const filteredQuotes = () => {

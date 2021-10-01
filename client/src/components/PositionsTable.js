@@ -81,7 +81,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
                 buttonText={side === "long" ? "Sell" : "Buy"}
                 buttonDisabled={!hasNoBracketOrder}
                 onClickFunction={submitOrder}
-                key={clientOrderId}
+                symbol={symbol}
               />
             ):(
               <SpinnerButton
@@ -90,8 +90,8 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
                 buttonText="Cancel Bracket"
                 buttonDisabled={hasNoBracketOrder}
                 onClickFunction={cancelBracket}
-                key={clientOrderId}
                 orderId={targetOrderId}
+                symbol={symbol}
               />              
             )}
             </td>

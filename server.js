@@ -60,12 +60,14 @@ io.on('connection', (socket) => {
     if (symbol && (event === 'canceled')) {
       alpaca.getPositions(alpacaInstance, io, alpacaSocket);
       alpaca.getOrders(alpacaInstance, io);
-      io.emit(`${symbol} canceledOrderResponse`, data);      
+      io.emit(`${symbol} canceledOrderResponse`, data);
+      io.emit('canceledOrderResponse', data);
     }
     if (symbol && (event === 'fill')) {
       alpaca.getPositions(alpacaInstance, io, alpacaSocket);
       alpaca.getOrders(alpacaInstance, io);
-      io.emit(`${symbol} fillOrderResponse`, data);      
+      io.emit(`${symbol} fillOrderResponse`, data);
+      io.emit('fillOrderResponse', data);
     }
   });
 

@@ -7,12 +7,12 @@ export default function SpinnerButton({
   buttonDisabled = false, 
   onClickFunction,
   orderId = '',
-  key
+  symbol
 }) {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    socket.on("canceledOrderUpdateResponse", (data) => {
+    socket.on("canceledOrderResponse", (data) => {
       const responseOrderId = data.order.id;
       if (orderId === responseOrderId) {
         setSubmitted(false);
@@ -29,7 +29,7 @@ export default function SpinnerButton({
   }
 
   return (
-    <div className="text-center align-middle" key={key}>
+    <div className="text-center align-middle" id={symbol}>
     {submitted ? (
       <button className={buttonClass} type="button" disabled>
         <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

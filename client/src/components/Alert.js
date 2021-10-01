@@ -6,7 +6,7 @@ export default function Alert({ socket }) {
   const [displayAlert, setDisplayAlert] = useState(false);
 
   useEffect(() => {
-    socket.on('newOrderUpdateResponse', (data) => {
+    socket.on('newOrderResponse', (data) => {
       const symbol = data.order.symbol;
       const alertString = `${symbol} order initiated`;
       console.log('here is the alertString', alertString);
@@ -14,11 +14,11 @@ export default function Alert({ socket }) {
       setDisplayAlert(true);
     });
 
-    socket.on("canceledOrderUpdateResponse", (data) => {
+    socket.on("canceledOrderResponse", (data) => {
       handleOrderUpdateResponse(data);
     });
 
-    socket.on("fillOrderUpdateResponse", (data) => {
+    socket.on("fillOrderResponse", (data) => {
       handleOrderUpdateResponse(data);
     });    
 
@@ -44,7 +44,7 @@ export default function Alert({ socket }) {
     <>
     {displayAlert && (
       <div>
-        {alert}
+        <strong>{alert}</strong>
       </div>
     )}
     </>

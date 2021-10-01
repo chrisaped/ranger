@@ -14,7 +14,7 @@ import {
 } from "../shared/orders";
 import { displayPrice } from "../shared/formatting";
 
-export default function QuotesTableRow({ 
+export default function QuotesTableRowData({ 
   socket, 
   symbol, 
   price, 
@@ -24,13 +24,13 @@ export default function QuotesTableRow({
   displayOrderButton,
   isDisabled
 }) {
-  const defaultStopPrice = 0.0;
+  const defaultStopPrice = 0;
   const [stopPrice, setStopPrice] = useState(defaultStopPrice);
   const [side, setSide] = useState('buy');
   const [orderId, setOrderId] = useState('');
 
   useEffect(() => {
-    if (stopPrice === defaultStopPrice) {
+    if (price && (stopPrice === defaultStopPrice)) {
       const newDefaultStopPrice = price - defaultStopPriceDifference;
       setStopPrice(newDefaultStopPrice); 
     }
@@ -59,13 +59,9 @@ export default function QuotesTableRow({
     setStopPrice(newStopPrice);
   };
 
-  const stopPriceInputClassName = () => {
-    if (isForbiddenStopPrice(side, stopPrice, price)) {
-      return "form-control border border-danger";
-    }
-    return "form-control";
-  };
-
+  const stopPriceInputClassName = isForbiddenStopPrice(side, stopPrice, price) ?
+    "form-control border border-danger" :
+    "form-control";
   const profitTarget = calculateProfitTarget(price, stopPrice, side);
   const positionSize = calculatePositionSize(price, stopPrice);
   const moneyUpfront = calculateMoneyUpfront(price, stopPrice);
@@ -78,7 +74,7 @@ export default function QuotesTableRow({
   const isOrderButtonDisabled = isDisabled(side, stopPrice, currentPrice, symbol, positionSize);
 
   return (
-    <tr key={symbol}>
+    <>
       <td><strong>{symbol}</strong></td>
       {price ? (
         <>
@@ -113,7 +109,7 @@ export default function QuotesTableRow({
               buttonDisabled={isOrderButtonDisabled}
               onClickFunction={createBracketOrder}
               orderId={orderId}
-              key={symbol}
+              symbol={symbol}
             />
           </td>       
         </>
@@ -132,7 +128,7 @@ export default function QuotesTableRow({
             buttonText='Cancel Order'
             onClickFunction={cancelNewOrder}
             orderId={orderId}
-            key={symbol}
+            symbol={symbol}
           />
         ):(
           <button 
@@ -143,6 +139,6 @@ export default function QuotesTableRow({
           </button>
         )}
       </td>    
-    </tr>
+    </>
   );
 }
