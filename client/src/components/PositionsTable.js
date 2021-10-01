@@ -38,7 +38,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
         </tr>
       </thead>
       <tbody>
-      {positions.map((positionObj, index) => {
+      {positions.map((positionObj) => {
         const {
           symbol,
           side,
@@ -81,7 +81,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
                 buttonText={side === "long" ? "Sell" : "Buy"}
                 buttonDisabled={!hasNoBracketOrder}
                 onClickFunction={submitOrder}
-                key={index}
+                key={clientOrderId}
               />
             ):(
               <SpinnerButton
@@ -90,7 +90,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
                 buttonText="Cancel Bracket"
                 buttonDisabled={hasNoBracketOrder}
                 onClickFunction={cancelBracket}
-                key={index}
+                key={clientOrderId}
                 orderId={targetOrderId}
               />              
             )}

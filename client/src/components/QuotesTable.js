@@ -170,7 +170,7 @@ export default function QuotesTable({
         </tr>
       </thead>
       <tbody>
-      {watchlist.map((symbol, index) => {
+      {watchlist.map((symbol) => {
         const price = quotes[symbol];
         const stopPrice = stopPrices[symbol];
         const side = sides[symbol];
@@ -224,7 +224,7 @@ export default function QuotesTable({
                     buttonDisabled={isDisabled(side, stopPrice, currentPrice, symbol, positionSize)}
                     onClickFunction={createBracketOrder}
                     orderId={orderId}
-                    key={index}
+                    key={symbol}
                   />
                 </td>       
               </>
@@ -243,7 +243,7 @@ export default function QuotesTable({
                   buttonText='Cancel Order'
                   onClickFunction={cancelOrder}
                   orderId={orderId}
-                  key={index}
+                  key={symbol}
                 />
               ):(
                 <button 
