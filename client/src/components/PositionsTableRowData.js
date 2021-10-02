@@ -3,7 +3,8 @@ import { displayPrice } from "../shared/formatting";
 import { 
   createMarketOrder,
   createOrder,
-  cancelOrder
+  cancelOrder,
+  extractBracketOrderInfo
 } from "../shared/orders";
 
 export default function PositionsTableRowData({
@@ -12,14 +13,18 @@ export default function PositionsTableRowData({
   side,
   avgEntryPrice,
   price,
-  hasLegs,
-  targetOrderStatus,
-  targetPrice,
-  stopPrice,
   profitOrLoss,
   quantity,
-  targetOrderId
+  orders
 }) {
+  const { 
+    targetPrice, 
+    targetOrderStatus,
+    stopPrice,
+    targetOrderId,
+    hasLegs
+  } = extractBracketOrderInfo(symbol, quantity, avgEntryPrice, orders);
+
   const sideInCaps = side.toUpperCase();
   const entryPrice = displayPrice(avgEntryPrice);
   const currentPrice = displayPrice(price);
