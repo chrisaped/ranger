@@ -9,7 +9,6 @@ export default function Alert({ socket }) {
     socket.on('newOrderResponse', (data) => {
       const symbol = data.order.symbol;
       const alertString = `${symbol} order initiated`;
-      console.log('here is the alertString', alertString);
       setAlert(alertString);
       setDisplayAlert(true);
     });
@@ -35,18 +34,17 @@ export default function Alert({ socket }) {
     const symbol = data.order.symbol;
     const status = data.order.status;
     const alertString = `${symbol} order ${status}`;
-    console.log('here is the alertString', alertString);
     setAlert(alertString);
     setDisplayAlert(true);
   }
 
   return (
-    <>
-    {displayAlert && (
-      <div>
-        <strong>{alert}</strong>
+    <div className={displayAlert ? 'fadeIn' : 'fadeOut'}>
+      <div className="align-middle text-center">
+        <div className="bg-primary text-white p-2 mt-2">
+          <strong>{alert}</strong>
+        </div>
       </div>
-    )}
-    </>
+    </div>
   );
 }
