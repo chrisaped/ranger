@@ -104,7 +104,7 @@ io.on('connection', (socket) => {
     alpacaSocket.subscribeForQuotes([symbol]);
   });
 
-  socket.on('deleteFromWatchlist', (symbol) => {
+  socket.on('removeFromQuotesAndWatchlist', (symbol) => {
     alpacaSocket.unsubscribeFromQuotes([symbol]);
     alpaca.deleteFromWatchlist(alpacaInstance, symbol);
   });

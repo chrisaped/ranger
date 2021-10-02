@@ -47,7 +47,6 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
         } = positionObj;
         const quantity = Math.abs(qty);
         const { 
-          clientOrderId,
           targetPrice, 
           targetOrderStatus,
           stopPrice,
@@ -63,7 +62,7 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
         const profitOrLoss = (calculateProfitLoss(currentPrice, entryPrice, quantity, side)).toFixed(2);
         const hasNoBracketOrder = !hasLegs || (targetOrderStatus === "canceled");
         return (
-          <tr className={rowClassName(profitOrLoss)} key={clientOrderId}>
+          <tr className={rowClassName(profitOrLoss)} key={symbol}>
             <td><strong>{symbol}</strong></td>
             <td>{side.toUpperCase()}</td>
             <td className="bg-info">{entryPrice}</td>

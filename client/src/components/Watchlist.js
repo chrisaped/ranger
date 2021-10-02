@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import QuotesTable from "./QuotesTable";
 
 export default function Watchlist({ 
@@ -15,7 +15,7 @@ export default function Watchlist({
     });
   }, [socket, setWatchlist]);
 
-  const deleteFromWatchlist = (symbol) => {
+  const removeFromQuotesAndWatchlist = useCallback((symbol) => {
     const newWatchlist = watchlist.filter(watchlistSymbol => watchlistSymbol !== symbol);
     setWatchlist(newWatchlist);
     if (Object.keys(quotes).length > 0) {
@@ -23,37 +23,26 @@ export default function Watchlist({
       delete newQuotes[symbol];
       setQuotes(newQuotes);
     }
-    socket.emit('deleteFromWatchlist', symbol);
-  }
+    socket.emit('removeFromQuotesAndWatchlist', symbol);
+  }, [quotes, setQuotes, setWatchlist, socket, watchlist]);
 
-  const removeFromWatchlist = (symbol) => {
+  const removeFromWatchlist = useCallback(symbol => {
     if (watchlist.includes(symbol)) {
       const newWatchlist = watchlist.filter(watchlistSymbol => watchlistSymbol !== symbol);
       setWatchlist(newWatchlist);
       socket.emit('removeFromWatchlist', symbol);
     }
-  };
-
-  const filteredQuotes = () => {
-    const newQuotes = {};
-    Object.entries(quotes).forEach(([symbol, price]) => {
-      if (watchlist.includes(symbol)) {
-        newQuotes[symbol] = price;
-      }
-    });
-    return newQuotes;
-  }
+  }, [setWatchlist, socket, watchlist]);
 
   return (
     <div>
       {watchlist.length > 0 && (
         <QuotesTable 
           socket={socket}
-          quotes={filteredQuotes()}
-          deleteFromWatchlist={deleteFromWatchlist}
+          quotes={quotes}
+          removeFromQuotesAndWatchlist={removeFromQuotesAndWatchlist}
           watchlist={watchlist}
           tradeableAssets={tradeableAssets}
-          setWatchlist={setWatchlist}
           removeFromWatchlist={removeFromWatchlist}
         />
       )}

@@ -19,7 +19,7 @@ export default function QuotesTableRowData({
   symbol, 
   price, 
   removeFromWatchlist,
-  deleteFromWatchlist,
+  removeFromQuotesAndWatchlist,
   isForbiddenStopPrice,
   displayOrderButton,
   isDisabled
@@ -36,16 +36,20 @@ export default function QuotesTableRowData({
     }
 
     socket.on(`${symbol} newOrderResponse`, (data) => {
-      const orderId = data.order.id;
-      setOrderId(orderId);
+      const newOrderId = data.order.id;
+      if (orderId !== newOrderId) {
+        setOrderId(newOrderId);
+      }
     });
 
     socket.on(`${symbol} fillOrderResponse`, (data) => {
-      const orderId = data.order.id;
-      setOrderId(orderId);
-      removeFromWatchlist(symbol);
+      const newOrderId = data.order.id;
+      if (orderId !== newOrderId) {
+        setOrderId(newOrderId);
+        removeFromWatchlist(symbol);
+      }
     });
-  }, [price, removeFromWatchlist, socket, stopPrice, symbol]);
+  }, [price, removeFromWatchlist, socket, stopPrice, symbol, orderId]);
 
   const onSelectChange = (e) => {
     const newSide = e.target.value;
@@ -70,7 +74,7 @@ export default function QuotesTableRowData({
   const cancelNewOrder = () => cancelOrder(socket, orderId);
   const currentPrice = displayPrice(price);
   const { buttonClass, buttonText } = displayOrderButton(side, symbol);
-  const onClickRemove = () => deleteFromWatchlist(symbol);
+  const onClickRemove = () => removeFromQuotesAndWatchlist(symbol);
   const isOrderButtonDisabled = isDisabled(side, stopPrice, currentPrice, symbol, positionSize);
 
   return (

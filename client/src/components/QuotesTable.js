@@ -3,7 +3,7 @@ import QuotesTableRowData from "./QuotesTableRowData";
 export default function QuotesTable({ 
   socket, 
   quotes, 
-  deleteFromWatchlist,
+  removeFromQuotesAndWatchlist,
   watchlist,
   tradeableAssets,
   removeFromWatchlist
@@ -93,7 +93,7 @@ export default function QuotesTable({
               symbol={symbol} 
               price={price} 
               removeFromWatchlist={removeFromWatchlist}
-              deleteFromWatchlist={deleteFromWatchlist}
+              removeFromQuotesAndWatchlist={removeFromQuotesAndWatchlist}
               isForbiddenStopPrice={isForbiddenStopPrice}
               displayOrderButton={displayOrderButton}
               isDisabled={isDisabled}
