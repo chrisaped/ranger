@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import PropTypes from 'prop-types';
 import { io } from 'socket.io-client';
-import { updateObjectState } from "./shared/state";
 import Search from './components/Search';
 import ProfitLoss from "./components/ProfitLoss";
 import Positions from "./components/Positions";
 import Watchlist from "./components/Watchlist";
 import Alert from "./components/Alert";
+import { updateObjectState } from "./shared/state";
 
 export default function App() {
   const [socket, setSocket] = useState(null);
