@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PropTypes from 'prop-types';
 import { io } from 'socket.io-client';
 import { updateObjectState } from "./shared/state";
 import Search from './components/Search';
@@ -53,55 +54,73 @@ export default function App() {
 
   return (
     <>
-    {socket ? (
-    <div className="container">
-      <div className="row">
-        <div className="col">
-          <Alert socket={socket} />
-        </div>
-        <div className="col">
-          <Search 
-            socket={socket}
-            watchlist={watchlist}
-            setWatchlist={setWatchlist} 
-            tradeableAssets={tradeableAssets}
-            positions={positions}
-          />
-        </div>
-        <div className="col d-flex justify-content-end align-items-center">
-          {orders.length > 0 && (
-            <ProfitLoss 
+      {socket ? (
+        <div className="container">
+          <div className="row">
+            <div className="col">
+              <Alert socket={socket} />
+            </div>
+            <div className="col">
+              <Search 
+                socket={socket}
+                watchlist={watchlist}
+                setWatchlist={setWatchlist} 
+                tradeableAssets={tradeableAssets}
+                positions={positions}
+              />
+            </div>
+            <div className="col d-flex justify-content-end align-items-center">
+              {orders.length > 0 && (
+                <ProfitLoss 
+                  orders={orders}
+                  positions={positions}
+                  quotes={quotes}
+                />
+              )}
+            </div>
+          </div>
+          <div className="row">
+            <Watchlist 
+              socket={socket}
+              quotes={quotes}
+              setQuotes={setQuotes}
+              watchlist={watchlist}
+              setWatchlist={setWatchlist}
+              tradeableAssets={tradeableAssets}
+            />
+          </div>      
+          <div className="row">
+            <Positions 
+              socket={socket}
+              quotes={quotes}
               orders={orders}
               positions={positions}
-              quotes={quotes}
             />
-          )}
+          </div>      
         </div>
-      </div>
-      <div className="row">
-        <Watchlist 
-          socket={socket}
-          quotes={quotes}
-          setQuotes={setQuotes}
-          watchlist={watchlist}
-          setWatchlist={setWatchlist}
-          tradeableAssets={tradeableAssets}
-        />
-      </div>      
-      <div className="row">
-        <Positions 
-          socket={socket}
-          quotes={quotes}
-          orders={orders}
-          positions={positions}
-        />
-      </div>      
-    </div>
-    ):(
-      <div>
-        <p>Socket connection error.</p>
-      </div>
-    )}
+      ):(
+        <div>
+          <p>Socket connection error.</p>
+        </div>
+      )}
     </>
   );
+}
+
+App.propTypes = {
+  socket: PropTypes.instanceOf(io),
+  quotes: PropTypes.object,
+  watchlist: PropTypes.array,
+  tradeableAssets: PropTypes.object,
+  orders: PropTypes.array,
+  positions: PropTypes.array
+}
+
+App.defaultProps = {
+  socket: null,
+  quotes: {},
+  watchlist: [],
+  tradeableAssets: {},
+  orders: [],
+  positions: []  
 }
