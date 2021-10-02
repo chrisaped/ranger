@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import PropTypes from 'prop-types';
 import { io } from 'socket.io-client';
 import Search from './components/Search';
 import ProfitLoss from "./components/ProfitLoss";
@@ -105,22 +104,4 @@ export default function App() {
       )}
     </>
   );
-}
-
-App.propTypes = {
-  socket: PropTypes.instanceOf(io),
-  quotes: PropTypes.object,
-  watchlist: PropTypes.array,
-  tradeableAssets: PropTypes.object,
-  orders: PropTypes.array,
-  positions: PropTypes.array
-}
-
-App.defaultProps = {
-  socket: null,
-  quotes: {},
-  watchlist: [],
-  tradeableAssets: {},
-  orders: [],
-  positions: []  
 }

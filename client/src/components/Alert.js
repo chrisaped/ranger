@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import PropTypes from 'prop-types';
 import "../styles/alert.css";
 
 export default function Alert({ socket }) {
@@ -47,4 +48,12 @@ export default function Alert({ socket }) {
       </div>
     </div>
   );
+}
+
+Alert.propTypes = {
+  socket: PropTypes.object.isRequired,
+}
+
+Alert.defaultProps = {
+  socket: {}
 }
