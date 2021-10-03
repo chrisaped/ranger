@@ -1,7 +1,10 @@
-const accountSize = 5900;
-const riskPercentage = .005;
+import { 
+  accountSize,
+  riskPercentage,
+  defaultStopPriceDifference
+} from "./constants";
+
 const risk = accountSize * riskPercentage;
-export const defaultStopPriceDifference = .25;
 
 const calculateRiskPerShare = (currentPrice, stopPrice) => {
   return Math.abs(currentPrice - stopPrice);

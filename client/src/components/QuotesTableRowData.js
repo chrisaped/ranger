@@ -6,7 +6,6 @@ import {
   calculatePositionSize,
   calculateMoneyUpfront,
   calculateDefaultStopPrice,
-  defaultStopPriceDifference
 } from "../shared/calculations";
 import { 
   createOrder, 
@@ -14,6 +13,7 @@ import {
   createBracketOrderObject
 } from "../shared/orders";
 import { displayPrice } from "../shared/formatting";
+import { defaultStopPriceDifference } from "../shared/constants";
 
 export default function QuotesTableRowData({ 
   socket, 
