@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import PropTypes from 'prop-types';
 
 export default function SpinnerButton({
   socket,
@@ -47,3 +48,22 @@ export default function SpinnerButton({
     </div>
   );
 }
+
+SpinnerButton.propTypes = {
+  socket: PropTypes.object.isRequired,
+  buttonClass: PropTypes.string.isRequired, 
+  buttonText: PropTypes.string.isRequired, 
+  buttonDisabled: PropTypes.bool, 
+  onClickFunction: PropTypes.func.isRequired,
+  orderId: PropTypes.string,
+  symbol: PropTypes.string.isRequired
+};
+
+SpinnerButton.defaultProps = {
+  socket: {},
+  buttonClass: '', 
+  buttonText: '', 
+  buttonDisabled: false, 
+  orderId: '',
+  symbol: ''
+};

@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from "react";
+import PropTypes from 'prop-types';
 import QuotesTable from "./QuotesTable";
 
 export default function Watchlist({ 
@@ -49,3 +50,19 @@ export default function Watchlist({
     </div>
   );
 }
+
+Watchlist.propTypes = {
+  socket: PropTypes.object.isRequired, 
+  quotes: PropTypes.object.isRequired, 
+  setQuotes: PropTypes.func.isRequired, 
+  watchlist: PropTypes.arrayOf(PropTypes.string).isRequired, 
+  setWatchlist: PropTypes.func.isRequired,
+  tradeableAssets: PropTypes.object.isRequired
+};
+
+Watchlist.defaultProps = {
+  socket: {}, 
+  quotes: {}, 
+  watchlist: [], 
+  tradeableAssets: {}
+};

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import PropTypes from 'prop-types';
 import SpinnerButton from "./SpinnerButton";
 import { 
   calculateProfitTarget,
@@ -146,3 +147,26 @@ export default function QuotesTableRowData({
     </>
   );
 }
+
+QuotesTableRowData.propTypes = {
+  socket: PropTypes.object.isRequired, 
+  symbol: PropTypes.string.isRequired, 
+  price: PropTypes.number.isRequired, 
+  removeFromWatchlist: PropTypes.func.isRequired,
+  removeFromQuotesAndWatchlist: PropTypes.func.isRequired,
+  isForbiddenStopPrice: PropTypes.bool.isRequired,
+  displayOrderButton: PropTypes.shape({
+    buttonClass: PropTypes.string,
+    buttonText: PropTypes.string
+  }).isRequired,
+  isDisabled: PropTypes.bool.isRequired
+};
+
+QuotesTableRowData.defaultProps = {
+  socket: {}, 
+  symbol: '', 
+  price: 0, 
+  isForbiddenStopPrice: false,
+  displayOrderButton: {},
+  isDisabled: false
+};

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import QuotesTableRowData from "./QuotesTableRowData";
 
 export default function QuotesTable({ 
@@ -105,3 +106,19 @@ export default function QuotesTable({
     </table>    
   );
 }
+
+QuotesTable.propTypes = {
+  socket: PropTypes.object.isRequired, 
+  quotes: PropTypes.object.isRequired, 
+  removeFromQuotesAndWatchlist: PropTypes.func.isRequired,
+  watchlist: PropTypes.arrayOf(PropTypes.string).isRequired,
+  tradeableAssets: PropTypes.object.isRequired,
+  removeFromWatchlist: PropTypes.func.isRequired
+};
+
+QuotesTable.defaultProps = {
+  socket: {}, 
+  quotes: {}, 
+  watchlist: [],
+  tradeableAssets: {}
+};
