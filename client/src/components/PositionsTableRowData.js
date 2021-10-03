@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import SpinnerButton from "./SpinnerButton";
 import { displayPrice } from "../shared/formatting";
 import { 
@@ -73,3 +74,37 @@ export default function PositionsTableRowData({
     </>
   );
 }
+
+PositionsTableRowData.propTypes = {
+  socket: PropTypes.object.isRequired,
+  symbol: PropTypes.string.isRequired,
+  side: PropTypes.string.isRequired,
+  avgEntryPrice: PropTypes.number.isRequired,
+  price: PropTypes.number.isRequired,
+  profitOrLoss: PropTypes.number.isRequired,
+  quantity: PropTypes.number.isRequired,
+  orders: PropTypes.arrayOf(PropTypes.shape({
+    symbol: PropTypes.string,
+    filled_qty: PropTypes.number,
+    filled_avg_price: PropTypes.number,
+    status: PropTypes.string,
+    legs: PropTypes.arrayOf(PropTypes.shape({
+      type: PropTypes.string,
+      limit_price: PropTypes.number,
+      id: PropTypes.string,
+      status: PropTypes.string,
+      stop_price: PropTypes.number
+    }))
+  })).isRequired
+};
+
+PositionsTableRowData.defaultProps = {
+  socket: {},
+  symbol: '',
+  side: '',
+  avgEntryPrice: 0,
+  price: 0,
+  profitOrLoss: 0,
+  quantity: 0,
+  orders: []
+};

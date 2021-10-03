@@ -1,7 +1,8 @@
+import PropTypes from 'prop-types';
 import PositionsTableRowData from "./PositionsTableRowData";
 import { calculateProfitLoss } from "../shared/calculations";
 
-export default function PositionsTable({ socket, positions, orders, quotes }) {
+export default function PositionsTable({ socket, quotes, orders, positions }) {
   const getRowClassName = (profitOrLoss) => {
     let rowClass;
     if (profitOrLoss > 0) {
@@ -64,3 +65,34 @@ export default function PositionsTable({ socket, positions, orders, quotes }) {
     </table>
   );
 }
+
+PositionsTable.propTypes = {
+  socket: PropTypes.object.isRequired,
+  quotes: PropTypes.object.isRequired,
+  orders: PropTypes.arrayOf(PropTypes.shape({
+    symbol: PropTypes.string,
+    filled_qty: PropTypes.number,
+    filled_avg_price: PropTypes.number,
+    status: PropTypes.string,
+    legs: PropTypes.arrayOf(PropTypes.shape({
+      type: PropTypes.string,
+      limit_price: PropTypes.number,
+      id: PropTypes.string,
+      status: PropTypes.string,
+      stop_price: PropTypes.number
+    }))
+  })).isRequired,
+  positions: PropTypes.arrayOf(PropTypes.shape({
+    symbol: PropTypes.string,
+    side: PropTypes.string,
+    avg_entry_price: PropTypes.number,
+    qty: PropTypes.number
+  })).isRequired  
+};
+
+PositionsTable.defaultProps = {
+  socket: {},
+  quotes: {},
+  orders: [],
+  positions: []
+};
