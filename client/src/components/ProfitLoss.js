@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { sumObjectValues, calculateProfitLoss } from "../shared/calculations";
 import { extractTotalProfitLossFromClosedOrders } from "../shared/orders";
 
@@ -49,3 +50,27 @@ export default function ProfitLoss({ orders, positions, quotes }) {
     </div>
   );
 }
+
+ProfitLoss.propTypes = {
+  orders: PropTypes.arrayOf(PropTypes.shape({
+    status: PropTypes.string,
+    legs: PropTypes.arrayOf(PropTypes.object),
+    symbol: PropTypes.string,
+    side: PropTypes.string,
+    filled_qty: PropTypes.number,
+    filled_avg_price: PropTypes.number
+  })).isRequired,
+  positions: PropTypes.arrayOf(PropTypes.shape({
+    symbol: PropTypes.string,
+    qty: PropTypes.number,
+    avg_entry_price: PropTypes.number,
+    side: PropTypes.string
+  })).isRequired,
+  quotes: PropTypes.object.isRequired
+};
+
+ProfitLoss.defaultProps = {
+  orders: [],
+  positions: [],
+  quotes: {}
+};

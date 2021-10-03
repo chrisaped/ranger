@@ -95,7 +95,9 @@ Search.propTypes = {
   watchlist: PropTypes.arrayOf(PropTypes.string).isRequired, 
   setWatchlist: PropTypes.func.isRequired,
   tradeableAssets: PropTypes.object.isRequired,
-  positions: PropTypes.arrayOf(PropTypes.object).isRequired
+  positions: PropTypes.arrayOf(PropTypes.shape({
+    symbol: PropTypes.string
+  })).isRequired
 };
 
 Search.defaultProps = {

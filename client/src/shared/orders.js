@@ -51,7 +51,6 @@ export const cancelOrder = (socket, orderId) => {
 };
 
 export const extractBracketOrderInfo = (symbol, qty, avg_entry_price, orders) => {
-  let clientOrderId;
   let legs = [];
   let targetPrice;
   let stopPrice;
@@ -65,7 +64,6 @@ export const extractBracketOrderInfo = (symbol, qty, avg_entry_price, orders) =>
       (orderObj.filled_avg_price === avg_entry_price) &&
       (orderObj.status === "filled")
     ) {
-      clientOrderId = orderObj.client_order_id;
       legs = orderObj.legs;
     }
   });
@@ -87,7 +85,6 @@ export const extractBracketOrderInfo = (symbol, qty, avg_entry_price, orders) =>
   const hasLegs = legs.length > 0;
 
   return { 
-    clientOrderId,
     targetPrice, 
     targetOrderStatus,
     stopPrice,
