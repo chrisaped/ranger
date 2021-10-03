@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from 'prop-types';
 
 export default function Search({ 
   socket, 
@@ -23,7 +24,7 @@ export default function Search({
     }
   };
 
-  const isAnAsset = (searchParams) => {
+  const isAnAsset = searchParams => {
     if (searchParams in tradeableAssets) {
       return true;
     }
@@ -41,7 +42,7 @@ export default function Search({
     return false;
   }
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const params = e.target.value;
     setSearchParams(params.toUpperCase());
   };
@@ -51,6 +52,8 @@ export default function Search({
       getStockQuote();
     }
   };
+
+  const isDisabled = !searchParams || watchlist.includes(searchParams) || isAPosition();
 
   return (
     <div>
@@ -62,27 +65,42 @@ export default function Search({
             placeholder="Symbol" 
             value={searchParams} 
             onChange={handleChange}
-            onKeyPress={(e) => handleKeyPress(e)} 
+            onKeyPress={handleKeyPress} 
           />
           <button 
             className="btn btn-primary m-2" 
             onClick={getStockQuote}
-            disabled={!searchParams || watchlist.includes(searchParams) || isAPosition()}
+            disabled={isDisabled}
           >
             Search
           </button>
         </div>
       </div>
       {searchError && (
-      <div 
-        style={{cursor: "pointer"}}
-        className="alert alert-danger alert-dismissible fade show p-2 d-flex justify-content-center" 
-        role="alert"
-        onClick={() => setSearchError('')}
-      >
-        {searchError}
-      </div>
+        <div 
+          style={{cursor: "pointer"}}
+          className="alert alert-danger alert-dismissible fade show p-2 d-flex justify-content-center" 
+          role="alert"
+          onClick={() => setSearchError('')}
+        >
+          {searchError}
+        </div>
       )}      
     </div>
   );
 }
+
+Search.propTypes = {
+  socket: PropTypes.object.isRequired,
+  watchlist: PropTypes.arrayOf(PropTypes.string).isRequired, 
+  setWatchlist: PropTypes.func.isRequired,
+  tradeableAssets: PropTypes.object.isRequired,
+  positions: PropTypes.arrayOf(PropTypes.object).isRequired
+};
+
+Search.defaultProps = {
+  socket: {}, 
+  watchlist: [], 
+  tradeableAssets: {},
+  positions: []
+};

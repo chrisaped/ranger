@@ -51,9 +51,9 @@ export default function Alert({ socket }) {
 }
 
 Alert.propTypes = {
-  socket: PropTypes.object.isRequired,
-}
+  socket: PropTypes.object.isRequired
+};
 
 Alert.defaultProps = {
   socket: {}
-}
+};
