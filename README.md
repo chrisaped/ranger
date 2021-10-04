@@ -11,3 +11,5 @@ Things to add:
 - Move 'not a valid asset' error alert from search to the alert component.
 - Enable the alert component to receive errors from Alpaca
 - an orders table to see which orders are live, closed and cancelled?
+- disable buy or sell if account size is exceeded
+- add cancel order button for positions table once sell or buy order has been placed (after bracket)
