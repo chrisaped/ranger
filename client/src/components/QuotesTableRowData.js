@@ -14,6 +14,11 @@ import {
 } from "../shared/orders";
 import { displayPrice } from "../shared/formatting";
 import { defaultStopPriceDifference } from "../shared/constants";
+import { 
+  displayOrderButton,
+  isForbiddenStopPrice,
+  isDisabled
+} from "../shared/quotes";
 
 export default function QuotesTableRowData({ 
   socket, 
@@ -21,9 +26,7 @@ export default function QuotesTableRowData({
   price, 
   removeFromWatchlist,
   removeFromQuotesAndWatchlist,
-  isForbiddenStopPrice,
-  displayOrderButton,
-  isDisabled
+  tradeableAssets
 }) {
   const defaultStopPrice = 0;
   const [stopPrice, setStopPrice] = useState(defaultStopPrice);
@@ -74,9 +77,9 @@ export default function QuotesTableRowData({
   const createBracketOrder = () => createOrder(socket, orderObject);
   const cancelNewOrder = () => cancelOrder(socket, orderId);
   const currentPrice = displayPrice(price);
-  const { buttonClass, buttonText } = displayOrderButton(side, symbol);
+  const { buttonClass, buttonText } = displayOrderButton(side, symbol, tradeableAssets);
   const onClickRemove = () => removeFromQuotesAndWatchlist(symbol);
-  const isOrderButtonDisabled = isDisabled(side, stopPrice, currentPrice, symbol, positionSize);
+  const isOrderButtonDisabled = isDisabled(side, stopPrice, currentPrice, symbol, positionSize, tradeableAssets);
 
   return (
     <>
@@ -154,19 +157,12 @@ QuotesTableRowData.propTypes = {
   price: PropTypes.number.isRequired, 
   removeFromWatchlist: PropTypes.func.isRequired,
   removeFromQuotesAndWatchlist: PropTypes.func.isRequired,
-  isForbiddenStopPrice: PropTypes.bool.isRequired,
-  displayOrderButton: PropTypes.shape({
-    buttonClass: PropTypes.string,
-    buttonText: PropTypes.string
-  }).isRequired,
-  isDisabled: PropTypes.bool.isRequired
+  tradeableAssets: PropTypes.object.isRequired
 };
 
 QuotesTableRowData.defaultProps = {
   socket: {}, 
   symbol: '', 
   price: 0, 
-  isForbiddenStopPrice: false,
-  displayOrderButton: {},
-  isDisabled: false
+  tradeableAssets: {}
 };
