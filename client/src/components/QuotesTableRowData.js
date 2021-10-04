@@ -34,26 +34,24 @@ export default function QuotesTableRowData({
   const [orderId, setOrderId] = useState('');
 
   useEffect(() => {
-    if (price && (stopPrice === defaultStopPrice)) {
-      const newDefaultStopPrice = price - defaultStopPriceDifference;
-      setStopPrice(newDefaultStopPrice); 
-    }
-
     socket.on(`${symbol} newOrderResponse`, (data) => {
       const newOrderId = data.order.id;
-      if (orderId !== newOrderId) {
-        setOrderId(newOrderId);
-      }
+      setOrderId(newOrderId);
     });
 
     socket.on(`${symbol} fillOrderResponse`, (data) => {
       const newOrderId = data.order.id;
-      if (orderId !== newOrderId) {
-        setOrderId(newOrderId);
-        removeFromWatchlist(symbol);
-      }
+      setOrderId(newOrderId);
+      removeFromWatchlist(symbol);
     });
-  }, [price, removeFromWatchlist, socket, stopPrice, symbol, orderId]);
+  }, []); // eslint-disable-line
+
+  useEffect(() => {
+    if (price && (stopPrice === defaultStopPrice)) {
+      const newDefaultStopPrice = price - defaultStopPriceDifference;
+      setStopPrice(newDefaultStopPrice); 
+    }
+  }, [price, stopPrice]);
 
   const onSelectChange = (e) => {
     const newSide = e.target.value;
