@@ -9,7 +9,8 @@ export default function ProfitLoss({ orders, positions, quotes }) {
       newObj[positionObj.symbol] = { 
         shares: Math.abs(parseInt(positionObj.qty)), 
         entryPrice: parseFloat(positionObj.avg_entry_price),
-        side: positionObj.side
+        side: positionObj.side,
+        currentPrice: positionObj.current_price
       };
     })
     return newObj;
@@ -18,7 +19,9 @@ export default function ProfitLoss({ orders, positions, quotes }) {
   const createCurrentPositionsWithQuotes = (quotes) => {
     const newObj = {};
     Object.entries(currentPositions).forEach(([symbol, infoObj]) => {
-      const calculatedProfitLoss = calculateProfitLoss(quotes[symbol], infoObj.entryPrice, infoObj.shares, infoObj.side);
+      let price = quotes[symbol];
+      if (!price) { price = parseFloat(infoObj.currentPrice); }
+      const calculatedProfitLoss = calculateProfitLoss(price, infoObj.entryPrice, infoObj.shares, infoObj.side);
       newObj[symbol] = parseFloat(calculatedProfitLoss);
     })
     return newObj;
@@ -57,13 +60,13 @@ ProfitLoss.propTypes = {
     legs: PropTypes.arrayOf(PropTypes.object),
     symbol: PropTypes.string,
     side: PropTypes.string,
-    filled_qty: PropTypes.number,
-    filled_avg_price: PropTypes.number
+    filled_qty: PropTypes.string,
+    filled_avg_price: PropTypes.string
   })).isRequired,
   positions: PropTypes.arrayOf(PropTypes.shape({
     symbol: PropTypes.string,
-    qty: PropTypes.number,
-    avg_entry_price: PropTypes.number,
+    qty: PropTypes.string,
+    avg_entry_price: PropTypes.string,
     side: PropTypes.string
   })).isRequired,
   quotes: PropTypes.object.isRequired

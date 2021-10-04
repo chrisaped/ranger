@@ -79,21 +79,21 @@ PositionsTableRowData.propTypes = {
   socket: PropTypes.object.isRequired,
   symbol: PropTypes.string.isRequired,
   side: PropTypes.string.isRequired,
-  avgEntryPrice: PropTypes.number.isRequired,
+  avgEntryPrice: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
-  profitOrLoss: PropTypes.number.isRequired,
+  profitOrLoss: PropTypes.string.isRequired,
   quantity: PropTypes.number.isRequired,
   orders: PropTypes.arrayOf(PropTypes.shape({
     symbol: PropTypes.string,
-    filled_qty: PropTypes.number,
-    filled_avg_price: PropTypes.number,
+    filled_qty: PropTypes.string,
+    filled_avg_price: PropTypes.string,
     status: PropTypes.string,
     legs: PropTypes.arrayOf(PropTypes.shape({
       type: PropTypes.string,
-      limit_price: PropTypes.number,
+      limit_price: PropTypes.string,
       id: PropTypes.string,
       status: PropTypes.string,
-      stop_price: PropTypes.number
+      stop_price: PropTypes.string
     }))
   })).isRequired
 };

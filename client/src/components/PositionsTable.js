@@ -20,10 +20,12 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
       symbol,
       side,
       avg_entry_price,
-      qty
+      qty,
+      current_price
     } = positionObj;
     const quantity = Math.abs(qty);
-    const price = quotes[symbol];
+    let price = quotes[symbol];
+    if (!price) { price = parseFloat(current_price); }
     const profitOrLoss = (calculateProfitLoss(price, avg_entry_price, quantity, side)).toFixed(2);
     const rowClassName = getRowClassName(profitOrLoss);
 
@@ -71,22 +73,23 @@ PositionsTable.propTypes = {
   quotes: PropTypes.object.isRequired,
   orders: PropTypes.arrayOf(PropTypes.shape({
     symbol: PropTypes.string,
-    filled_qty: PropTypes.number,
-    filled_avg_price: PropTypes.number,
+    filled_qty: PropTypes.string,
+    filled_avg_price: PropTypes.string,
     status: PropTypes.string,
     legs: PropTypes.arrayOf(PropTypes.shape({
       type: PropTypes.string,
-      limit_price: PropTypes.number,
+      limit_price: PropTypes.string,
       id: PropTypes.string,
       status: PropTypes.string,
-      stop_price: PropTypes.number
+      stop_price: PropTypes.string
     }))
   })).isRequired,
   positions: PropTypes.arrayOf(PropTypes.shape({
     symbol: PropTypes.string,
     side: PropTypes.string,
-    avg_entry_price: PropTypes.number,
-    qty: PropTypes.number
+    avg_entry_price: PropTypes.string,
+    qty: PropTypes.string,
+    current_price: PropTypes.string
   })).isRequired  
 };
 
