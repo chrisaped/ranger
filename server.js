@@ -66,7 +66,11 @@ io.on('connection', (socket) => {
     if (symbol && (event === 'fill')) {
       alpaca.getPositions(alpacaInstance, io, alpacaSocket);
       alpaca.getOrders(alpacaInstance, io);
-      io.emit(`${symbol} fillOrderResponse`, data);
+
+      const positionQuantity = data.position_qty;
+      if (positionQuantity !== "0") {
+        io.emit(`${symbol} fillOrderResponse`, data);
+      }
       io.emit('fillOrderResponse', data);
     }
   });
