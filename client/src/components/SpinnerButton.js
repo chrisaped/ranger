@@ -24,6 +24,10 @@ export default function SpinnerButton({
   const handleOnClick = () => {
     setSubmitted(true);
 
+    setTimeout(() => {
+      setSubmitted(false);
+    }, 10000);
+
     if (onClickFunction) {
       onClickFunction();
     }

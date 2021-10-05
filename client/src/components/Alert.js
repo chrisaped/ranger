@@ -31,6 +31,10 @@ export default function Alert({
     socket.on("fillOrderResponse", (data) => {
       handleOrderUpdateResponse(data);
     });
+
+    socket.on("errorResponse", (message) => {
+      enableAlert(message, setAlert, setDisplayAlert, true);
+    });
   }, [socket, handleOrderUpdateResponse, setAlert, setDisplayAlert]);
 
   let alertBackground = 'bg-primary';

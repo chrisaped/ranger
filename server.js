@@ -90,8 +90,10 @@ io.on('connection', (socket) => {
     io.emit('stockQuoteResponse', quote);
   });
 
-  alpacaSocket.onError((err) => {
-    console.log(err);
+  alpacaSocket.onError((error) => {
+    const message = error.message;
+    console.log('error', message);
+    io.emit('errorResponse', message);
   });
 
   socket.on('createOrder', (orderObject) => {
