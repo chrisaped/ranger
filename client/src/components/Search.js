@@ -1,18 +1,19 @@
 import { useState } from "react";
 import PropTypes from 'prop-types';
+import { enableAlert } from "../shared/formatting";
 
 export default function Search({ 
   socket, 
   watchlist, 
   setWatchlist,
   tradeableAssets,
-  positions
+  positions,
+  setAlert,
+  setDisplayAlert
 }) {
   const [searchParams, setSearchParams] = useState('');
-  const [searchError, setSearchError] = useState('');
 
   const getStockQuote = () => {
-    setSearchError('');
     if (isAnAsset(searchParams)) {
       const newWatchlist = watchlist.concat([searchParams]);
       setWatchlist(newWatchlist);
@@ -20,7 +21,8 @@ export default function Search({
       setSearchParams('');
     } else {
       setSearchParams('');
-      setSearchError('Not a valid asset');
+      const alertString = 'Not a valid asset';
+      enableAlert(alertString, setAlert, setDisplayAlert, true);
     }
   };
 
@@ -75,17 +77,7 @@ export default function Search({
             Search
           </button>
         </div>
-      </div>
-      {searchError && (
-        <div 
-          style={{cursor: "pointer"}}
-          className="alert alert-danger alert-dismissible fade show p-2 d-flex justify-content-center" 
-          role="alert"
-          onClick={() => setSearchError('')}
-        >
-          {searchError}
-        </div>
-      )}      
+      </div>   
     </div>
   );
 }
@@ -97,7 +89,9 @@ Search.propTypes = {
   tradeableAssets: PropTypes.object.isRequired,
   positions: PropTypes.arrayOf(PropTypes.shape({
     symbol: PropTypes.string
-  })).isRequired
+  })).isRequired,
+  setAlert: PropTypes.func.isRequired,
+  setDisplayAlert: PropTypes.func.isRequired
 };
 
 Search.defaultProps = {

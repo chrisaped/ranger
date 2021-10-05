@@ -14,6 +14,8 @@ export default function App() {
   const [tradeableAssets, setTradeableAssets] = useState({});
   const [orders, setOrders] = useState([]);
   const [positions, setPositions] = useState([]);
+  const [alert, setAlert] = useState({});
+  const [displayAlert, setDisplayAlert] = useState(false);
 
   useEffect(() => {
     const newSocket = io(process.env.REACT_APP_SOCKET_ENDPOINT);
@@ -57,7 +59,13 @@ export default function App() {
         <div className="container">
           <div className="row">
             <div className="col">
-              <Alert socket={socket} />
+              <Alert 
+                socket={socket}
+                alert={alert}
+                setAlert={setAlert}
+                displayAlert={displayAlert}
+                setDisplayAlert={setDisplayAlert}
+              />
             </div>
             <div className="col">
               <Search 
@@ -66,6 +74,8 @@ export default function App() {
                 setWatchlist={setWatchlist} 
                 tradeableAssets={tradeableAssets}
                 positions={positions}
+                setAlert={setAlert}
+                setDisplayAlert={setDisplayAlert}
               />
             </div>
             <div className="col d-flex justify-content-end align-items-center">

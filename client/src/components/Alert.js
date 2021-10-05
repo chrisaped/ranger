@@ -1,17 +1,27 @@
-import { useState, useEffect } from "react";
+import { useEffect, useCallback } from "react";
 import PropTypes from 'prop-types';
+import { enableAlert } from "../shared/formatting";
 import "../styles/alert.css";
 
-export default function Alert({ socket }) {
-  const [alert, setAlert] = useState('');
-  const [displayAlert, setDisplayAlert] = useState(false);
+export default function Alert({ 
+  socket,
+  alert,
+  setAlert,
+  displayAlert,
+  setDisplayAlert
+}) {
+  const handleOrderUpdateResponse = useCallback((data) => {
+    const symbol = data.order.symbol;
+    const status = data.order.status;
+    const alertString = `${symbol} order ${status}`;
+    enableAlert(alertString, setAlert, setDisplayAlert);
+  }, [setAlert, setDisplayAlert]);
 
   useEffect(() => {
     socket.on('newOrderResponse', (data) => {
       const symbol = data.order.symbol;
       const alertString = `${symbol} order initiated`;
-      setAlert(alertString);
-      setDisplayAlert(true);
+      enableAlert(alertString, setAlert, setDisplayAlert);
     });
 
     socket.on("canceledOrderResponse", (data) => {
@@ -20,30 +30,19 @@ export default function Alert({ socket }) {
 
     socket.on("fillOrderResponse", (data) => {
       handleOrderUpdateResponse(data);
-    });    
+    });
+  }, [socket, handleOrderUpdateResponse, setAlert, setDisplayAlert]);
 
-    const timer = setTimeout(() => {
-      setDisplayAlert(false);
-    }, 5000)
-
-    return () => {
-      clearTimeout(timer);
-    }
-  }, [socket, alert]);
-
-  const handleOrderUpdateResponse = (data) => {
-    const symbol = data.order.symbol;
-    const status = data.order.status;
-    const alertString = `${symbol} order ${status}`;
-    setAlert(alertString);
-    setDisplayAlert(true);
+  let alertBackground = 'bg-primary';
+  if (alert.error === true) {
+    alertBackground = 'bg-danger';
   }
 
   return (
     <div className={displayAlert ? 'fadeIn' : 'fadeOut'}>
       <div className="align-middle text-center">
-        <div className="bg-primary text-white p-2 mt-2">
-          <strong>{alert}</strong>
+        <div className={`${alertBackground} text-white p-2 mt-2`}>
+          <strong>{alert.message}</strong>
         </div>
       </div>
     </div>
@@ -51,9 +50,15 @@ export default function Alert({ socket }) {
 }
 
 Alert.propTypes = {
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object.isRequired,
+  alert: PropTypes.object.isRequired,
+  setAlert: PropTypes.func.isRequired,
+  displayAlert: PropTypes.bool.isRequired,
+  setDisplayAlert: PropTypes.func.isRequired
 };
 
 Alert.defaultProps = {
-  socket: {}
+  socket: {},
+  alert: {},
+  displayAlert: false
 };
