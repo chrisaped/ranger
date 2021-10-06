@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import SpinnerButton from "./SpinnerButton";
 import { displayPrice } from "../shared/formatting";
@@ -19,15 +18,6 @@ export default function PositionsTableRowData({
   quantity,
   orders
 }) {
-  const [orderId, setOrderId] = useState('');
-
-  useEffect(() => {
-    socket.on(`${symbol} newOrderResponse`, (data) => {
-      const newOrderId = data.order.id;
-      setOrderId(newOrderId);
-    });
-  }, [socket, symbol]);
-
   const { 
     targetPrice, 
     targetOrderStatus,
@@ -35,6 +25,7 @@ export default function PositionsTableRowData({
     targetOrderId,
     hasLegs
   } = extractBracketOrderInfo(symbol, quantity, avgEntryPrice, orders);
+
   const sideInCaps = side.toUpperCase();
   const entryPrice = displayPrice(avgEntryPrice);
   const currentPrice = displayPrice(price);
@@ -46,7 +37,6 @@ export default function PositionsTableRowData({
   const submitOrder = () => createOrder(socket, marketOrder);
   const cancelBracket = () => cancelOrder(socket, targetOrderId);
   const orderButtonText = side === "long" ? "Sell" : "Buy";
-  const cancelNewOrder = () => cancelOrder(socket, orderId);
 
   return (
     <>
@@ -78,21 +68,9 @@ export default function PositionsTableRowData({
           onClickFunction={cancelBracket}
           orderId={targetOrderId}
           symbol={symbol}
-        />         
+        />              
       )}
-      </td>
-      {orderId && (
-        <td>
-          <SpinnerButton
-            socket={socket}
-            buttonClass="btn btn-dark"
-            buttonText="Cancel Order"
-            onClickFunction={cancelNewOrder}
-            orderId={orderId}
-            symbol={symbol}
-          />
-        </td>  
-      )}
+      </td>    
     </>
   );
 }
