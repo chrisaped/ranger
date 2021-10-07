@@ -53,5 +53,10 @@ module.exports = {
     // const response = await alpacaInstance.getLatestQuote(symbol, alpacaConfig);
     const response = await alpacaInstance.lastQuote(symbol);
     io.emit('getLatestQuoteResponse', response);
-  }
+  },
+  createOrder: async function (alpacaInstance, orderObject, _io) {
+    const response = await alpacaInstance.createOrder(orderObject);
+    console.log('createOrder', response);
+    // emit error here
+  }  
 }

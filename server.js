@@ -97,10 +97,8 @@ io.on('connection', (socket) => {
   });
 
   socket.on('createOrder', (orderObject) => {
-    console.log('createOrder', orderObject);
-    alpacaInstance.createOrder(orderObject);
-    alpaca.getOrders(alpacaInstance, io);
-    alpaca.getPositions(alpacaInstance, io, alpacaSocket);
+    console.log('createOrder request', orderObject);
+    alpaca.createOrder(alpacaInstance, orderObject, io);
   });
 
   socket.on('addToWatchlist', (symbol) => {

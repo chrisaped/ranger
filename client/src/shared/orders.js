@@ -28,7 +28,7 @@ export const createBracketOrderObject = (
 
 export const createMarketOrder = (symbol, qty, side) => {
   let action = "sell";
-  if (side === "sell") {
+  if (side === "short") {
     action = "buy";
   }
   return (
