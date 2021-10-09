@@ -90,6 +90,7 @@ io.on('connection', (socket) => {
   });
 
   alpacaSocket.onStockBar((bar) => {
+    // stock bar data once a minute
     io.emit('stockBarResponse', bar);
     console.log('here is the stockBarResponse', bar);
   });
