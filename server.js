@@ -3,13 +3,12 @@ const app = express();
 const http = require('http').createServer(app);
 const port = process.env.PORT || 5000;
 const io = require('socket.io')(http, {
-  cors: {
-    origins: ['http://localhost:3000']
-  }
+  cors: { origins: ['http://localhost:3000'] }
 });
 require('dotenv').config();
 const Alpaca = require("@alpacahq/alpaca-trade-api");
 const alpaca = require('./alpaca');
+const indicators = require('./indicators');
 
 const alpacaInstance = new Alpaca({
   keyId: process.env.ALPACA_API_KEY,
@@ -90,6 +89,11 @@ io.on('connection', (socket) => {
     io.emit('stockQuoteResponse', quote);
   });
 
+  alpacaSocket.onStockBar((bar) => {
+    io.emit('stockBarResponse', bar);
+    console.log('here is the stockBarResponse', bar);
+  });
+
   alpacaSocket.onError((error) => {
     const message = error.message;
     console.log('error', message);
@@ -119,6 +123,11 @@ io.on('connection', (socket) => {
 
   socket.on('cancelOrder', (orderId) => {
     alpaca.cancelOrder(alpacaInstance, orderId);
+  });
+
+  socket.on('getSMA', (symbol, currentPrice) => {
+    // need to add time period as a variable here
+    // indicators.calculateSMA(symbol, currentPrice, alpacaInstance, io);
   });
 });
 

@@ -5,6 +5,7 @@ module.exports = {
     io.emit('getWatchlist', symbolsArray);
     if (symbolsArray.length > 0) {
       alpacaSocket.subscribeForQuotes(symbolsArray);
+      alpacaSocket.subscribeForBars(symbolsArray);
     }
   },
   addToWatchlist: async function (alpacaInstance, symbol) {
@@ -24,6 +25,7 @@ module.exports = {
     const symbolsArray = response?.map(obj => obj.symbol) || [];
     if (symbolsArray.length > 0) {
       alpacaSocket.subscribeForQuotes(symbolsArray);
+      alpacaSocket.subscribeForBars(symbolsArray);
     }
     io.emit('getPositionsResponse', response);
   },
@@ -58,5 +60,29 @@ module.exports = {
     const response = await alpacaInstance.createOrder(orderObject);
     console.log('createOrder', response);
     // emit error here
-  }  
+  },
+  getBars: async function (symbol, alpacaInstance, startDate, endDate) {
+    const barsObj = {
+      start: startDate,
+      end: endDate,
+      timeframe: "1Day"
+    };
+
+    const response = await alpacaInstance.getBarsV2(
+      symbol, barsObj, alpacaInstance.configuration
+    );
+    console.log('getBarsResponse', response);
+
+    const barsArray = response?.bars;
+    if (!barsArray) {
+      return [];
+    }
+    
+    const closingPrices = [];
+    barsArray.forEach(barObj => {
+      closingPrices.push(barObj.c)
+    });
+
+    return closingPrices;
+  }
 }

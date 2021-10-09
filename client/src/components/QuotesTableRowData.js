@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import SpinnerButton from "./SpinnerButton";
+import Indicators from "./Indicators";
 import { 
   calculateProfitTarget,
   calculatePositionSize,
@@ -107,6 +108,11 @@ export default function QuotesTableRowData({
           </td>
           <td>{positionSize} shares</td>
           <td>${moneyUpfront}</td>
+          <td>
+            <Indicators 
+              socket={socket}
+            />
+          </td>
           <td>
             <SpinnerButton 
               socket={socket}
