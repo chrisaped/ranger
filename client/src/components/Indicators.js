@@ -1,31 +1,54 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import PropTypes from 'prop-types';
+import EMA from "./indicators/EMA";
+import VWAP from "./indicators/VWAP";
+import { updateObjectState } from "../shared/state";
 
-export default function Indicators({ socket, symbol, barObj }) {
-  // 5 min indicators needed: VWAP, 3 EMA, 8 EMA
-  // vwap does not need to be calculated since it is included in alpaca bars data
+export default function Indicators({ socket, symbol }) {
+  const [indicators, setIndicators] = useState({});
 
-  const [SMA, setSMA] = useState(0);
-
-  useEffect(() => {
-    socket.emit('getSMA', symbol, barObj?.c);
-
-    socket.on(`${symbol} SMA`, (data) => {
-      setSMA(data);
-    });
-  }, []); // eslint-disable-line
+  const addIndicator = (indicator, value) => {
+    updateObjectState(setIndicators, indicator, value);
+  };
 
   return (
-    <div>
-      {`SMA: ${SMA}`}
-    </div>
+    <>
+      <div>
+        <EMA 
+          socket={socket}
+          symbol={symbol}
+          period={3}
+          addIndicator={addIndicator}
+          indicators={indicators}
+        />
+      </div>
+      <div>
+        <EMA 
+          socket={socket}
+          symbol={symbol}
+          period={8}
+          addIndicator={addIndicator}
+          indicators={indicators}
+        />
+      </div>      
+      <div>
+        <VWAP 
+          socket={socket}
+          symbol={symbol}
+          addIndicator={addIndicator}
+          indicators={indicators}
+        />
+      </div>
+    </>
   );
 }
 
 Indicators.propTypes = {
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object.isRequired,
+  symbol: PropTypes.string.isRequired
 };
 
 Indicators.defaultProps = {
-  socket: {}
+  socket: {},
+  symbol: ''
 };

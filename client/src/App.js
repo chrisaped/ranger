@@ -10,7 +10,6 @@ import { updateObjectState } from "./shared/state";
 export default function App() {
   const [socket, setSocket] = useState(null);
   const [quotes, setQuotes] = useState({});
-  const [bars, setBars] = useState({});
   const [watchlist, setWatchlist] = useState([]);
   const [tradeableAssets, setTradeableAssets] = useState({});
   const [orders, setOrders] = useState([]);
@@ -25,11 +24,6 @@ export default function App() {
     newSocket.on("stockQuoteResponse", (quote) => {
       const { Symbol, AskPrice } = quote;
       addQuote(Symbol, AskPrice);
-    });
-
-    newSocket.on("stockBarResponse", (barObj) => {
-      const { S } = barObj;
-      addBar(S, barObj);
     });
 
     // newSocket.on('getLatestQuoteResponse', (response) => {
@@ -57,10 +51,6 @@ export default function App() {
 
   const addQuote = (symbol, price) => {
     updateObjectState(setQuotes, symbol, price);
-  };
-
-  const addBar = (symbol, barObj) => {
-    updateObjectState(setBars, symbol, barObj);
   };
 
   return (

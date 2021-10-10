@@ -89,10 +89,14 @@ io.on('connection', (socket) => {
     io.emit('stockQuoteResponse', quote);
   });
 
-  alpacaSocket.onStockBar((bar) => {
+  alpacaSocket.onStockBar((barObj) => {
     // stock bar data once a minute
-    io.emit('stockBarResponse', bar);
-    console.log('here is the stockBarResponse', bar);
+    console.log('stockBarResponse', barObj);
+    // 8 EMA
+    indicators.calculateEMA(barObj, 8, alpacaInstance, io);
+    // 3 EMA
+    indicators.calculateEMA(barObj, 3, alpacaInstance, io);
+    indicators.getVWAP(barObj, io);
   });
 
   alpacaSocket.onError((error) => {

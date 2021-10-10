@@ -65,7 +65,8 @@ module.exports = {
     const barsObj = {
       start: startDate,
       end: endDate,
-      timeframe: "1Day"
+      timeframe: "1Min",
+      limit: 100
     };
 
     const response = await alpacaInstance.getBarsV2(

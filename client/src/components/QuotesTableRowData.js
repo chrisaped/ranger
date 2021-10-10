@@ -111,6 +111,7 @@ export default function QuotesTableRowData({
           <td>
             <Indicators 
               socket={socket}
+              symbol={symbol}
             />
           </td>
           <td>
