@@ -4,12 +4,42 @@ import EMA from "./indicators/EMA";
 import VWAP from "./indicators/VWAP";
 import { updateObjectState } from "../shared/state";
 
-export default function Indicators({ socket, symbol }) {
+export default function Indicators({ 
+  socket, 
+  symbol, 
+  addIndicatorPass,
+  price,
+  side
+}) {
   const [indicators, setIndicators] = useState({});
 
   const addIndicator = (indicator, value) => {
     updateObjectState(setIndicators, indicator, value);
   };
+  
+  addIndicatorPass(symbol, false);
+
+  const arrayChecker = (arr, target) => target.every(v => arr.includes(v));
+  const requiredIndicators = ['3EMA', '8EMA', 'VWAP'];
+  const indicatorsKeys = Object.keys(indicators);
+
+  if (arrayChecker(requiredIndicators, indicatorsKeys)) {
+    if (side === 'buy') {
+      if (
+        (indicators['3EMA'] > indicators['8EMA']) &&
+        (price > indicators['VWAP'])
+      ) {
+        addIndicatorPass(symbol, true);
+      }
+    } else {
+      if (
+        (indicators['3EMA'] < indicators['8EMA']) &&
+        (price < indicators['VWAP'])
+      ) {
+        addIndicatorPass(symbol, true);
+      }
+    }
+  }
 
   return (
     <>
@@ -45,10 +75,15 @@ export default function Indicators({ socket, symbol }) {
 
 Indicators.propTypes = {
   socket: PropTypes.object.isRequired,
-  symbol: PropTypes.string.isRequired
+  symbol: PropTypes.string.isRequired,
+  addIndicatorPass: PropTypes.func.isRequired,
+  price: PropTypes.number.isRequired,
+  side: PropTypes.string.isRequired
 };
 
 Indicators.defaultProps = {
   socket: {},
-  symbol: ''
+  symbol: '',
+  price: 0,
+  side: ''
 };
