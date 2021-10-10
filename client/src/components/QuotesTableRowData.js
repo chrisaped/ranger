@@ -114,6 +114,8 @@ export default function QuotesTableRowData({
               socket={socket}
               symbol={symbol}
               addIndicatorPass={addIndicatorPass}
+              price={price}
+              side={side}
             />
           </td>
           <td>
