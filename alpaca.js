@@ -69,20 +69,14 @@ module.exports = {
       limit: 100
     };
 
-    const response = await alpacaInstance.getBarsV2(
+    const bars = await alpacaInstance.getBarsV2(
       symbol, barsObj, alpacaInstance.configuration
     );
-    console.log('getBarsResponse', response);
 
-    const barsArray = response?.bars;
-    if (!barsArray) {
-      return [];
-    }
-    
     const closingPrices = [];
-    barsArray.forEach(barObj => {
-      closingPrices.push(barObj.c)
-    });
+    for await (let bar of bars) {
+      closingPrices.push(bar.ClosePrice);
+    }
 
     return closingPrices;
   }

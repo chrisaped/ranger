@@ -135,7 +135,7 @@ export default function QuotesTableRowData({
           </td>
         </>
       )}
-      <td>
+      <td colSpan="2">
         {orderId ? (
           <SpinnerButton 
             socket={socket}
