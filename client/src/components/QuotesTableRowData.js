@@ -27,8 +27,7 @@ export default function QuotesTableRowData({
   price, 
   removeFromWatchlist,
   removeFromQuotesAndWatchlist,
-  tradeableAssets,
-  addIndicatorPass
+  tradeableAssets
 }) {
   const defaultStopPrice = 0;
   const [stopPrice, setStopPrice] = useState(defaultStopPrice);
@@ -113,7 +112,6 @@ export default function QuotesTableRowData({
             <Indicators 
               socket={socket}
               symbol={symbol}
-              addIndicatorPass={addIndicatorPass}
               price={price}
               side={side}
             />
@@ -167,7 +165,6 @@ QuotesTableRowData.propTypes = {
   removeFromWatchlist: PropTypes.func.isRequired,
   removeFromQuotesAndWatchlist: PropTypes.func.isRequired,
   tradeableAssets: PropTypes.object.isRequired,
-  addIndicatorPass: PropTypes.func.isRequired
 };
 
 QuotesTableRowData.defaultProps = {

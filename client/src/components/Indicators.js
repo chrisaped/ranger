@@ -7,7 +7,6 @@ import { updateObjectState } from "../shared/state";
 export default function Indicators({ 
   socket, 
   symbol, 
-  addIndicatorPass,
   price,
   side
 }) {
@@ -17,8 +16,6 @@ export default function Indicators({
     updateObjectState(setIndicators, indicator, value);
   };
   
-  addIndicatorPass(symbol, false);
-
   const arrayChecker = (arr, target) => target.every(v => arr.includes(v));
   const requiredIndicators = ['3EMA', '8EMA', 'VWAP'];
   const indicatorsKeys = Object.keys(indicators);
@@ -29,14 +26,14 @@ export default function Indicators({
         (indicators['3EMA'] > indicators['8EMA']) &&
         (price > indicators['VWAP'])
       ) {
-        addIndicatorPass(symbol, true);
+        // set row color
       }
     } else {
       if (
         (indicators['3EMA'] < indicators['8EMA']) &&
         (price < indicators['VWAP'])
       ) {
-        addIndicatorPass(symbol, true);
+        // set row color
       }
     }
   }
@@ -76,7 +73,6 @@ export default function Indicators({
 Indicators.propTypes = {
   socket: PropTypes.object.isRequired,
   symbol: PropTypes.string.isRequired,
-  addIndicatorPass: PropTypes.func.isRequired,
   price: PropTypes.number.isRequired,
   side: PropTypes.string.isRequired
 };

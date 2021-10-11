@@ -1,7 +1,5 @@
-import { useState } from "react";
 import PropTypes from 'prop-types';
 import QuotesTableRowData from "./QuotesTableRowData";
-import { updateObjectState } from "../shared/state";
 
 export default function QuotesTable({ 
   socket, 
@@ -11,12 +9,6 @@ export default function QuotesTable({
   tradeableAssets,
   removeFromWatchlist
 }) {
-  const [indicatorPass, setIndicatorPass] = useState({});
-
-  const addIndicatorPass = (symbol, boolean) => {
-    updateObjectState(setIndicatorPass, symbol, boolean);
-  };
-
   return (
     <table className="table table-bordered align-middle text-center">
       <thead className="table-dark">
@@ -35,10 +27,9 @@ export default function QuotesTable({
       <tbody>
       {watchlist.map((symbol) => {
         const price = quotes[symbol];
-        const rowClassName = indicatorPass[symbol] ? "table-primary" : "";
 
         return (
-          <tr className={rowClassName} key={symbol}>
+          <tr key={symbol}>
             <QuotesTableRowData
               socket={socket}
               symbol={symbol} 
@@ -46,7 +37,6 @@ export default function QuotesTable({
               removeFromWatchlist={removeFromWatchlist}
               removeFromQuotesAndWatchlist={removeFromQuotesAndWatchlist}
               tradeableAssets={tradeableAssets}
-              addIndicatorPass={addIndicatorPass}
             />
           </tr>
         );
