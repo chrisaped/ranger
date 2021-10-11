@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
-import EMA from "./indicators/EMA";
-import VWAP from "./indicators/VWAP";
 import { updateObjectState } from "../shared/state";
+import { checkMark, xMark } from "../shared/icons";
 
 export default function Indicators({ 
   socket, 
@@ -12,59 +11,58 @@ export default function Indicators({
 }) {
   const [indicators, setIndicators] = useState({});
 
+  useEffect(() => {
+    socket.on(`${symbol} VWAP`, (data) => {
+      addIndicator('VWAP', data);
+    });
+
+    socket.on(`${symbol} 3EMA`, (data) => {
+      addIndicator('3EMA', data);
+    });
+
+    socket.on(`${symbol} 8EMA`, (data) => {
+      addIndicator('8EMA', data);
+    });
+  }, []) // eslint-disable-line
+
   const addIndicator = (indicator, value) => {
     updateObjectState(setIndicators, indicator, value);
   };
-  
+
+  let EMAIcon = xMark;
+  let VWAPIcon = xMark;
+  const buySide = side === 'buy';
+  const sellSide = side === 'sell';
+  const threeEMAGreaterThanEightEMA = indicators['3EMA'] > indicators['8EMA'];
+  const priceGreaterThanVWAP = price > indicators['VWAP'];
   const arrayChecker = (arr, target) => target.every(v => arr.includes(v));
   const requiredIndicators = ['3EMA', '8EMA', 'VWAP'];
   const indicatorsKeys = Object.keys(indicators);
 
   if (arrayChecker(requiredIndicators, indicatorsKeys)) {
-    if (side === 'buy') {
-      if (
-        (indicators['3EMA'] > indicators['8EMA']) &&
-        (price > indicators['VWAP'])
-      ) {
-        // set row color
-      }
-    } else {
-      if (
-        (indicators['3EMA'] < indicators['8EMA']) &&
-        (price < indicators['VWAP'])
-      ) {
-        // set row color
-      }
+    if (
+      (buySide && threeEMAGreaterThanEightEMA) ||
+      (sellSide && !threeEMAGreaterThanEightEMA)
+    ) {
+      EMAIcon = checkMark;
+    }
+    if (
+      (buySide && priceGreaterThanVWAP) ||
+      (sellSide && !priceGreaterThanVWAP)
+    ) {
+      VWAPIcon = checkMark;
     }
   }
 
   return (
     <>
       <div>
-        <EMA 
-          socket={socket}
-          symbol={symbol}
-          period={3}
-          addIndicator={addIndicator}
-          indicators={indicators}
-        />
+        3/8 EMA 
+        {EMAIcon}
       </div>
       <div>
-        <EMA 
-          socket={socket}
-          symbol={symbol}
-          period={8}
-          addIndicator={addIndicator}
-          indicators={indicators}
-        />
-      </div>      
-      <div>
-        <VWAP 
-          socket={socket}
-          symbol={symbol}
-          addIndicator={addIndicator}
-          indicators={indicators}
-        />
+        VWAP
+        {VWAPIcon}
       </div>
     </>
   );

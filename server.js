@@ -91,7 +91,6 @@ io.on('connection', (socket) => {
 
   alpacaSocket.onStockBar((barObj) => {
     // stock bar data once a minute
-    console.log('stockBarResponse', barObj);
     // 8 EMA
     indicators.calculateEMA(barObj, 8, alpacaInstance, io);
     // 3 EMA
