@@ -1,3 +1,5 @@
+const indicators = require('./indicators');
+
 module.exports = {
   getWatchlist: async function (alpacaInstance, alpacaSocket, io) {
     const response = await alpacaInstance.getWatchlist(process.env.ALPACA_WATCHLIST_ID);
@@ -50,11 +52,19 @@ module.exports = {
     const response = await alpacaInstance.cancelOrder(orderId);
     console.log('cancelOrder', response);
   },
-  getLatestQuote: async function (alpacaInstance, io, symbol) {
-    // this does not work yet
-    // const response = await alpacaInstance.getLatestQuote(symbol, alpacaConfig);
-    const response = await alpacaInstance.lastQuote(symbol);
-    io.emit('getLatestQuoteResponse', response);
+  getSnapshot: async function (alpacaInstance, io, symbol) {
+    const response = await alpacaInstance.getSnapshot(symbol, alpacaInstance.configuration);
+  
+    const quote = { Symbol: symbol, AskPrice: response.LatestQuote.AskPrice };
+    io.emit('stockQuoteResponse', quote);
+  
+    const barObj = response.MinuteBar;
+    barObj['Symbol'] = symbol;
+    // 8 EMA
+    indicators.calculateEMA(barObj, 8, alpacaInstance, io, this);
+    // 3 EMA
+    indicators.calculateEMA(barObj, 3, alpacaInstance, io, this);
+    indicators.getVWAP(barObj, io);    
   },
   createOrder: async function (alpacaInstance, orderObject, _io) {
     const response = await alpacaInstance.createOrder(orderObject);

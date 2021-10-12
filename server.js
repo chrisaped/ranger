@@ -16,14 +16,6 @@ const alpacaInstance = new Alpaca({
   feed: "sip",
   paper: true
 });
-
-// for getLatestQuote
-// const alpacaConfig = {
-//   baseUrl: "https://data.alpaca.markets",
-//   keyId: process.env.ALPACA_API_KEY,
-//   secretKey: process.env.ALPACA_API_SECRET  
-// };
-
 const alpacaSocket = alpacaInstance.data_stream_v2;
 const alpacaTradeSocket = alpacaInstance.trade_ws;
 
@@ -69,6 +61,7 @@ io.on('connection', (socket) => {
       const positionQuantity = data.position_qty;
       if (positionQuantity !== "0") {
         io.emit(`${symbol} fillOrderResponse`, data);
+        alpaca.getSnapshot(alpacaInstance, io, symbol);
       }
       io.emit('fillOrderResponse', data);
     }
@@ -92,9 +85,9 @@ io.on('connection', (socket) => {
   alpacaSocket.onStockBar((barObj) => {
     // stock bar data once a minute
     // 8 EMA
-    indicators.calculateEMA(barObj, 8, alpacaInstance, io);
+    indicators.calculateEMA(barObj, 8, alpacaInstance, io, alpaca);
     // 3 EMA
-    indicators.calculateEMA(barObj, 3, alpacaInstance, io);
+    indicators.calculateEMA(barObj, 3, alpacaInstance, io, alpaca);
     indicators.getVWAP(barObj, io);
   });
 
@@ -110,8 +103,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('addToWatchlist', (symbol) => {
-    // getLatestQuote does not get accurate data
-    // alpaca.getLatestQuote(alpacaInstance, io, symbol);
+    alpaca.getSnapshot(alpacaInstance, io, symbol);
     alpaca.addToWatchlist(alpacaInstance, symbol);
     alpacaSocket.subscribeForQuotes([symbol]);
   });
@@ -127,11 +119,6 @@ io.on('connection', (socket) => {
 
   socket.on('cancelOrder', (orderId) => {
     alpaca.cancelOrder(alpacaInstance, orderId);
-  });
-
-  socket.on('getSMA', (symbol, currentPrice) => {
-    // need to add time period as a variable here
-    // indicators.calculateSMA(symbol, currentPrice, alpacaInstance, io);
   });
 });
 

@@ -1,8 +1,7 @@
-const alpaca = require('./alpaca');
 const tulind = require('tulind');
 
 module.exports = {
-  calculateEMA: async function(barObj, period, alpacaInstance, io) {
+  calculateEMA: async function(barObj, period, alpacaInstance, io, alpaca) {
     const symbol = barObj.Symbol;
     const today = new Date().toISOString().slice(0, 10); // "2021-10-07"
     const closingPricesArray = await alpaca.getBars(symbol, alpacaInstance, today, today);

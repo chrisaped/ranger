@@ -16,4 +16,4 @@ Things to add:
 BUG FIXES:
 - VWAP is not correct, and tulind does not have that indicator. need to switch to technicalindicators.
 - cancel button is showing up next to sell button after canceling a bracket order
-- indicator values are lagging....need to get those when added to watchlist, or there is a new position
+- disable return button for searches where the symbol is already on the watchlist or a position
