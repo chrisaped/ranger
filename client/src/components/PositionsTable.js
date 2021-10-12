@@ -58,6 +58,7 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
           <th>P/L</th>
           <th>Shares</th>
           <th>Cost</th>
+          <th>Indicators</th>
           <th colSpan="2">Actions</th>
         </tr>
       </thead>

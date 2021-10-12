@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import SpinnerButton from "./SpinnerButton";
+import Indicators from "./Indicators";
 import { displayPrice } from "../shared/formatting";
 import { 
   createMarketOrder,
@@ -59,6 +60,14 @@ export default function PositionsTableRowData({
       <td>${profitOrLoss}</td>
       <td>{quantity} shares</td>
       <td>${cost}</td>
+      <td>
+        <Indicators 
+          socket={socket}
+          symbol={symbol}
+          price={price}
+          side={side}
+        />        
+      </td>
       <td>
       {hasNoBracketOrder ? (
         <SpinnerButton 

@@ -31,8 +31,8 @@ export default function Indicators({
 
   let EMAIcon = xMark;
   let VWAPIcon = xMark;
-  const buySide = side === 'buy';
-  const sellSide = side === 'sell';
+  const buySide = side === 'buy' || side === 'long';
+  const sellSide = side === 'sell' || side === 'short';
   const threeEMAGreaterThanEightEMA = indicators['3EMA'] > indicators['8EMA'];
   const priceGreaterThanVWAP = price > indicators['VWAP'];
   const arrayChecker = (arr, target) => target.every(v => arr.includes(v));
