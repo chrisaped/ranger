@@ -65,7 +65,7 @@ module.exports = {
     const barsObj = {
       start: startDate,
       end: endDate,
-      timeframe: "1Min",
+      timeframe: "5Min",
       limit: 100
     };
 
