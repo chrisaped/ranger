@@ -12,3 +12,8 @@ Things to add:
 - disable buy or sell if account size is exceeded
 - add close button as well?
 - close all positions (there is an Alpaca endpoint for this) when I have reached my daily dollar target
+
+BUG FIXES:
+- VWAP is not correct, and tulind does not have that indicator. need to switch to technicalindicators.
+- cancel button is showing up next to sell button after canceling a bracket order
+- indicator values are lagging....need to get those when added to watchlist, or there is a new position
