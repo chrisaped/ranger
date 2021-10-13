@@ -7,16 +7,16 @@ module.exports = {
     const today = new Date().toISOString().slice(0, 10); // "2021-10-07"
     const barsData = await alpaca.getBars(symbol, alpacaInstance, today, today);
 
-    const EMA3Result = EMA.calculate({ period: 3, values: barsData.close });
-    console.log('here is the EMA3Result:', EMA3Result);
-    io.emit(`${symbol} ${period}EMA`, EMA3Result);
+    const EMA3Results = EMA.calculate({ period: 3, values: barsData.close });
+    const EMA3Result = EMA3Results[EMA3Results.length - 1].toFixed(2);
+    io.emit(`${symbol} 3EMA`, EMA3Result);
 
-    const EMA8Result = EMA.calculate({ period: 8, values: barsData.close });
-    console.log('here is the EMA8Result:', EMA8Result);
-    io.emit(`${symbol} ${period}EMA`, EMA8Result);
+    const EMA8Results = EMA.calculate({ period: 8, values: barsData.close });
+    const EMA8Result = EMA8Results[EMA8Results.length - 1].toFixed(2);
+    io.emit(`${symbol} 8EMA`, EMA8Result);
 
-    const VWAPResult = VWAP.calculate(barsData);
-    console.log('here is the VWAPResult', VWAPResult);
+    const VWAPResults = VWAP.calculate(barsData);
+    const VWAPResult = VWAPResults[VWAPResults.length - 1].toFixed(2);
     io.emit(`${symbol} VWAP`, VWAPResult);
   }
 };

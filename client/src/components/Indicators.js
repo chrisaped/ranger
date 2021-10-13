@@ -29,12 +29,15 @@ export default function Indicators({
     updateObjectState(setIndicators, indicator, value);
   };
 
+  const EMA3 = indicators['3EMA'];
+  const EMA8 = indicators['8EMA'];
+  const VWAP = indicators['VWAP'];
   let EMAIcon = xMark;
   let VWAPIcon = xMark;
   const buySide = side === 'buy' || side === 'long';
   const sellSide = side === 'sell' || side === 'short';
-  const threeEMAGreaterThanEightEMA = indicators['3EMA'] > indicators['8EMA'];
-  const priceGreaterThanVWAP = price > indicators['VWAP'];
+  const threeEMAGreaterThanEightEMA = EMA3 > EMA8;
+  const priceGreaterThanVWAP = price > VWAP;
   const arrayChecker = (arr, target) => target.every(v => arr.includes(v));
   const requiredIndicators = ['3EMA', '8EMA', 'VWAP'];
   const indicatorsKeys = Object.keys(indicators);
@@ -56,20 +59,24 @@ export default function Indicators({
 
   return (
     <>
-      <div>
-        3/8 EMA 
-        {EMAIcon}
-      </div>
-      <div>
-        3EMA: {indicators['3EMA']?.toFixed(2)}
-      </div>
-      <div>
-        8EMA: {indicators['8EMA']?.toFixed(2)}
-      </div>
-      <div>
-        VWAP: {indicators['VWAP']?.toFixed(2)}
-        {VWAPIcon}
-      </div>
+      {EMA3 && EMA8 && VWAP && (
+        <div>
+          <div>
+            3/8 EMA 
+            {EMAIcon}
+          </div>
+          <div>
+            3EMA: {EMA3}
+          </div>
+          <div>
+            8EMA: {EMA8}
+          </div>
+          <div>
+            VWAP: {VWAP}
+            {VWAPIcon}
+          </div>
+        </div>
+      )}
     </>
   );
 }
