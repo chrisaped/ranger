@@ -49,13 +49,13 @@ export default function Search({
     setSearchParams(params.toUpperCase());
   };
 
+  const isDisabled = !searchParams || watchlist.includes(searchParams) || isAPosition();
+
   const handleKeyPress = e => {
-    if (e.key === 'Enter' && searchParams) {
+    if (e.key === 'Enter' && searchParams && !isDisabled) {
       getStockQuote();
     }
   };
-
-  const isDisabled = !searchParams || watchlist.includes(searchParams) || isAPosition();
 
   return (
     <div>
