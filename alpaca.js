@@ -60,11 +60,7 @@ module.exports = {
   
     const barObj = response.MinuteBar;
     barObj['Symbol'] = symbol;
-    // 8 EMA
-    indicators.calculateEMA(barObj, 8, alpacaInstance, io, this);
-    // 3 EMA
-    indicators.calculateEMA(barObj, 3, alpacaInstance, io, this);
-    indicators.getVWAP(barObj, io);    
+    indicators.calculateIndicators(barObj, alpacaInstance, io, this);
   },
   createOrder: async function (alpacaInstance, orderObject, _io) {
     const response = await alpacaInstance.createOrder(orderObject);
@@ -83,11 +79,22 @@ module.exports = {
       symbol, barsObj, alpacaInstance.configuration
     );
 
-    const closingPrices = [];
+    const barsData = {
+      open: [],
+      close: [],
+      high: [],
+      low: [],
+      volume: []
+    };
+
     for await (let bar of bars) {
-      closingPrices.push(bar.ClosePrice);
+      barsData.open.push(bar.OpenPrice);
+      barsData.close.push(bar.ClosePrice);
+      barsData.high.push(bar.HighPrice);
+      barsData.low.push(bar.LowPrice);
+      barsData.volume.push(bar.Volume);
     }
 
-    return closingPrices;
+    return barsData;
   }
 }

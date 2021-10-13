@@ -84,11 +84,7 @@ io.on('connection', (socket) => {
 
   alpacaSocket.onStockBar((barObj) => {
     // stock bar data once a minute
-    // 8 EMA
-    indicators.calculateEMA(barObj, 8, alpacaInstance, io, alpaca);
-    // 3 EMA
-    indicators.calculateEMA(barObj, 3, alpacaInstance, io, alpaca);
-    indicators.getVWAP(barObj, io);
+    indicators.calculateIndicators(barObj, alpacaInstance, io, alpaca);
   });
 
   alpacaSocket.onError((error) => {
