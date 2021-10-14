@@ -76,7 +76,7 @@ io.on('connection', (socket) => {
     alpaca.getPositions(alpacaInstance, io, alpacaSocket);
     alpaca.getOrders(alpacaInstance, io);
     alpaca.getAssets(alpacaInstance, io);
-    alpaca.getAccount(alpacaInstance);
+    alpaca.getAccount(alpacaInstance, io);
   });
   
   alpacaSocket.onStockQuote((quote) => {

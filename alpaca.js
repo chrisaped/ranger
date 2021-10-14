@@ -97,7 +97,7 @@ module.exports = {
 
     return barsData;
   },
-  getAccount: async function (alpacaInstance) {
+  getAccount: async function (alpacaInstance, io) {
     const response = await alpacaInstance.getAccount();
     io.emit('getAccountResponse', response);
   }
