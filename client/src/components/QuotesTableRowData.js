@@ -27,7 +27,8 @@ export default function QuotesTableRowData({
   price, 
   removeFromWatchlist,
   removeFromQuotesAndWatchlist,
-  tradeableAssets
+  tradeableAssets,
+  accountInfo
 }) {
   const defaultStopPrice = 0;
   const [stopPrice, setStopPrice] = useState(defaultStopPrice);
@@ -70,8 +71,9 @@ export default function QuotesTableRowData({
     "form-control border border-danger" :
     "form-control";
   const profitTarget = calculateProfitTarget(price, stopPrice, side);
-  const positionSize = calculatePositionSize(price, stopPrice);
-  const moneyUpfront = calculateMoneyUpfront(price, stopPrice);
+  const accountSize = parseFloat(accountInfo.cash);
+  const positionSize = calculatePositionSize(price, stopPrice, accountSize);
+  const moneyUpfront = calculateMoneyUpfront(price, stopPrice, accountSize);
   const orderObject = createBracketOrderObject(symbol, side, positionSize, profitTarget, stopPrice);
   const createBracketOrder = () => createOrder(socket, orderObject);
   const cancelNewOrder = () => cancelOrder(socket, orderId);
@@ -165,11 +167,13 @@ QuotesTableRowData.propTypes = {
   removeFromWatchlist: PropTypes.func.isRequired,
   removeFromQuotesAndWatchlist: PropTypes.func.isRequired,
   tradeableAssets: PropTypes.object.isRequired,
+  accountInfo: PropTypes.object.isRequired
 };
 
 QuotesTableRowData.defaultProps = {
   socket: {}, 
   symbol: '', 
   price: 0, 
-  tradeableAssets: {}
+  tradeableAssets: {},
+  accountInfo: {}
 };

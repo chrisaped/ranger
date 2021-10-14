@@ -7,7 +7,8 @@ export default function QuotesTable({
   removeFromQuotesAndWatchlist,
   watchlist,
   tradeableAssets,
-  removeFromWatchlist
+  removeFromWatchlist,
+  accountInfo
 }) {
   return (
     <table className="table table-bordered align-middle text-center">
@@ -37,6 +38,7 @@ export default function QuotesTable({
               removeFromWatchlist={removeFromWatchlist}
               removeFromQuotesAndWatchlist={removeFromQuotesAndWatchlist}
               tradeableAssets={tradeableAssets}
+              accountInfo={accountInfo}
             />
           </tr>
         );
@@ -52,12 +54,14 @@ QuotesTable.propTypes = {
   removeFromQuotesAndWatchlist: PropTypes.func.isRequired,
   watchlist: PropTypes.arrayOf(PropTypes.string).isRequired,
   tradeableAssets: PropTypes.object.isRequired,
-  removeFromWatchlist: PropTypes.func.isRequired
+  removeFromWatchlist: PropTypes.func.isRequired,
+  accountInfo: PropTypes.object.isRequired
 };
 
 QuotesTable.defaultProps = {
   socket: {}, 
   quotes: {}, 
   watchlist: [],
-  tradeableAssets: {}
+  tradeableAssets: {},
+  accountInfo: {}
 };

@@ -96,5 +96,9 @@ module.exports = {
     }
 
     return barsData;
+  },
+  getAccount: async function (alpacaInstance) {
+    const response = await alpacaInstance.getAccount();
+    io.emit('getAccountResponse', response);
   }
 }

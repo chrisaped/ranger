@@ -8,7 +8,8 @@ export default function Watchlist({
   setQuotes, 
   watchlist, 
   setWatchlist,
-  tradeableAssets
+  tradeableAssets,
+  accountInfo
 }) {
   useEffect(() => {
     socket.on('getWatchlist', (symbols) => {
@@ -45,6 +46,7 @@ export default function Watchlist({
           watchlist={watchlist}
           tradeableAssets={tradeableAssets}
           removeFromWatchlist={removeFromWatchlist}
+          accountInfo={accountInfo}
         />
       )}
     </div>
@@ -57,12 +59,14 @@ Watchlist.propTypes = {
   setQuotes: PropTypes.func.isRequired, 
   watchlist: PropTypes.arrayOf(PropTypes.string).isRequired, 
   setWatchlist: PropTypes.func.isRequired,
-  tradeableAssets: PropTypes.object.isRequired
+  tradeableAssets: PropTypes.object.isRequired,
+  accountInfo: PropTypes.object.isRequired
 };
 
 Watchlist.defaultProps = {
   socket: {}, 
   quotes: {}, 
   watchlist: [], 
-  tradeableAssets: {}
+  tradeableAssets: {},
+  accountInfo: {}
 };

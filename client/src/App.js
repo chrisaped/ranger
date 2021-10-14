@@ -16,6 +16,7 @@ export default function App() {
   const [positions, setPositions] = useState([]);
   const [alert, setAlert] = useState({});
   const [displayAlert, setDisplayAlert] = useState(false);
+  const [accountInfo, setAccountInfo] = useState({});
 
   useEffect(() => {
     const newSocket = io(process.env.REACT_APP_SOCKET_ENDPOINT);
@@ -36,6 +37,10 @@ export default function App() {
 
     newSocket.on("getPositionsResponse", (array) => {
       setPositions(array);
+    });
+
+    newSocket.on("getAccountResponse", (accountObj) => {
+      setAccountInfo(accountObj);
     });
   
     return () => {
@@ -90,6 +95,7 @@ export default function App() {
               watchlist={watchlist}
               setWatchlist={setWatchlist}
               tradeableAssets={tradeableAssets}
+              accountInfo={accountInfo}
             />
           </div>      
           <div className="row">

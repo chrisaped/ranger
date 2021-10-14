@@ -1,10 +1,7 @@
 import { 
-  accountSize,
   riskPercentage,
   defaultStopPriceDifference
 } from "./constants";
-
-const risk = accountSize * riskPercentage;
 
 const calculateRiskPerShare = (currentPrice, stopPrice) => {
   return Math.abs(currentPrice - stopPrice);
@@ -18,13 +15,14 @@ export const calculateProfitTarget = (currentPrice, stopPrice, side) => {
   return (currentPrice - (riskPerShare * 1.5)).toFixed(2);  
 };
 
-export const calculatePositionSize = (currentPrice, stopPrice) => {
+export const calculatePositionSize = (currentPrice, stopPrice, accountSize) => {
+  const risk = accountSize * riskPercentage;
   const riskPerShare = calculateRiskPerShare(currentPrice, stopPrice);
   return Math.round(risk / riskPerShare);
 };
 
-export const calculateMoneyUpfront = (currentPrice, stopPrice) => {
-  const positionSize = calculatePositionSize(currentPrice, stopPrice);
+export const calculateMoneyUpfront = (currentPrice, stopPrice, accountSize) => {
+  const positionSize = calculatePositionSize(currentPrice, stopPrice, accountSize);
   return Math.round(currentPrice * positionSize).toLocaleString();
 };
 
