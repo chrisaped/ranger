@@ -72,7 +72,7 @@ export default function QuotesTableRowData({
     "form-control";
   const profitTarget = calculateProfitTarget(price, stopPrice, side);
   const accountSize = parseFloat(accountInfo.cash);
-  const positionSize = calculatePositionSize(price, stopPrice, accountSize);
+  const positionSize = calculatePositionSize(price, stopPrice, accountSize).toLocaleString();
   const moneyUpfront = calculateMoneyUpfront(price, stopPrice, accountSize);
   const orderObject = createBracketOrderObject(symbol, side, positionSize, profitTarget, stopPrice);
   const createBracketOrder = () => createOrder(socket, orderObject);
