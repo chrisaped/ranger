@@ -66,12 +66,6 @@ export default function Indicators({
             {EMAIcon}
           </div>
           <div>
-            3EMA: {EMA3}
-          </div>
-          <div>
-            8EMA: {EMA8}
-          </div>
-          <div>
             VWAP: {VWAP}
             {VWAPIcon}
           </div>
