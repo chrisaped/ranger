@@ -71,7 +71,7 @@ export default function QuotesTableRowData({
     "form-control border border-danger" :
     "form-control";
   const profitTarget = calculateProfitTarget(price, stopPrice, side);
-  const accountSize = parseFloat(accountInfo.cash);
+  const accountSize = parseFloat(accountInfo.buying_power);
   const positionSize = calculatePositionSize(price, stopPrice, accountSize).toLocaleString();
   const moneyUpfront = calculateMoneyUpfront(price, stopPrice, accountSize);
   const orderObject = createBracketOrderObject(symbol, side, positionSize, profitTarget, stopPrice);

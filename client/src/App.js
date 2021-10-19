@@ -77,7 +77,12 @@ export default function App() {
                 setDisplayAlert={setDisplayAlert}
               />
             </div>
-            <div className="col d-flex justify-content-end align-items-center">
+            <div className="col d-flex justify-content-around align-items-center">
+              <div>
+                Day Trades: {' '}
+                <strong>{accountInfo.daytrade_count}</strong>
+                {' '} (3 MAX)
+              </div>
               {orders.length > 0 && (
                 <ProfitLoss 
                   orders={orders}

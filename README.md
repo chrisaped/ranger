@@ -14,6 +14,8 @@ Things to add:
 - disable buy or sell if account size is exceeded
 - add close button as well?
 - close all positions (there is an Alpaca endpoint for this) when I have reached my daily dollar target
+- move calculations to server
 
 BUG FIXES:
 - cancel button is showing up next to sell button after canceling a bracket order
+- EMA values are still not accurate....are there enough data points? is this only when the day starts?
