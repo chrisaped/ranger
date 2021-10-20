@@ -66,13 +66,13 @@ export default function Indicators({
             {EMAIcon}
           </div>
           <div>
-            3EMA: {EMA3}
+            3EMA: {EMA3.toFixed(2)}
           </div>
           <div>
-            8EMA: {EMA8}
+            8EMA: {EMA8.toFixed(2)}
           </div>
           <div>
-            VWAP: {VWAP}
+            VWAP: {VWAP.toFixed(2)}
             {VWAPIcon}
           </div>
         </div>

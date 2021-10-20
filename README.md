@@ -19,3 +19,5 @@ Things to add:
 BUG FIXES:
 - cancel button is showing up next to sell button after canceling a bracket order
 - EMA values are still not accurate....are there enough data points? is this only when the day starts?
+- change orders to be not cancelled after the day is over (good till cancelled?)
+- need to broaden date range to reflect swing trades for positions to reflect proper profit/loss. swing trading profit/loss does not show up at the moment
