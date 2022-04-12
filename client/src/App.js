@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { io } from 'socket.io-client';
-import Search from './components/Search';
+import { io } from "socket.io-client";
+import Search from "./components/Search";
 import ProfitLoss from "./components/ProfitLoss";
 import Positions from "./components/Positions";
 import Watchlist from "./components/Watchlist";
@@ -27,7 +27,7 @@ export default function App() {
       addQuote(Symbol, AskPrice);
     });
 
-    newSocket.on('getAssetsResponse', (assets) => {
+    newSocket.on("getAssetsResponse", (assets) => {
       setTradeableAssets(assets);
     });
 
@@ -42,10 +42,10 @@ export default function App() {
     newSocket.on("getAccountResponse", (accountObj) => {
       setAccountInfo(accountObj);
     });
-  
+
     return () => {
       newSocket.disconnect();
-    }
+    };
   }, []);
 
   const addQuote = (symbol, price) => {
@@ -58,7 +58,7 @@ export default function App() {
         <div className="container">
           <div className="row">
             <div className="col">
-              <Alert 
+              <Alert
                 socket={socket}
                 alert={alert}
                 setAlert={setAlert}
@@ -67,10 +67,10 @@ export default function App() {
               />
             </div>
             <div className="col">
-              <Search 
+              <Search
                 socket={socket}
                 watchlist={watchlist}
-                setWatchlist={setWatchlist} 
+                setWatchlist={setWatchlist}
                 tradeableAssets={tradeableAssets}
                 positions={positions}
                 setAlert={setAlert}
@@ -79,12 +79,11 @@ export default function App() {
             </div>
             <div className="col d-flex justify-content-around align-items-center">
               <div>
-                Day Trades: {' '}
-                <strong>{accountInfo.daytrade_count}</strong>
-                {' '} (3 MAX)
+                Day Trades: <strong>{accountInfo.daytrade_count}</strong> (3
+                MAX)
               </div>
               {orders.length > 0 && (
-                <ProfitLoss 
+                <ProfitLoss
                   orders={orders}
                   positions={positions}
                   quotes={quotes}
@@ -93,7 +92,7 @@ export default function App() {
             </div>
           </div>
           <div className="row">
-            <Watchlist 
+            <Watchlist
               socket={socket}
               quotes={quotes}
               setQuotes={setQuotes}
@@ -102,17 +101,17 @@ export default function App() {
               tradeableAssets={tradeableAssets}
               accountInfo={accountInfo}
             />
-          </div>      
+          </div>
           <div className="row">
-            <Positions 
+            <Positions
               socket={socket}
               quotes={quotes}
               orders={orders}
               positions={positions}
             />
-          </div>      
+          </div>
         </div>
-      ):(
+      ) : (
         <div>
           <p>Socket connection error.</p>
         </div>

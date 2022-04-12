@@ -1,26 +1,26 @@
 export const displayOrderButton = (side, symbol, tradeableAssets) => {
-  let buttonText = 'Long';
+  let buttonText = "Long";
   let buttonClass = "btn btn-success";
 
-  if (side === 'sell') {
-    buttonText = 'Short';
+  if (side === "sell") {
+    buttonText = "Short";
     buttonClass = "btn btn-danger";
     if (!isShortable(symbol, tradeableAssets)) {
-      buttonText = 'Not Shortable'
+      buttonText = "N/A";
     }
   }
 
   return { buttonText, buttonClass };
-}
+};
 
 export const isForbiddenStopPrice = (side, stopPrice, price) => {
-  if ((side === 'buy') && (stopPrice > price)) {
+  if (side === "buy" && stopPrice > price) {
     return true;
   }
-  if ((side === 'sell') && (stopPrice < price)) {
+  if (side === "sell" && stopPrice < price) {
     return true;
   }
-  return false;    
+  return false;
 };
 
 const isShortable = (symbol, tradeableAssets) => {
@@ -35,10 +35,22 @@ const isProperPositionSize = (positionSize) => {
   return true;
 };
 
-export const isDisabled = (side, stopPrice, currentPrice, symbol, positionSize, tradeableAssets) => {
-  if (side === 'sell') {
+export const isDisabled = (
+  side,
+  stopPrice,
+  currentPrice,
+  symbol,
+  positionSize,
+  tradeableAssets,
+  limitPrice
+) => {
+  if (!limitPrice || !stopPrice) {
+    return true;
+  }
+
+  if (side === "sell") {
     if (
-      isForbiddenStopPrice(side, stopPrice, currentPrice) || 
+      isForbiddenStopPrice(side, stopPrice, currentPrice) ||
       !isShortable(symbol, tradeableAssets) ||
       !isProperPositionSize(positionSize)
     ) {
@@ -46,7 +58,7 @@ export const isDisabled = (side, stopPrice, currentPrice, symbol, positionSize, 
     }
   }
 
-  if (side === 'buy') {
+  if (side === "buy") {
     if (
       isForbiddenStopPrice(side, stopPrice, currentPrice) ||
       !isProperPositionSize(positionSize)

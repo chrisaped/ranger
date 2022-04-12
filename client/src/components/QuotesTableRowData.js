@@ -1,39 +1,40 @@
 import { useState, useEffect } from "react";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import SpinnerButton from "./SpinnerButton";
-import Indicators from "./Indicators";
-import { 
+import {
   calculateProfitTarget,
   calculatePositionSize,
   calculateMoneyUpfront,
   calculateDefaultStopPrice,
 } from "../shared/calculations";
-import { 
-  createOrder, 
+import {
+  createOrder,
   cancelOrder,
-  createBracketOrderObject
+  createBracketOrderObject,
 } from "../shared/orders";
 import { displayPrice } from "../shared/formatting";
 import { defaultStopPriceDifference } from "../shared/constants";
-import { 
+import {
   displayOrderButton,
   isForbiddenStopPrice,
-  isDisabled
+  isDisabled,
 } from "../shared/quotes";
 
-export default function QuotesTableRowData({ 
-  socket, 
-  symbol, 
-  price, 
+export default function QuotesTableRowData({
+  socket,
+  symbol,
+  price,
   removeFromWatchlist,
   removeFromQuotesAndWatchlist,
   tradeableAssets,
-  accountInfo
+  accountInfo,
 }) {
   const defaultStopPrice = 0;
+  const defaultLimitPrice = 0;
   const [stopPrice, setStopPrice] = useState(defaultStopPrice);
-  const [side, setSide] = useState('buy');
-  const [orderId, setOrderId] = useState('');
+  const [limitPrice, setLimitPrice] = useState(defaultLimitPrice);
+  const [side, setSide] = useState("buy");
+  const [orderId, setOrderId] = useState("");
 
   useEffect(() => {
     socket.on(`${symbol} newOrderResponse`, (data) => {
@@ -49,16 +50,22 @@ export default function QuotesTableRowData({
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    if (price && (stopPrice === defaultStopPrice)) {
+    if (price && stopPrice === defaultStopPrice) {
       const newDefaultStopPrice = price - defaultStopPriceDifference;
-      setStopPrice(newDefaultStopPrice); 
+      setStopPrice(newDefaultStopPrice);
     }
   }, [price, stopPrice]);
+
+  useEffect(() => {
+    if (price && limitPrice === defaultLimitPrice) {
+      setLimitPrice(price);
+    }
+  }, [price, limitPrice]);
 
   const onSelectChange = (e) => {
     const newSide = e.target.value;
     setSide(newSide);
-    const newDefaultStopPrice = calculateDefaultStopPrice(side, price);
+    const newDefaultStopPrice = calculateDefaultStopPrice(side, limitPrice);
     setStopPrice(newDefaultStopPrice);
   };
 
@@ -67,28 +74,66 @@ export default function QuotesTableRowData({
     setStopPrice(newStopPrice);
   };
 
-  const stopPriceInputClassName = isForbiddenStopPrice(side, stopPrice, price) ?
-    "form-control border border-danger" :
-    "form-control";
-  const profitTarget = calculateProfitTarget(price, stopPrice, side);
-  const accountSize = parseFloat(accountInfo.buying_power);
-  const positionSize = calculatePositionSize(price, stopPrice, accountSize).toLocaleString();
-  const moneyUpfront = calculateMoneyUpfront(price, stopPrice, accountSize);
-  const orderObject = createBracketOrderObject(symbol, side, positionSize, profitTarget, stopPrice);
+  const updateLimitPrice = (e) => {
+    const newLimitPrice = e.target.value;
+    setLimitPrice(newLimitPrice);
+  };
+
+  const stopPriceInputClassName = isForbiddenStopPrice(
+    side,
+    stopPrice,
+    limitPrice
+  )
+    ? "form-control border border-danger"
+    : "form-control";
+  const profitTarget = calculateProfitTarget(limitPrice, stopPrice, side);
+  const accountSize = accountInfo.buying_power;
+  const positionSize = calculatePositionSize(
+    limitPrice,
+    stopPrice,
+    accountSize
+  ).toLocaleString();
+  const moneyUpfront = calculateMoneyUpfront(
+    limitPrice,
+    stopPrice,
+    accountSize
+  );
+  const orderObject = createBracketOrderObject(
+    symbol,
+    side,
+    positionSize,
+    profitTarget,
+    stopPrice,
+    limitPrice
+  );
   const createBracketOrder = () => createOrder(socket, orderObject);
   const cancelNewOrder = () => cancelOrder(socket, orderId);
   const currentPrice = displayPrice(price);
-  const { buttonClass, buttonText } = displayOrderButton(side, symbol, tradeableAssets);
+  const { buttonClass, buttonText } = displayOrderButton(
+    side,
+    symbol,
+    tradeableAssets
+  );
   const onClickRemove = () => removeFromQuotesAndWatchlist(symbol);
-  const isOrderButtonDisabled = isDisabled(side, stopPrice, currentPrice, symbol, positionSize, tradeableAssets);
+  const isOrderButtonDisabled = isDisabled(
+    side,
+    stopPrice,
+    currentPrice,
+    symbol,
+    positionSize,
+    tradeableAssets,
+    limitPrice
+  );
 
   return (
     <>
-      <td><strong>{symbol}</strong></td>
+      <td>
+        <strong>{symbol}</strong>
+      </td>
       {price ? (
         <>
           <td>
-            <select 
+            <select
               className="form-select"
               value={side}
               onChange={onSelectChange}
@@ -97,29 +142,32 @@ export default function QuotesTableRowData({
               <option value="sell">Short</option>
             </select>
           </td>
-          <td className="bg-warning"><strong>{currentPrice}</strong></td>
+          <td className="bg-warning">
+            <strong>{currentPrice}</strong>
+          </td>
+          <td>
+            <input
+              className="form-control"
+              type="text"
+              size="3"
+              value={limitPrice}
+              onChange={updateLimitPrice}
+            />
+          </td>
           <td className="bg-success text-white">{profitTarget}</td>
           <td>
-            <input 
+            <input
               className={stopPriceInputClassName}
               type="text"
-              size="4"
-              value={stopPrice} 
-              onChange={updateStopPrice} 
-            />         
+              size="3"
+              value={stopPrice}
+              onChange={updateStopPrice}
+            />
           </td>
           <td>{positionSize} shares</td>
           <td>${moneyUpfront}</td>
           <td>
-            <Indicators 
-              socket={socket}
-              symbol={symbol}
-              price={price}
-              side={side}
-            />
-          </td>
-          <td>
-            <SpinnerButton 
+            <SpinnerButton
               socket={socket}
               buttonClass={buttonClass}
               buttonText={buttonText}
@@ -128,9 +176,9 @@ export default function QuotesTableRowData({
               orderId={orderId}
               symbol={symbol}
             />
-          </td>       
+          </td>
         </>
-      ):(
+      ) : (
         <>
           <td className="bg-light" colSpan="7">
             Awaiting price data...
@@ -139,41 +187,38 @@ export default function QuotesTableRowData({
       )}
       <td colSpan="2">
         {orderId ? (
-          <SpinnerButton 
+          <SpinnerButton
             socket={socket}
             buttonClass="btn btn-dark"
-            buttonText='Cancel Order'
+            buttonText="Cancel Order"
             onClickFunction={cancelNewOrder}
             orderId={orderId}
             symbol={symbol}
           />
-        ):(
-          <button 
-            className="btn btn-secondary" 
-            onClick={onClickRemove}
-          >
+        ) : (
+          <button className="btn btn-secondary" onClick={onClickRemove}>
             Remove
           </button>
         )}
-      </td>    
+      </td>
     </>
   );
 }
 
 QuotesTableRowData.propTypes = {
-  socket: PropTypes.object.isRequired, 
-  symbol: PropTypes.string.isRequired, 
-  price: PropTypes.number.isRequired, 
+  socket: PropTypes.object.isRequired,
+  symbol: PropTypes.string.isRequired,
+  price: PropTypes.number.isRequired,
   removeFromWatchlist: PropTypes.func.isRequired,
   removeFromQuotesAndWatchlist: PropTypes.func.isRequired,
   tradeableAssets: PropTypes.object.isRequired,
-  accountInfo: PropTypes.object.isRequired
+  accountInfo: PropTypes.object.isRequired,
 };
 
 QuotesTableRowData.defaultProps = {
-  socket: {}, 
-  symbol: '', 
-  price: 0, 
+  socket: {},
+  symbol: "",
+  price: 0,
   tradeableAssets: {},
-  accountInfo: {}
+  accountInfo: {},
 };

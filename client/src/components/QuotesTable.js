@@ -1,14 +1,14 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import QuotesTableRowData from "./QuotesTableRowData";
 
-export default function QuotesTable({ 
-  socket, 
-  quotes, 
+export default function QuotesTable({
+  socket,
+  quotes,
   removeFromQuotesAndWatchlist,
   watchlist,
   tradeableAssets,
   removeFromWatchlist,
-  accountInfo
+  accountInfo,
 }) {
   return (
     <table className="table table-bordered align-middle text-center">
@@ -17,51 +17,51 @@ export default function QuotesTable({
           <th>Symbol</th>
           <th>Side</th>
           <th>Price</th>
+          <th>Limit</th>
           <th>Target</th>
           <th>Stop</th>
           <th>Shares</th>
           <th>Cost</th>
-          <th>Indicators</th>
           <th colSpan="2">Actions</th>
         </tr>
       </thead>
       <tbody>
-      {watchlist.map((symbol) => {
-        const price = quotes[symbol];
+        {watchlist.map((symbol) => {
+          const price = quotes[symbol];
 
-        return (
-          <tr key={symbol}>
-            <QuotesTableRowData
-              socket={socket}
-              symbol={symbol} 
-              price={price} 
-              removeFromWatchlist={removeFromWatchlist}
-              removeFromQuotesAndWatchlist={removeFromQuotesAndWatchlist}
-              tradeableAssets={tradeableAssets}
-              accountInfo={accountInfo}
-            />
-          </tr>
-        );
-      })}
+          return (
+            <tr key={symbol}>
+              <QuotesTableRowData
+                socket={socket}
+                symbol={symbol}
+                price={price}
+                removeFromWatchlist={removeFromWatchlist}
+                removeFromQuotesAndWatchlist={removeFromQuotesAndWatchlist}
+                tradeableAssets={tradeableAssets}
+                accountInfo={accountInfo}
+              />
+            </tr>
+          );
+        })}
       </tbody>
-    </table>    
+    </table>
   );
 }
 
 QuotesTable.propTypes = {
-  socket: PropTypes.object.isRequired, 
-  quotes: PropTypes.object.isRequired, 
+  socket: PropTypes.object.isRequired,
+  quotes: PropTypes.object.isRequired,
   removeFromQuotesAndWatchlist: PropTypes.func.isRequired,
   watchlist: PropTypes.arrayOf(PropTypes.string).isRequired,
   tradeableAssets: PropTypes.object.isRequired,
   removeFromWatchlist: PropTypes.func.isRequired,
-  accountInfo: PropTypes.object.isRequired
+  accountInfo: PropTypes.object.isRequired,
 };
 
 QuotesTable.defaultProps = {
-  socket: {}, 
-  quotes: {}, 
+  socket: {},
+  quotes: {},
   watchlist: [],
   tradeableAssets: {},
-  accountInfo: {}
+  accountInfo: {},
 };

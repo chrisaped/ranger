@@ -1,42 +1,55 @@
-import { 
-  riskPercentage,
-  defaultStopPriceDifference
-} from "./constants";
+import { riskPercentage, defaultStopPriceDifference } from "./constants";
 
-const calculateRiskPerShare = (currentPrice, stopPrice) => {
-  return Math.abs(currentPrice - stopPrice);
+const calculateRiskPerShare = (limitPrice, stopPrice) => {
+  return Math.abs(limitPrice - stopPrice);
 };
 
-export const calculateProfitTarget = (currentPrice, stopPrice, side) => {
-  const riskPerShare = calculateRiskPerShare(currentPrice, stopPrice);
-  if (side === 'buy') {
-    return (currentPrice + (riskPerShare * 1.5)).toFixed(2);
+export const calculateProfitTarget = (limitPrice, stopPrice, side) => {
+  const limitPriceFloat = parseFloat(limitPrice);
+  const stopPriceFloat = parseFloat(stopPrice);
+  const riskPerShare = calculateRiskPerShare(limitPriceFloat, stopPriceFloat);
+  if (side === "buy") {
+    return (limitPriceFloat + riskPerShare * 1.5)?.toFixed(2);
   }
-  return (currentPrice - (riskPerShare * 1.5)).toFixed(2);  
+  return (limitPriceFloat - riskPerShare * 1.5)?.toFixed(2);
 };
 
-export const calculatePositionSize = (currentPrice, stopPrice, accountSize) => {
-  const risk = accountSize * riskPercentage;
-  const riskPerShare = calculateRiskPerShare(currentPrice, stopPrice);
+export const calculatePositionSize = (limitPrice, stopPrice, accountSize) => {
+  const limitPriceFloat = parseFloat(limitPrice);
+  const stopPriceFloat = parseFloat(stopPrice);
+  const accountSizeFloat = parseFloat(accountSize);
+  const risk = accountSizeFloat * riskPercentage;
+  const riskPerShare = calculateRiskPerShare(limitPriceFloat, stopPriceFloat);
   return Math.round(risk / riskPerShare);
 };
 
-export const calculateMoneyUpfront = (currentPrice, stopPrice, accountSize) => {
-  const positionSize = calculatePositionSize(currentPrice, stopPrice, accountSize);
-  return Math.round(currentPrice * positionSize).toLocaleString();
+export const calculateMoneyUpfront = (limitPrice, stopPrice, accountSize) => {
+  const limitPriceFloat = parseFloat(limitPrice);
+  const stopPriceFloat = parseFloat(stopPrice);
+  const accountSizeFloat = parseFloat(accountSize);
+  const positionSize = calculatePositionSize(
+    limitPriceFloat,
+    stopPriceFloat,
+    accountSizeFloat
+  );
+  return Math.round(limitPrice * positionSize).toLocaleString();
 };
 
 export const calculateProfitLoss = (currentPrice, entryPrice, shares, side) => {
   const purchaseValue = shares * entryPrice;
   const currentValue = shares * currentPrice;
-  if (side === 'long') {
-    return (currentValue - purchaseValue);
+  if (side === "long") {
+    return currentValue - purchaseValue;
   }
-  return (purchaseValue - currentValue);
+  return purchaseValue - currentValue;
 };
 
-export const calculateProfitLossByValues = (purchaseValue, childValue, side) => {
-  if (side === 'buy') {
+export const calculateProfitLossByValues = (
+  purchaseValue,
+  childValue,
+  side
+) => {
+  if (side === "buy") {
     return (childValue - purchaseValue).toFixed(2);
   }
   return (purchaseValue - childValue).toFixed(2);
@@ -50,12 +63,14 @@ export const isInProfit = (calculatedProfitLoss) => {
   return false;
 };
 
-export const calculateDefaultStopPrice = (side, price) => {
-  let defaultStopPrice = price + defaultStopPriceDifference;
-  if (side === 'sell') {
-    defaultStopPrice = price - defaultStopPriceDifference;
+export const calculateDefaultStopPrice = (side, limitPrice) => {
+  const limitPriceFloat = parseFloat(limitPrice);
+  let defaultStopPrice = limitPriceFloat + defaultStopPriceDifference;
+  if (side === "sell") {
+    defaultStopPrice = limitPriceFloat - defaultStopPriceDifference;
   }
-  return defaultStopPrice.toFixed(2);
-}
+  return defaultStopPrice?.toFixed(2);
+};
 
-export const sumObjectValues = obj => Object.values(obj).reduce((a, b) => a + b);
+export const sumObjectValues = (obj) =>
+  Object.values(obj).reduce((a, b) => a + b);
