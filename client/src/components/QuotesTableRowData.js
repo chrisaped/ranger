@@ -98,6 +98,7 @@ export default function QuotesTableRowData({
     stopPrice,
     accountSize
   );
+  const moneyUpfrontDisplay = Math.round(moneyUpfront).toLocaleString();
   const orderObject = createBracketOrderObject(
     symbol,
     side,
@@ -122,7 +123,9 @@ export default function QuotesTableRowData({
     symbol,
     positionSize,
     tradeableAssets,
-    limitPrice
+    limitPrice,
+    moneyUpfront,
+    accountSize
   );
   const onClickUpdateLimitPrice = () => {
     setLimitPrice(price);
@@ -172,7 +175,7 @@ export default function QuotesTableRowData({
             />
           </td>
           <td>{positionSize} shares</td>
-          <td>${moneyUpfront}</td>
+          <td>${moneyUpfrontDisplay}</td>
           <td>
             <SpinnerButton
               socket={socket}

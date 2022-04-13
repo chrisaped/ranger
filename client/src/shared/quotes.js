@@ -42,9 +42,15 @@ export const isDisabled = (
   symbol,
   positionSize,
   tradeableAssets,
-  limitPrice
+  limitPrice,
+  moneyUpfront,
+  accountSize
 ) => {
   if (!limitPrice || !stopPrice) {
+    return true;
+  }
+  const accountSizeFloat = parseFloat(accountSize);
+  if (moneyUpfront >= accountSizeFloat) {
     return true;
   }
 

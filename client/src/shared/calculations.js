@@ -36,7 +36,7 @@ export const calculateMoneyUpfront = (limitPrice, stopPrice, accountSize) => {
     stopPriceFloat,
     accountSizeFloat
   );
-  return Math.round(limitPrice * positionSize).toLocaleString();
+  return limitPrice * positionSize;
 };
 
 export const calculateProfitLoss = (currentPrice, entryPrice, shares, side) => {
