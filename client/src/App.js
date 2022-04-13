@@ -52,6 +52,8 @@ export default function App() {
     updateObjectState(setQuotes, symbol, price);
   };
 
+  const accountSize = Math.round(accountInfo?.buying_power).toLocaleString();
+
   return (
     <>
       {socket ? (
@@ -78,6 +80,7 @@ export default function App() {
               />
             </div>
             <div className="col d-flex justify-content-around align-items-center">
+              <div>${accountSize}</div>
               <div>
                 Day Trades: <strong>{accountInfo.daytrade_count}</strong> (3
                 MAX)
