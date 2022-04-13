@@ -92,7 +92,8 @@ export default function QuotesTableRowData({
     limitPrice,
     stopPrice,
     accountSize
-  ).toLocaleString();
+  );
+  const positionSizeDisplay = positionSize.toLocaleString();
   const moneyUpfront = calculateMoneyUpfront(
     limitPrice,
     stopPrice,
@@ -174,7 +175,7 @@ export default function QuotesTableRowData({
               onChange={updateStopPrice}
             />
           </td>
-          <td>{positionSize} shares</td>
+          <td>{positionSizeDisplay} shares</td>
           <td>${moneyUpfrontDisplay}</td>
           <td>
             <SpinnerButton

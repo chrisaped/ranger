@@ -13,7 +13,7 @@ export const createBracketOrderObject = (
     side: side,
     symbol: symbol,
     type: "limit",
-    limit_price: limitPrice,
+    limit_price: `${limitPrice}`,
     qty: `${positionSize}`,
     time_in_force: "gtc",
     order_class: "bracket",
