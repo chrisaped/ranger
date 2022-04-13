@@ -124,6 +124,9 @@ export default function QuotesTableRowData({
     tradeableAssets,
     limitPrice
   );
+  const onClickUpdateLimitPrice = () => {
+    setLimitPrice(price);
+  };
 
   return (
     <>
@@ -142,7 +145,11 @@ export default function QuotesTableRowData({
               <option value="sell">Short</option>
             </select>
           </td>
-          <td className="bg-warning">
+          <td
+            className="bg-warning"
+            onClick={onClickUpdateLimitPrice}
+            style={{ cursor: "pointer" }}
+          >
             <strong>{currentPrice}</strong>
           </td>
           <td>
