@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import PositionsTableRowData from "./PositionsTableRowData";
 import { calculateProfitLoss } from "../shared/calculations";
 
@@ -13,25 +13,26 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
       rowClass = "table-light";
     }
     return rowClass;
-  }
+  };
 
-  const positionsTableData = positions.map(positionObj => {
-    const {
-      symbol,
-      side,
-      avg_entry_price,
-      qty,
-      current_price
-    } = positionObj;
+  const positionsTableData = positions.map((positionObj) => {
+    const { symbol, side, avg_entry_price, qty, current_price } = positionObj;
     const quantity = Math.abs(qty);
     let price = quotes[symbol];
-    if (!price) { price = parseFloat(current_price); }
-    const profitOrLoss = (calculateProfitLoss(price, avg_entry_price, quantity, side)).toFixed(2);
+    if (!price) {
+      price = parseFloat(current_price);
+    }
+    const profitOrLoss = calculateProfitLoss(
+      price,
+      avg_entry_price,
+      quantity,
+      side
+    ).toFixed(2);
     const rowClassName = getRowClassName(profitOrLoss);
 
     return (
       <tr className={rowClassName} key={symbol}>
-        <PositionsTableRowData 
+        <PositionsTableRowData
           socket={socket}
           symbol={symbol}
           side={side}
@@ -43,7 +44,7 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
         />
       </tr>
     );
-  })
+  });
 
   return (
     <table className="table table-bordered align-middle text-center">
@@ -58,13 +59,10 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
           <th>P/L</th>
           <th>Shares</th>
           <th>Cost</th>
-          <th>Indicators</th>
           <th colSpan="2">Actions</th>
         </tr>
       </thead>
-      <tbody>
-        {positionsTableData}
-      </tbody>
+      <tbody>{positionsTableData}</tbody>
     </table>
   );
 }
@@ -72,31 +70,37 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
 PositionsTable.propTypes = {
   socket: PropTypes.object.isRequired,
   quotes: PropTypes.object.isRequired,
-  orders: PropTypes.arrayOf(PropTypes.shape({
-    symbol: PropTypes.string,
-    filled_qty: PropTypes.string,
-    filled_avg_price: PropTypes.string,
-    status: PropTypes.string,
-    legs: PropTypes.arrayOf(PropTypes.shape({
-      type: PropTypes.string,
-      limit_price: PropTypes.string,
-      id: PropTypes.string,
+  orders: PropTypes.arrayOf(
+    PropTypes.shape({
+      symbol: PropTypes.string,
+      filled_qty: PropTypes.string,
+      filled_avg_price: PropTypes.string,
       status: PropTypes.string,
-      stop_price: PropTypes.string
-    }))
-  })).isRequired,
-  positions: PropTypes.arrayOf(PropTypes.shape({
-    symbol: PropTypes.string,
-    side: PropTypes.string,
-    avg_entry_price: PropTypes.string,
-    qty: PropTypes.string,
-    current_price: PropTypes.string
-  })).isRequired  
+      legs: PropTypes.arrayOf(
+        PropTypes.shape({
+          type: PropTypes.string,
+          limit_price: PropTypes.string,
+          id: PropTypes.string,
+          status: PropTypes.string,
+          stop_price: PropTypes.string,
+        })
+      ),
+    })
+  ).isRequired,
+  positions: PropTypes.arrayOf(
+    PropTypes.shape({
+      symbol: PropTypes.string,
+      side: PropTypes.string,
+      avg_entry_price: PropTypes.string,
+      qty: PropTypes.string,
+      current_price: PropTypes.string,
+    })
+  ).isRequired,
 };
 
 PositionsTable.defaultProps = {
   socket: {},
   quotes: {},
   orders: [],
-  positions: []
+  positions: [],
 };

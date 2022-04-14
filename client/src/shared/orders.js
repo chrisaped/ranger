@@ -40,6 +40,21 @@ export const createMarketOrder = (symbol, qty, side) => {
   };
 };
 
+export const createLimitOrder = (symbol, qty, side, limitPrice) => {
+  let action = "sell";
+  if (side === "short") {
+    action = "buy";
+  }
+  return {
+    side: action,
+    symbol: symbol,
+    type: "limit",
+    limit_price: `${limitPrice}`,
+    qty: `${qty}`,
+    time_in_force: "gtc",
+  };
+};
+
 export const createOrder = (socket, orderObject) => {
   socket.emit("createOrder", orderObject);
 };

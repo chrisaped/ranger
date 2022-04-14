@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import SpinnerButton from "./SpinnerButton";
-import Indicators from "./Indicators";
 import { displayPrice } from "../shared/formatting";
-import { 
-  createMarketOrder,
+import {
+  createLimitOrder,
   createOrder,
   cancelOrder,
-  extractBracketOrderInfo
+  extractBracketOrderInfo,
 } from "../shared/orders";
 
 export default function PositionsTableRowData({
@@ -18,9 +17,11 @@ export default function PositionsTableRowData({
   price,
   profitOrLoss,
   quantity,
-  orders
+  orders,
 }) {
-  const [orderId, setOrderId] = useState('');
+  const defaultLimitPrice = 0;
+  const [orderId, setOrderId] = useState("");
+  const [limitPrice, setLimitPrice] = useState(defaultLimitPrice);
 
   useEffect(() => {
     socket.on(`${symbol} newOrderResponse`, (data) => {
@@ -29,79 +30,95 @@ export default function PositionsTableRowData({
     });
   }, []); // eslint-disable-line
 
-  const { 
-    targetPrice, 
-    targetOrderStatus,
-    stopPrice,
-    targetOrderId,
-    hasLegs
-  } = extractBracketOrderInfo(symbol, quantity, avgEntryPrice, orders);
+  useEffect(() => {
+    if (price && limitPrice === defaultLimitPrice) {
+      setLimitPrice(price);
+    }
+  }, [price, limitPrice]);
+
+  const { targetPrice, targetOrderStatus, stopPrice, targetOrderId, hasLegs } =
+    extractBracketOrderInfo(symbol, quantity, avgEntryPrice, orders);
   const sideInCaps = side.toUpperCase();
   const entryPrice = displayPrice(avgEntryPrice);
   const currentPrice = displayPrice(price);
-  const hasNoBracketOrder = !hasLegs || (targetOrderStatus === "canceled");
-  const targetPriceClassName = hasNoBracketOrder ? 'bg-secondary' : "bg-success text-white";
-  const stopPriceClassName = hasNoBracketOrder ? 'bg-secondary' : "bg-danger text-white";
+  const hasNoBracketOrder = !hasLegs || targetOrderStatus === "canceled";
+  const targetPriceClassName = hasNoBracketOrder
+    ? "bg-secondary"
+    : "bg-success text-white";
+  const stopPriceClassName = hasNoBracketOrder
+    ? "bg-secondary"
+    : "bg-danger text-white";
   const cost = Math.round(avgEntryPrice * quantity).toLocaleString();
-  const marketOrder = createMarketOrder(symbol, quantity, side);
-  const submitOrder = () => createOrder(socket, marketOrder);
+  const limitOrder = createLimitOrder(symbol, quantity, side, limitPrice);
+  const submitOrder = () => createOrder(socket, limitOrder);
   const cancelBracket = () => cancelOrder(socket, targetOrderId);
   const orderButtonText = side === "long" ? "Sell" : "Buy";
   const cancelNewOrder = () => cancelOrder(socket, orderId);
 
   return (
     <>
-      <td><strong>{symbol}</strong></td>
+      <td>
+        <strong>{symbol}</strong>
+      </td>
       <td>{sideInCaps}</td>
       <td className="bg-info">{entryPrice}</td>
-      <td className="bg-warning"><strong>{currentPrice}</strong></td>
+      <td
+        className="bg-warning"
+        onClick={() => setLimitPrice(currentPrice)}
+        style={{ cursor: "pointer" }}
+      >
+        <strong>{currentPrice}</strong>
+      </td>
       <td className={targetPriceClassName}>{targetPrice}</td>
       <td className={stopPriceClassName}>{stopPrice}</td>
       <td>${profitOrLoss}</td>
-      <td>{quantity} shares</td>
+      <td>{quantity.toLocaleString()} shares</td>
       <td>${cost}</td>
       <td>
-        <Indicators 
-          socket={socket}
-          symbol={symbol}
-          price={price}
-          side={side}
-        />        
-      </td>
-      <td>
-      {hasNoBracketOrder ? (
-        <SpinnerButton 
-          socket={socket}
-          buttonClass="btn btn-dark"
-          buttonText={orderButtonText}
-          buttonDisabled={!hasNoBracketOrder}
-          onClickFunction={submitOrder}
-          symbol={symbol}
-        />
-      ):(
-        <SpinnerButton
-          socket={socket}
-          buttonClass="btn btn-dark"
-          buttonText="Cancel Bracket"
-          buttonDisabled={hasNoBracketOrder}
-          onClickFunction={cancelBracket}
-          orderId={targetOrderId}
-          symbol={symbol}
-        />              
-      )}
+        {hasNoBracketOrder ? (
+          <div className="d-flex">
+            <input
+              className="form-control"
+              type="text"
+              size="3"
+              value={limitPrice}
+              onChange={(e) => {
+                setLimitPrice(e.target.value);
+              }}
+            />
+            <SpinnerButton
+              socket={socket}
+              buttonClass="btn btn-dark"
+              buttonText={orderButtonText}
+              buttonDisabled={!hasNoBracketOrder || !limitPrice}
+              onClickFunction={submitOrder}
+              symbol={symbol}
+            />
+          </div>
+        ) : (
+          <SpinnerButton
+            socket={socket}
+            buttonClass="btn btn-dark"
+            buttonText="Cancel Bracket"
+            buttonDisabled={hasNoBracketOrder}
+            onClickFunction={cancelBracket}
+            orderId={targetOrderId}
+            symbol={symbol}
+          />
+        )}
       </td>
       {hasNoBracketOrder && orderId && (
         <td>
-          <SpinnerButton 
+          <SpinnerButton
             socket={socket}
             buttonClass="btn btn-dark"
-            buttonText='Cancel Order'
+            buttonText="Cancel Order"
             onClickFunction={cancelNewOrder}
             orderId={orderId}
             symbol={symbol}
           />
         </td>
-      )}  
+      )}
     </>
   );
 }
@@ -114,28 +131,32 @@ PositionsTableRowData.propTypes = {
   price: PropTypes.number.isRequired,
   profitOrLoss: PropTypes.string.isRequired,
   quantity: PropTypes.number.isRequired,
-  orders: PropTypes.arrayOf(PropTypes.shape({
-    symbol: PropTypes.string,
-    filled_qty: PropTypes.string,
-    filled_avg_price: PropTypes.string,
-    status: PropTypes.string,
-    legs: PropTypes.arrayOf(PropTypes.shape({
-      type: PropTypes.string,
-      limit_price: PropTypes.string,
-      id: PropTypes.string,
+  orders: PropTypes.arrayOf(
+    PropTypes.shape({
+      symbol: PropTypes.string,
+      filled_qty: PropTypes.string,
+      filled_avg_price: PropTypes.string,
       status: PropTypes.string,
-      stop_price: PropTypes.string
-    }))
-  })).isRequired
+      legs: PropTypes.arrayOf(
+        PropTypes.shape({
+          type: PropTypes.string,
+          limit_price: PropTypes.string,
+          id: PropTypes.string,
+          status: PropTypes.string,
+          stop_price: PropTypes.string,
+        })
+      ),
+    })
+  ).isRequired,
 };
 
 PositionsTableRowData.defaultProps = {
   socket: {},
-  symbol: '',
-  side: '',
+  symbol: "",
+  side: "",
   avgEntryPrice: 0,
   price: 0,
   profitOrLoss: 0,
   quantity: 0,
-  orders: []
+  orders: [],
 };
