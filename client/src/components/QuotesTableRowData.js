@@ -12,6 +12,7 @@ import {
   cancelOrder,
   createBracketOrderObject,
 } from "../shared/orders";
+import { updateNumberField } from "../shared/inputs";
 import { displayPrice } from "../shared/formatting";
 import { defaultStopPriceDifference } from "../shared/constants";
 import {
@@ -69,16 +70,6 @@ export default function QuotesTableRowData({
     setStopPrice(newDefaultStopPrice);
   };
 
-  const updateStopPrice = (e) => {
-    const newStopPrice = e.target.value;
-    setStopPrice(newStopPrice);
-  };
-
-  const updateLimitPrice = (e) => {
-    const newLimitPrice = e.target.value;
-    setLimitPrice(newLimitPrice);
-  };
-
   const stopPriceInputClassName = isForbiddenStopPrice(
     side,
     stopPrice,
@@ -128,9 +119,6 @@ export default function QuotesTableRowData({
     moneyUpfront,
     accountSize
   );
-  const onClickUpdateLimitPrice = () => {
-    setLimitPrice(price);
-  };
 
   return (
     <>
@@ -151,7 +139,7 @@ export default function QuotesTableRowData({
           </td>
           <td
             className="bg-warning"
-            onClick={onClickUpdateLimitPrice}
+            onClick={() => setLimitPrice(price)}
             style={{ cursor: "pointer" }}
           >
             <strong>{currentPrice}</strong>
@@ -162,7 +150,7 @@ export default function QuotesTableRowData({
               type="text"
               size="3"
               value={limitPrice}
-              onChange={updateLimitPrice}
+              onChange={(e) => updateNumberField(e.target.value, setLimitPrice)}
             />
           </td>
           <td className="bg-success text-white">{profitTarget}</td>
@@ -172,7 +160,7 @@ export default function QuotesTableRowData({
               type="text"
               size="3"
               value={stopPrice}
-              onChange={updateStopPrice}
+              onChange={(e) => updateNumberField(e.target.value, setStopPrice)}
             />
           </td>
           <td>{positionSizeDisplay} shares</td>

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import SpinnerButton from "./SpinnerButton";
 import { displayPrice } from "../shared/formatting";
+import { updateNumberField } from "../shared/inputs";
 import {
   createLimitOrder,
   createOrder,
@@ -82,9 +83,8 @@ export default function PositionsTableRowData({
               type="text"
               size="3"
               value={limitPrice}
-              onChange={(e) => {
-                setLimitPrice(e.target.value);
-              }}
+              placeholder="Limit Price"
+              onChange={(e) => updateNumberField(e.target.value, setLimitPrice)}
             />
             <SpinnerButton
               socket={socket}
