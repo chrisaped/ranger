@@ -54,7 +54,10 @@ export default function PositionsTableRowData({
   const submitOrder = () => createOrder(socket, limitOrder);
   const cancelBracket = () => cancelOrder(socket, targetOrderId);
   const orderButtonText = side === "long" ? "Sell" : "Buy";
-  const cancelNewOrder = () => cancelOrder(socket, orderId);
+  const cancelNewOrder = () => {
+    cancelOrder(socket, orderId);
+    setOrderId("");
+  };
 
   return (
     <>
@@ -75,26 +78,32 @@ export default function PositionsTableRowData({
       <td>${profitOrLoss}</td>
       <td>{quantity.toLocaleString()} shares</td>
       <td>${cost}</td>
-      <td>
+      <td className="">
         {hasNoBracketOrder ? (
-          <div className="d-flex">
-            <input
-              className="form-control"
-              type="text"
-              size="3"
-              value={limitPrice}
-              placeholder="Limit Price"
-              onChange={(e) => updateNumberField(e.target.value, setLimitPrice)}
-            />
-            <SpinnerButton
-              socket={socket}
-              buttonClass="btn btn-dark"
-              buttonText={orderButtonText}
-              buttonDisabled={!hasNoBracketOrder || !limitPrice}
-              onClickFunction={submitOrder}
-              symbol={symbol}
-            />
-          </div>
+          <>
+            {!orderId && (
+              <div className="d-flex">
+                <input
+                  className="form-control"
+                  type="text"
+                  size="3"
+                  value={limitPrice}
+                  placeholder="Limit Price"
+                  onChange={(e) =>
+                    updateNumberField(e.target.value, setLimitPrice)
+                  }
+                />
+                <SpinnerButton
+                  socket={socket}
+                  buttonClass="btn btn-dark"
+                  buttonText={orderButtonText}
+                  buttonDisabled={!hasNoBracketOrder || !limitPrice}
+                  onClickFunction={submitOrder}
+                  symbol={symbol}
+                />
+              </div>
+            )}
+          </>
         ) : (
           <SpinnerButton
             socket={socket}
@@ -106,19 +115,17 @@ export default function PositionsTableRowData({
             symbol={symbol}
           />
         )}
-      </td>
-      {hasNoBracketOrder && orderId && (
-        <td>
+        {hasNoBracketOrder && orderId && (
           <SpinnerButton
             socket={socket}
             buttonClass="btn btn-dark"
-            buttonText="Cancel Order"
+            buttonText={`Cancel $${limitPrice} Order`}
             onClickFunction={cancelNewOrder}
             orderId={orderId}
             symbol={symbol}
           />
-        </td>
-      )}
+        )}
+      </td>
     </>
   );
 }

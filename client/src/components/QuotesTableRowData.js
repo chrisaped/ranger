@@ -100,7 +100,10 @@ export default function QuotesTableRowData({
     limitPrice
   );
   const createBracketOrder = () => createOrder(socket, orderObject);
-  const cancelNewOrder = () => cancelOrder(socket, orderId);
+  const cancelNewOrder = () => {
+    cancelOrder(socket, orderId);
+    setOrderId("");
+  };
   const currentPrice = displayPrice(price);
   const { buttonClass, buttonText } = displayOrderButton(
     side,
