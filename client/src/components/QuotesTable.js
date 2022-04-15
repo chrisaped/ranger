@@ -27,14 +27,14 @@ export default function QuotesTable({
       </thead>
       <tbody>
         {watchlist.map((symbol) => {
-          const price = quotes[symbol];
+          const priceObj = quotes[symbol];
 
           return (
             <tr key={symbol}>
               <QuotesTableRowData
                 socket={socket}
                 symbol={symbol}
-                price={price}
+                priceObj={priceObj}
                 removeFromWatchlist={removeFromWatchlist}
                 removeFromQuotesAndWatchlist={removeFromQuotesAndWatchlist}
                 tradeableAssets={tradeableAssets}

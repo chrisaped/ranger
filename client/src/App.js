@@ -23,8 +23,8 @@ export default function App() {
     setSocket(newSocket);
 
     newSocket.on("stockQuoteResponse", (quote) => {
-      const { Symbol, AskPrice } = quote;
-      addQuote(Symbol, AskPrice);
+      const { Symbol, AskPrice, BidPrice } = quote;
+      addQuote(Symbol, AskPrice, BidPrice);
     });
 
     newSocket.on("getAssetsResponse", (assets) => {
@@ -48,8 +48,9 @@ export default function App() {
     };
   }, []);
 
-  const addQuote = (symbol, price) => {
-    updateObjectState(setQuotes, symbol, price);
+  const addQuote = (symbol, askPrice, bidPrice) => {
+    const priceObj = { ask: askPrice, bid: bidPrice };
+    updateObjectState(setQuotes, symbol, priceObj);
   };
 
   const accountSize = Math.round(accountInfo?.buying_power).toLocaleString();

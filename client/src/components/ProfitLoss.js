@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { sumObjectValues, calculateProfitLoss } from "../shared/calculations";
 import { extractTotalProfitLossFromClosedOrders } from "../shared/orders";
+import { selectPrice } from "../shared/quotes";
 
 export default function ProfitLoss({ orders, positions, quotes }) {
   const createCurrentPositions = (positions) => {
@@ -19,7 +20,9 @@ export default function ProfitLoss({ orders, positions, quotes }) {
   const createCurrentPositionsWithQuotes = (quotes) => {
     const newObj = {};
     Object.entries(currentPositions).forEach(([symbol, infoObj]) => {
-      let price = quotes[symbol];
+      const priceObj = quotes[symbol];
+      const side = infoObj.side;
+      let price = selectPrice(priceObj, side);
       if (!price) {
         price = parseFloat(infoObj.currentPrice);
       }
@@ -27,7 +30,7 @@ export default function ProfitLoss({ orders, positions, quotes }) {
         price,
         infoObj.entryPrice,
         infoObj.shares,
-        infoObj.side
+        side
       );
       newObj[symbol] = parseFloat(calculatedProfitLoss);
     });

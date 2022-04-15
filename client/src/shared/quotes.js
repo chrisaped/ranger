@@ -75,3 +75,25 @@ export const isDisabled = (
 
   return false;
 };
+
+export const selectPrice = (priceObj, side) => {
+  const { ask, bid } = priceObj;
+  let price = ask;
+  const priceSide = determineSide(side);
+  if (priceSide === "sell") {
+    price = bid;
+  }
+  return price;
+};
+
+const determineSide = (side) => {
+  let priceSide = side;
+  const positionSides = ["long", "short"];
+  if (positionSides.includes(side)) {
+    priceSide = "sell";
+    if (side === "short") {
+      priceSide = "buy";
+    }
+  }
+  return priceSide;
+};

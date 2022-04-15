@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import PositionsTableRowData from "./PositionsTableRowData";
 import { calculateProfitLoss } from "../shared/calculations";
+import { selectPrice } from "../shared/quotes";
 
 export default function PositionsTable({ socket, quotes, orders, positions }) {
   const getRowClassName = (profitOrLoss) => {
@@ -18,7 +19,8 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
   const positionsTableData = positions.map((positionObj) => {
     const { symbol, side, avg_entry_price, qty, current_price } = positionObj;
     const quantity = Math.abs(qty);
-    let price = quotes[symbol];
+    const priceObj = quotes[symbol];
+    let price = selectPrice(priceObj, side);
     if (!price) {
       price = parseFloat(current_price);
     }

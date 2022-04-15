@@ -19,12 +19,13 @@ import {
   displayOrderButton,
   isForbiddenStopPrice,
   isDisabled,
+  selectPrice,
 } from "../shared/quotes";
 
 export default function QuotesTableRowData({
   socket,
   symbol,
-  price,
+  priceObj,
   removeFromWatchlist,
   removeFromQuotesAndWatchlist,
   tradeableAssets,
@@ -36,6 +37,8 @@ export default function QuotesTableRowData({
   const [limitPrice, setLimitPrice] = useState(defaultLimitPrice);
   const [side, setSide] = useState("buy");
   const [orderId, setOrderId] = useState("");
+
+  const price = selectPrice(priceObj, side);
 
   useEffect(() => {
     socket.on(`${symbol} newOrderResponse`, (data) => {
@@ -210,7 +213,7 @@ export default function QuotesTableRowData({
 QuotesTableRowData.propTypes = {
   socket: PropTypes.object.isRequired,
   symbol: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
+  priceObj: PropTypes.object.isRequired,
   removeFromWatchlist: PropTypes.func.isRequired,
   removeFromQuotesAndWatchlist: PropTypes.func.isRequired,
   tradeableAssets: PropTypes.object.isRequired,
@@ -220,7 +223,7 @@ QuotesTableRowData.propTypes = {
 QuotesTableRowData.defaultProps = {
   socket: {},
   symbol: "",
-  price: 0,
+  priceObj: {},
   tradeableAssets: {},
   accountInfo: {},
 };
