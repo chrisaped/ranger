@@ -14,7 +14,7 @@ const alpacaInstance = new Alpaca({
   keyId: process.env.ALPACA_API_KEY,
   secretKey: process.env.ALPACA_API_SECRET,
   feed: "sip",
-  paper: true,
+  paper: false,
 });
 const alpacaSocket = alpacaInstance.data_stream_v2;
 const alpacaTradeSocket = alpacaInstance.trade_ws;
