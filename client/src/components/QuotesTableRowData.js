@@ -80,12 +80,17 @@ export default function QuotesTableRowData({
   )
     ? "form-control border border-danger"
     : "form-control";
-  const profitTarget = calculateProfitTarget(limitPrice, stopPrice, side);
   const accountSize = accountInfo.buying_power;
   const positionSize = calculatePositionSize(
     limitPrice,
     stopPrice,
     accountSize
+  );
+  const profitTarget = calculateProfitTarget(
+    limitPrice,
+    stopPrice,
+    side,
+    positionSize
   );
   const positionSizeDisplay = positionSize.toLocaleString();
   const moneyUpfront = calculateMoneyUpfront(

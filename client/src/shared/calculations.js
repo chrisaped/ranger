@@ -1,17 +1,39 @@
 import {
   riskPercentage,
   defaultStopPriceDifference,
-  profitTargetMultiple,
+  profitTarget,
 } from "./constants";
 
 const calculateRiskPerShare = (limitPrice, stopPrice) => {
   return Math.abs(limitPrice - stopPrice);
 };
 
-export const calculateProfitTarget = (limitPrice, stopPrice, side) => {
+const calculateProfitTargetMultiple = (
+  limitPrice,
+  positionSize,
+  riskPerShare
+) => {
+  return (
+    ((profitTarget + limitPrice * positionSize) / positionSize - limitPrice) /
+    riskPerShare
+  );
+};
+
+export const calculateProfitTarget = (
+  limitPrice,
+  stopPrice,
+  side,
+  positionSize
+) => {
   const limitPriceFloat = parseFloat(limitPrice);
   const stopPriceFloat = parseFloat(stopPrice);
   const riskPerShare = calculateRiskPerShare(limitPriceFloat, stopPriceFloat);
+  const profitTargetMultiple = calculateProfitTargetMultiple(
+    limitPriceFloat,
+    positionSize,
+    riskPerShare
+  );
+
   if (side === "buy") {
     return (limitPriceFloat + riskPerShare * profitTargetMultiple)?.toFixed(2);
   }
