@@ -10,11 +10,22 @@ const Alpaca = require("@alpacahq/alpaca-trade-api");
 const alpaca = require("./alpaca");
 const indicators = require("./indicators");
 
+const isPaper = process.env.IS_PAPER;
+let alpacaApiKey = process.env.ALPACA_API_KEY;
+let alpacaApiSecret = process.env.ALPACA_API_SECRET;
+let alpacaWatchlistId = process.env.ALPACA_WATCHLIST_ID;
+
+if (isPaper) {
+  alpacaApiKey = process.env.PAPER_ALPACA_API_KEY;
+  alpacaApiSecret = process.env.PAPER_ALPACA_API_SECRET;
+  alpacaWatchlistId = process.env.PAPER_ALPACA_WATCHLIST_ID;
+}
+
 const alpacaInstance = new Alpaca({
-  keyId: process.env.ALPACA_API_KEY,
-  secretKey: process.env.ALPACA_API_SECRET,
+  keyId: alpacaApiKey,
+  secretKey: alpacaApiSecret,
   feed: "sip",
-  paper: false,
+  paper: isPaper,
 });
 const alpacaSocket = alpacaInstance.data_stream_v2;
 const alpacaTradeSocket = alpacaInstance.trade_ws;
@@ -72,7 +83,7 @@ io.on("connection", (socket) => {
   });
 
   alpacaSocket.onConnect(() => {
-    alpaca.getWatchlist(alpacaInstance, alpacaSocket, io);
+    alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
     alpaca.getPositions(alpacaInstance, io, alpacaSocket);
     alpaca.getOrders(alpacaInstance, io);
     alpaca.getAssets(alpacaInstance, io);
@@ -100,17 +111,17 @@ io.on("connection", (socket) => {
 
   socket.on("addToWatchlist", (symbol) => {
     alpaca.getSnapshot(alpacaInstance, io, symbol);
-    alpaca.addToWatchlist(alpacaInstance, symbol);
+    alpaca.addToWatchlist(alpacaInstance, symbol, alpacaWatchlistId);
     alpacaSocket.subscribeForQuotes([symbol]);
   });
 
   socket.on("removeFromQuotesAndWatchlist", (symbol) => {
     alpacaSocket.unsubscribeFromQuotes([symbol]);
-    alpaca.deleteFromWatchlist(alpacaInstance, symbol);
+    alpaca.deleteFromWatchlist(alpacaInstance, symbol, alpacaWatchlistId);
   });
 
   socket.on("removeFromWatchlist", (symbol) => {
-    alpaca.deleteFromWatchlist(alpacaInstance, symbol);
+    alpaca.deleteFromWatchlist(alpacaInstance, symbol, alpacaWatchlistId);
   });
 
   socket.on("cancelOrder", (orderId) => {
