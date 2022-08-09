@@ -9,6 +9,7 @@ require("dotenv").config();
 const Alpaca = require("@alpacahq/alpaca-trade-api");
 const alpaca = require("./alpaca");
 const indicators = require("./indicators");
+const rangerApi = require("./rangerApi");
 
 const isPaper = process.env.IS_PAPER;
 let alpacaApiKey = process.env.ALPACA_API_KEY;
