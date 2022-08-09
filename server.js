@@ -3,7 +3,7 @@ const app = express();
 const http = require("http").createServer(app);
 const port = process.env.PORT || 5000;
 const io = require("socket.io")(http, {
-  cors: { origins: ["http://localhost:3000"] },
+  cors: { origins: ["http://localhost:2000"] },
 });
 require("dotenv").config();
 const Alpaca = require("@alpacahq/alpaca-trade-api");
