@@ -6,8 +6,8 @@ const axiosInstance = axios.create({
 });
 
 module.exports = {
-  createPosition: async function () {
-    const response = await axiosInstance.get("/create_position");
+  processPosition: async function (orderData) {
+    const response = await axiosInstance.post("/process_position", orderData);
     console.log(response.data);
   },
 };
