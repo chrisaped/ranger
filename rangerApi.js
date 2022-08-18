@@ -6,8 +6,11 @@ const axiosInstance = axios.create({
 });
 
 module.exports = {
-  processPosition: async function (orderData) {
-    const response = await axiosInstance.post("/process_position", orderData);
-    console.log(response.data);
+  fetchPositionState: async function (orderData) {
+    const response = await axiosInstance.post(
+      "/fetch_position_state",
+      orderData
+    );
+    console.log("here is the positionState", response.data);
   },
 };
