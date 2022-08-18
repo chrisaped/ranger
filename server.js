@@ -107,6 +107,7 @@ io.on("connection", (socket) => {
 
   socket.on("createOrder", (orderObject) => {
     console.log("createOrder request", orderObject);
+    rangerApi.createPosition(orderObject);
     alpaca.createOrder(alpacaInstance, orderObject, io);
   });
 
