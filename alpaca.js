@@ -86,6 +86,7 @@ module.exports = {
     indicators.calculateIndicators(barObj, alpacaInstance, io, this);
   },
   createOrder: async function (alpacaInstance, orderObject, _io) {
+    if ("stop_price" in orderObject) delete orderObject.stop_price;
     const response = await alpacaInstance.createOrder(orderObject);
     console.log("createOrder", response);
     // emit error here
