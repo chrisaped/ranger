@@ -67,6 +67,7 @@ io.on("connection", (socket) => {
       io.emit("canceledOrderResponse", data);
     }
     if (symbol && event === "fill") {
+      rangerApi.createOrder(data);
       alpaca.getPositions(alpacaInstance, io, alpacaSocket);
       alpaca.getOrders(alpacaInstance, io);
 
