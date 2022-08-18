@@ -2,15 +2,15 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import SpinnerButton from "./SpinnerButton";
 import {
-  calculateProfitTarget,
   calculatePositionSize,
   calculateMoneyUpfront,
   calculateDefaultStopPrice,
+  calculate1xProfitTarget,
 } from "../shared/calculations";
 import {
   createOrder,
   cancelOrder,
-  createBracketOrderObject,
+  createLimitOrderWithStop,
 } from "../shared/orders";
 import { updateNumberField } from "../shared/inputs";
 import { displayPrice } from "../shared/formatting";
@@ -86,12 +86,7 @@ export default function QuotesTableRowData({
     stopPrice,
     accountSize
   );
-  const profitTarget = calculateProfitTarget(
-    limitPrice,
-    stopPrice,
-    side,
-    positionSize
-  );
+  const profitTarget = calculate1xProfitTarget(limitPrice, stopPrice, side);
   const positionSizeDisplay = positionSize.toLocaleString();
   const moneyUpfront = calculateMoneyUpfront(
     limitPrice,
@@ -99,15 +94,14 @@ export default function QuotesTableRowData({
     accountSize
   );
   const moneyUpfrontDisplay = Math.round(moneyUpfront).toLocaleString();
-  const orderObject = createBracketOrderObject(
+  const orderObject = createLimitOrderWithStop(
     symbol,
-    side,
     positionSize,
-    profitTarget,
-    stopPrice,
-    limitPrice
+    side,
+    limitPrice,
+    stopPrice
   );
-  const createBracketOrder = () => createOrder(socket, orderObject);
+  const createLimitOrder = () => createOrder(socket, orderObject);
   const cancelNewOrder = () => {
     cancelOrder(socket, orderId);
     setOrderId("");
@@ -182,7 +176,7 @@ export default function QuotesTableRowData({
               buttonClass={buttonClass}
               buttonText={buttonText}
               buttonDisabled={isOrderButtonDisabled}
-              onClickFunction={createBracketOrder}
+              onClickFunction={createLimitOrder}
               orderId={orderId}
               symbol={symbol}
             />

@@ -50,7 +50,8 @@ export default function PositionsTableRowData({
     ? "bg-secondary"
     : "bg-danger text-white";
   const cost = Math.round(avgEntryPrice * quantity).toLocaleString();
-  const limitOrder = createLimitOrder(symbol, quantity, side, limitPrice);
+  const orderSide = side === "long" ? "sell" : "buy";
+  const limitOrder = createLimitOrder(symbol, quantity, orderSide, limitPrice);
   const submitOrder = () => createOrder(socket, limitOrder);
   const cancelBracket = () => cancelOrder(socket, targetOrderId);
   const orderButtonText = side === "long" ? "Sell" : "Buy";

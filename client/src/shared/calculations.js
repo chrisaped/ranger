@@ -40,6 +40,17 @@ export const calculateProfitTarget = (
   return (limitPriceFloat - riskPerShare * profitTargetMultiple)?.toFixed(2);
 };
 
+export const calculate1xProfitTarget = (limitPrice, stopPrice, side) => {
+  const limitPriceFloat = parseFloat(limitPrice);
+  const stopPriceFloat = parseFloat(stopPrice);
+  const riskPerShare = calculateRiskPerShare(limitPriceFloat, stopPriceFloat);
+
+  if (side === "buy") {
+    return (limitPriceFloat + riskPerShare)?.toFixed(2);
+  }
+  return (limitPriceFloat - riskPerShare)?.toFixed(2);
+};
+
 export const calculatePositionSize = (limitPrice, stopPrice, accountSize) => {
   const limitPriceFloat = parseFloat(limitPrice);
   const stopPriceFloat = parseFloat(stopPrice);

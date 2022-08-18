@@ -18,7 +18,7 @@ export default function QuotesTable({
           <th>Side</th>
           <th>Price</th>
           <th>Limit</th>
-          <th>Target</th>
+          <th>1x Target</th>
           <th>Stop</th>
           <th>Shares</th>
           <th>Cost</th>

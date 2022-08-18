@@ -41,17 +41,31 @@ export const createMarketOrder = (symbol, qty, side) => {
 };
 
 export const createLimitOrder = (symbol, qty, side, limitPrice) => {
-  let action = "sell";
-  if (side === "short") {
-    action = "buy";
-  }
   return {
-    side: action,
+    side: side,
     symbol: symbol,
     type: "limit",
     limit_price: `${limitPrice}`,
     qty: `${qty}`,
     time_in_force: "gtc",
+  };
+};
+
+export const createLimitOrderWithStop = (
+  symbol,
+  qty,
+  side,
+  limitPrice,
+  stopPrice
+) => {
+  return {
+    side: side,
+    symbol: symbol,
+    type: "limit",
+    limit_price: `${limitPrice}`,
+    qty: `${qty}`,
+    time_in_force: "gtc",
+    stop_price: `${stopPrice}`,
   };
 };
 
