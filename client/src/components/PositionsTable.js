@@ -17,16 +17,23 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
   };
 
   const positionsTableData = positions.map((positionObj) => {
-    const { symbol, side, avg_entry_price, qty, current_price } = positionObj;
-    const quantity = Math.abs(qty);
+    const {
+      symbol,
+      side,
+      current_quantity,
+      initial_price,
+      profit_targets,
+      stop_target,
+    } = positionObj;
+    const quantity = Math.abs(current_quantity);
     const priceObj = quotes[symbol];
     let price = selectPrice(priceObj, side);
     if (!price) {
-      price = parseFloat(current_price);
+      price = parseFloat(initial_price);
     }
     const profitOrLoss = calculateProfitLoss(
       price,
-      avg_entry_price,
+      initial_price,
       quantity,
       side
     ).toFixed(2);
@@ -38,11 +45,12 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
           socket={socket}
           symbol={symbol}
           side={side}
-          avgEntryPrice={avg_entry_price}
+          initialPrice={initial_price}
           price={price}
           profitOrLoss={profitOrLoss}
           quantity={quantity}
-          orders={orders}
+          profitTargets={profit_targets}
+          stopTarget={stop_target}
         />
       </tr>
     );
@@ -56,7 +64,9 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
           <th>Side</th>
           <th>Entry</th>
           <th>Price</th>
-          <th>Target</th>
+          <th>1x</th>
+          <th>2x</th>
+          <th>3x</th>
           <th>Stop</th>
           <th>P/L</th>
           <th>Shares</th>

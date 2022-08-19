@@ -3,22 +3,18 @@ import PropTypes from "prop-types";
 import SpinnerButton from "./SpinnerButton";
 import { displayPrice } from "../shared/formatting";
 import { updateNumberField } from "../shared/inputs";
-import {
-  createLimitOrder,
-  createOrder,
-  cancelOrder,
-  extractBracketOrderInfo,
-} from "../shared/orders";
+import { createLimitOrder, createOrder, cancelOrder } from "../shared/orders";
 
 export default function PositionsTableRowData({
   socket,
   symbol,
   side,
-  avgEntryPrice,
+  initialPrice,
   price,
   profitOrLoss,
   quantity,
-  orders,
+  profitTargets,
+  stopTarget,
 }) {
   const defaultLimitPrice = 0;
   const [orderId, setOrderId] = useState("");
@@ -37,28 +33,28 @@ export default function PositionsTableRowData({
     }
   }, [price, limitPrice]);
 
-  const { targetPrice, targetOrderStatus, stopPrice, targetOrderId, hasLegs } =
-    extractBracketOrderInfo(symbol, quantity, avgEntryPrice, orders);
   const sideInCaps = side.toUpperCase();
-  const entryPrice = displayPrice(avgEntryPrice);
+  const entryPrice = displayPrice(initialPrice);
   const currentPrice = displayPrice(price);
-  const hasNoBracketOrder = !hasLegs || targetOrderStatus === "canceled";
-  const targetPriceClassName = hasNoBracketOrder
-    ? "bg-secondary"
-    : "bg-success text-white";
-  const stopPriceClassName = hasNoBracketOrder
-    ? "bg-secondary"
-    : "bg-danger text-white";
-  const cost = Math.round(avgEntryPrice * quantity).toLocaleString();
+  const stopPrice = displayPrice(stopTarget.price);
+  const cost = Math.round(initialPrice * quantity).toLocaleString();
   const orderSide = side === "long" ? "sell" : "buy";
   const limitOrder = createLimitOrder(symbol, quantity, orderSide, limitPrice);
   const submitOrder = () => createOrder(socket, limitOrder);
-  const cancelBracket = () => cancelOrder(socket, targetOrderId);
   const orderButtonText = side === "long" ? "Sell" : "Buy";
   const cancelNewOrder = () => {
     cancelOrder(socket, orderId);
     setOrderId("");
   };
+
+  const profitTargetData = profitTargets.map((profitTarget) => {
+    const { price, filled } = profitTarget;
+    const targetPriceClassName = filled
+      ? "bg-secondary"
+      : "bg-success text-white";
+
+    return <td className={targetPriceClassName}>{displayPrice(price)}</td>;
+  });
 
   return (
     <>
@@ -74,49 +70,33 @@ export default function PositionsTableRowData({
       >
         <strong>{currentPrice}</strong>
       </td>
-      <td className={targetPriceClassName}>{targetPrice}</td>
-      <td className={stopPriceClassName}>{stopPrice}</td>
+      {profitTargetData}
+      <td className="bg-danger text-white">{stopPrice}</td>
       <td>${profitOrLoss}</td>
       <td>{quantity.toLocaleString()} shares</td>
       <td>${cost}</td>
       <td className="">
-        {hasNoBracketOrder ? (
-          <>
-            {!orderId && (
-              <div className="d-flex">
-                <input
-                  className="form-control"
-                  type="text"
-                  size="3"
-                  value={limitPrice}
-                  placeholder="Limit Price"
-                  onChange={(e) =>
-                    updateNumberField(e.target.value, setLimitPrice)
-                  }
-                />
-                <SpinnerButton
-                  socket={socket}
-                  buttonClass="btn btn-dark"
-                  buttonText={orderButtonText}
-                  buttonDisabled={!hasNoBracketOrder || !limitPrice}
-                  onClickFunction={submitOrder}
-                  symbol={symbol}
-                />
-              </div>
-            )}
-          </>
-        ) : (
-          <SpinnerButton
-            socket={socket}
-            buttonClass="btn btn-dark"
-            buttonText="Cancel Bracket"
-            buttonDisabled={hasNoBracketOrder}
-            onClickFunction={cancelBracket}
-            orderId={targetOrderId}
-            symbol={symbol}
-          />
+        {!orderId && (
+          <div className="d-flex">
+            <input
+              className="form-control"
+              type="text"
+              size="3"
+              value={limitPrice}
+              placeholder="Limit Price"
+              onChange={(e) => updateNumberField(e.target.value, setLimitPrice)}
+            />
+            <SpinnerButton
+              socket={socket}
+              buttonClass="btn btn-dark"
+              buttonText={orderButtonText}
+              buttonDisabled={!limitPrice}
+              onClickFunction={submitOrder}
+              symbol={symbol}
+            />
+          </div>
         )}
-        {hasNoBracketOrder && orderId && (
+        {orderId && (
           <SpinnerButton
             socket={socket}
             buttonClass="btn btn-dark"
@@ -135,7 +115,7 @@ PositionsTableRowData.propTypes = {
   socket: PropTypes.object.isRequired,
   symbol: PropTypes.string.isRequired,
   side: PropTypes.string.isRequired,
-  avgEntryPrice: PropTypes.string.isRequired,
+  initialPrice: PropTypes.string.isRequired,
   price: PropTypes.number.isRequired,
   profitOrLoss: PropTypes.string.isRequired,
   quantity: PropTypes.number.isRequired,
@@ -162,7 +142,7 @@ PositionsTableRowData.defaultProps = {
   socket: {},
   symbol: "",
   side: "",
-  avgEntryPrice: 0,
+  initialPrice: 0,
   price: 0,
   profitOrLoss: 0,
   quantity: 0,
