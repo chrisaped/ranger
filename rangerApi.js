@@ -8,15 +8,15 @@ const axiosInstance = axios.create({
 module.exports = {
   createPosition: async function (orderObject) {
     const response = await axiosInstance.post("/create_position", orderObject);
-    console.log("here is the createPosition response", response);
+    console.log("createPosition response", response.status);
   },
   createOrder: async function (orderData) {
     const response = await axiosInstance.post("/create_order", orderData);
-    console.log("here is the createOrder response", response);
+    console.log("createOrder response", response.status);
   },
   getPositions: async function (io) {
     const response = await axiosInstance.get("/get_positions");
-    console.log("here is the getPositions response", response);
-    io.emit("getPositionsResponse", response);
+    console.log("here is the getPositions response", response.data);
+    io.emit("getPositionsResponse", response.data);
   },
 };

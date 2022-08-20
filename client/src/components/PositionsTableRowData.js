@@ -19,6 +19,9 @@ export default function PositionsTableRowData({
   const defaultLimitPrice = 0;
   const [orderId, setOrderId] = useState("");
   const [limitPrice, setLimitPrice] = useState(defaultLimitPrice);
+  const [targetPrice, setTargetPrice] = useState(0.0);
+  const [targetQuantity, setTargetQuantity] = useState(0);
+  const [targetSide, setTargetSide] = useState("");
 
   useEffect(() => {
     socket.on(`${symbol} newOrderResponse`, (data) => {
@@ -32,6 +35,57 @@ export default function PositionsTableRowData({
       setLimitPrice(price);
     }
   }, [price, limitPrice]);
+
+  useEffect(() => {
+    const unFilledTargets = profitTargets.filter(
+      (target) => target.filled === false
+    );
+
+    if (unFilledTargets.length > 0) {
+      const firstUnfilledTarget = unFilledTargets[0];
+      setTargetPrice(parseFloat(firstUnfilledTarget.price));
+      setTargetQuantity(firstUnfilledTarget.quantity);
+      setTargetSide(firstUnfilledTarget.side);
+    }
+  }, [profitTargets]);
+
+  // if long position
+  let hasReachedTargetPrice = price >= targetPrice;
+  if (side === "short") {
+    hasReachedTargetPrice = price <= targetPrice;
+  }
+
+  if (hasReachedTargetPrice) {
+    const targetOrder = createLimitOrder(
+      symbol,
+      targetQuantity,
+      targetSide,
+      targetPrice
+    );
+    console.log("target has been reached!");
+    createOrder(socket, targetOrder);
+  }
+
+  const stopTargetPrice = parseFloat(stopTarget.price);
+  const stopTargetQuantity = stopTarget.quantity;
+  const stopTargetSide = stopTarget.side;
+
+  // if long position
+  let hasReachedStopPrice = price <= stopTargetPrice;
+  if (side === "short") {
+    hasReachedStopPrice = price >= stopTargetPrice;
+  }
+
+  if (hasReachedStopPrice) {
+    const stopOrder = createLimitOrder(
+      symbol,
+      stopTargetQuantity,
+      stopTargetSide,
+      stopTargetPrice
+    );
+    console.log("stop target has been reached!");
+    createOrder(socket, stopOrder);
+  }
 
   const sideInCaps = side.toUpperCase();
   const entryPrice = displayPrice(initialPrice);
