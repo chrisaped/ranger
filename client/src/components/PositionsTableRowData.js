@@ -43,7 +43,7 @@ export default function PositionsTableRowData({
 
     if (unFilledTargets.length > 0) {
       const firstUnfilledTarget = unFilledTargets[0];
-      setTargetPrice(parseFloat(firstUnfilledTarget.price));
+      setTargetPrice(firstUnfilledTarget.price);
       setTargetQuantity(firstUnfilledTarget.quantity);
       setTargetSide(firstUnfilledTarget.side);
     }
@@ -55,7 +55,7 @@ export default function PositionsTableRowData({
     hasReachedTargetPrice = price <= targetPrice;
   }
 
-  if (hasReachedTargetPrice) {
+  if (hasReachedTargetPrice && targetQuantity > 0 && targetPrice > 0) {
     const targetOrder = createLimitOrder(
       symbol,
       targetQuantity,
@@ -66,7 +66,7 @@ export default function PositionsTableRowData({
     createOrder(socket, targetOrder);
   }
 
-  const stopTargetPrice = parseFloat(stopTarget.price);
+  const stopTargetPrice = stopTarget.price;
   const stopTargetQuantity = stopTarget.quantity;
   const stopTargetSide = stopTarget.side;
 
@@ -76,7 +76,7 @@ export default function PositionsTableRowData({
     hasReachedStopPrice = price >= stopTargetPrice;
   }
 
-  if (hasReachedStopPrice) {
+  if (hasReachedStopPrice && stopTargetQuantity > 0 && stopTargetPrice > 0) {
     const stopOrder = createLimitOrder(
       symbol,
       stopTargetQuantity,
