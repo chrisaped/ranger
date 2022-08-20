@@ -102,10 +102,9 @@ export default function PositionsTableRowData({
   };
 
   const profitTargetData = profitTargets.map((profitTarget) => {
-    const { price, filled } = profitTarget;
-    const targetPriceClassName = filled
-      ? "bg-secondary"
-      : "bg-success text-white";
+    const { price } = profitTarget;
+    const targetPriceClassName =
+      price === targetPrice ? "bg-success text-white" : "bg-secondary";
 
     return <td className={targetPriceClassName}>{displayPrice(price)}</td>;
   });
