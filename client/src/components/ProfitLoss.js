@@ -12,6 +12,7 @@ export default function ProfitLoss({ orders, positions, quotes }) {
         entryPrice: parseFloat(positionObj.avg_entry_price),
         side: positionObj.side,
         currentPrice: positionObj.current_price,
+        profitOrLoss: positionObj.profit_or_loss,
       };
     });
     return newObj;
@@ -28,9 +29,8 @@ export default function ProfitLoss({ orders, positions, quotes }) {
       }
       const calculatedProfitLoss = calculateProfitLoss(
         price,
-        infoObj.entryPrice,
         infoObj.shares,
-        side
+        infoObj.profitOrLoss
       );
       newObj[symbol] = parseFloat(calculatedProfitLoss);
     });
