@@ -24,6 +24,7 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
       initial_filled_avg_price,
       profit_targets,
       stop_target,
+      profit_or_loss,
     } = positionObj;
     const quantity = Math.abs(current_quantity);
     const priceObj = quotes[symbol];
@@ -33,9 +34,8 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
     }
     const profitOrLoss = calculateProfitLoss(
       price,
-      initial_filled_avg_price,
       quantity,
-      side
+      profit_or_loss
     ).toFixed(2);
     const rowClassName = getRowClassName(profitOrLoss);
 
