@@ -8,7 +8,7 @@ import {
   calculate1xProfitTarget,
 } from "../shared/calculations";
 import {
-  createOrder,
+  createNewOrder,
   cancelOrder,
   createLimitOrderWithStop,
 } from "../shared/orders";
@@ -101,7 +101,7 @@ export default function QuotesTableRowData({
     limitPrice,
     stopPrice
   );
-  const createLimitOrder = () => createOrder(socket, orderObject);
+  const createLimitOrder = () => createNewOrder(socket, orderObject);
   const cancelNewOrder = () => {
     cancelOrder(socket, orderId);
     setOrderId("");

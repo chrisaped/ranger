@@ -69,7 +69,6 @@ io.on("connection", (socket) => {
     }
     if (symbol && event === "fill") {
       rangerApi.createOrder(data, io);
-      rangerApi.getPositions(io);
       // alpaca.getPositions(alpacaInstance, io, alpacaSocket);
       // alpaca.getOrders(alpacaInstance, io);
 
@@ -111,6 +110,11 @@ io.on("connection", (socket) => {
 
   socket.on("createOrder", (orderObject) => {
     console.log("createOrder request", orderObject);
+    alpaca.createOrder(alpacaInstance, orderObject, io);
+  });
+
+  socket.on("createNewOrder", (orderObject) => {
+    console.log("createNewOrder request", orderObject);
     rangerApi.createPosition(orderObject);
     alpaca.createOrder(alpacaInstance, orderObject, io);
   });

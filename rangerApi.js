@@ -10,9 +10,10 @@ module.exports = {
     const response = await axiosInstance.post("/create_position", orderObject);
     console.log("createPosition response", response.status);
   },
-  createOrder: async function (orderData) {
+  createOrder: async function (orderData, io) {
     const response = await axiosInstance.post("/create_order", orderData);
     console.log("createOrder response", response.status);
+    this.getPositions(io);
   },
   getPositions: async function (io) {
     const response = await axiosInstance.get("/get_positions");

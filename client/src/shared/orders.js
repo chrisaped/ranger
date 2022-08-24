@@ -73,6 +73,10 @@ export const createOrder = (socket, orderObject) => {
   socket.emit("createOrder", orderObject);
 };
 
+export const createNewOrder = (socket, orderObject) => {
+  socket.emit("createNewOrder", orderObject);
+};
+
 export const cancelOrder = (socket, orderId) => {
   socket.emit("cancelOrder", orderId);
 };
