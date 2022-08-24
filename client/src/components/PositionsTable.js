@@ -21,7 +21,7 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
       symbol,
       side,
       current_quantity,
-      initial_price,
+      initial_filled_avg_price,
       profit_targets,
       stop_target,
     } = positionObj;
@@ -29,11 +29,11 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
     const priceObj = quotes[symbol];
     let price = selectPrice(priceObj, side);
     if (!price) {
-      price = parseFloat(initial_price);
+      price = parseFloat(initial_filled_avg_price);
     }
     const profitOrLoss = calculateProfitLoss(
       price,
-      initial_price,
+      initial_filled_avg_price,
       quantity,
       side
     ).toFixed(2);
@@ -45,7 +45,7 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
           socket={socket}
           symbol={symbol}
           side={side}
-          initialPrice={initial_price}
+          initialPrice={initial_filled_avg_price}
           price={price}
           profitOrLoss={profitOrLoss}
           quantity={quantity}
