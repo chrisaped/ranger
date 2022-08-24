@@ -49,43 +49,48 @@ export default function PositionsTableRowData({
     }
   }, [profitTargets]);
 
-  // if long position
-  let hasReachedTargetPrice = price >= targetPrice;
-  if (side === "short") {
-    hasReachedTargetPrice = price <= targetPrice;
-  }
+  useEffect(() => {
+    // if long position
+    let hasReachedTargetPrice = price >= targetPrice;
+    if (side === "short") {
+      hasReachedTargetPrice = price <= targetPrice;
+    }
 
-  if (hasReachedTargetPrice && targetQuantity > 0 && targetPrice > 0) {
-    const targetOrder = createLimitOrder(
-      symbol,
-      targetQuantity,
-      targetSide,
-      targetPrice
-    );
-    console.log("target has been reached!");
-    createOrder(socket, targetOrder);
-  }
+    if (hasReachedTargetPrice && targetQuantity > 0 && targetPrice > 0) {
+      console.log("it has reached the target price");
+      console.log("targetQuantity", targetQuantity);
+      console.log("targetPrice", targetPrice);
+      const targetOrder = createLimitOrder(
+        symbol,
+        targetQuantity,
+        targetSide,
+        targetPrice
+      );
+      console.log("target has been reached!");
+      createOrder(socket, targetOrder);
+    }
 
-  const stopTargetPrice = stopTarget.price;
-  const stopTargetQuantity = stopTarget.quantity;
-  const stopTargetSide = stopTarget.side;
+    const stopTargetPrice = stopTarget.price;
+    const stopTargetQuantity = stopTarget.quantity;
+    const stopTargetSide = stopTarget.side;
 
-  // if long position
-  let hasReachedStopPrice = price <= stopTargetPrice;
-  if (side === "short") {
-    hasReachedStopPrice = price >= stopTargetPrice;
-  }
+    // if long position
+    let hasReachedStopPrice = price <= stopTargetPrice;
+    if (side === "short") {
+      hasReachedStopPrice = price >= stopTargetPrice;
+    }
 
-  if (hasReachedStopPrice && stopTargetQuantity > 0 && stopTargetPrice > 0) {
-    const stopOrder = createLimitOrder(
-      symbol,
-      stopTargetQuantity,
-      stopTargetSide,
-      stopTargetPrice
-    );
-    console.log("stop target has been reached!");
-    createOrder(socket, stopOrder);
-  }
+    if (hasReachedStopPrice && stopTargetQuantity > 0 && stopTargetPrice > 0) {
+      const stopOrder = createLimitOrder(
+        symbol,
+        stopTargetQuantity,
+        stopTargetSide,
+        stopTargetPrice
+      );
+      console.log("stop target has been reached!");
+      createOrder(socket, stopOrder);
+    }
+  }, [targetPrice, price]);
 
   const sideInCaps = side.toUpperCase();
   const entryPrice = displayPrice(initialPrice);
