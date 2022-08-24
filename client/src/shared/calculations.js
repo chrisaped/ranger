@@ -72,9 +72,19 @@ export const calculateMoneyUpfront = (limitPrice, stopPrice, accountSize) => {
   return limitPrice * positionSize;
 };
 
-export const calculateProfitLoss = (currentPrice, shares, profitOrLoss) => {
-  const currentValue = parseFloat(shares * currentPrice);
-  return currentValue + profitOrLoss;
+export const calculateProfitLoss = (
+  currentPrice,
+  entryPrice,
+  shares,
+  side,
+  profitOrLoss
+) => {
+  const purchaseValue = shares * entryPrice;
+  const currentValue = shares * currentPrice + profitOrLoss;
+  if (side === "long") {
+    return currentValue - purchaseValue;
+  }
+  return purchaseValue - currentValue;
 };
 
 export const calculateProfitLossByValues = (
