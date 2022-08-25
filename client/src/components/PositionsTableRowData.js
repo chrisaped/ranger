@@ -132,7 +132,7 @@ export default function PositionsTableRowData({
         <strong>{currentPrice}</strong>
       </td>
       {profitTargetData}
-      <td>${profitOrLoss}</td>
+      <td>${profitOrLoss.toLocaleString()}</td>
       <td>{quantity.toLocaleString()} shares</td>
       <td>${cost}</td>
       <td className="">
@@ -163,7 +163,7 @@ PositionsTableRowData.propTypes = {
   socket: PropTypes.object.isRequired,
   symbol: PropTypes.string.isRequired,
   side: PropTypes.string.isRequired,
-  initialPrice: PropTypes.string.isRequired,
+  initialPrice: PropTypes.number.isRequired,
   price: PropTypes.number.isRequired,
   profitOrLoss: PropTypes.string.isRequired,
   quantity: PropTypes.number.isRequired,
