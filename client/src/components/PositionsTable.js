@@ -65,11 +65,11 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
           <th>Symbol</th>
           <th>Side</th>
           <th>Entry</th>
+          <th>Stop</th>
           <th>Price</th>
           <th>1x</th>
           <th>2x</th>
           <th>3x</th>
-          <th>Stop</th>
           <th>P/L</th>
           <th>Shares</th>
           <th>Cost</th>

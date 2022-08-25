@@ -22,6 +22,9 @@ export default function PositionsTableRowData({
   const [targetPrice, setTargetPrice] = useState(0.0);
   const [targetQuantity, setTargetQuantity] = useState(0);
   const [targetSide, setTargetSide] = useState("");
+  const [targetSubmitted, setTargetSubmitted] = useState(false);
+
+  console.log(`${symbol} targetPrice`, targetPrice);
 
   useEffect(() => {
     socket.on(`${symbol} newOrderResponse`, (data) => {
@@ -46,51 +49,62 @@ export default function PositionsTableRowData({
       setTargetPrice(firstUnfilledTarget.price);
       setTargetQuantity(firstUnfilledTarget.quantity);
       setTargetSide(firstUnfilledTarget.side);
+      setTargetSubmitted(false);
     }
   }, [profitTargets]);
 
-  useEffect(() => {
-    // if long position
-    let hasReachedTargetPrice = price >= targetPrice;
-    if (side === "short") {
-      hasReachedTargetPrice = price <= targetPrice;
-    }
+  // if long position
+  let hasReachedTargetPrice = price >= targetPrice;
+  if (side === "short") {
+    hasReachedTargetPrice = price <= targetPrice;
+  }
 
-    if (hasReachedTargetPrice && targetQuantity > 0 && targetPrice > 0) {
-      console.log("it has reached the target price");
-      console.log("targetQuantity", targetQuantity);
-      console.log("targetPrice", targetPrice);
-      const targetOrder = createLimitOrder(
-        symbol,
-        targetQuantity,
-        targetSide,
-        targetPrice
-      );
-      console.log("target has been reached!");
-      createOrder(socket, targetOrder);
-    }
+  if (
+    targetSubmitted === false &&
+    hasReachedTargetPrice &&
+    targetQuantity > 0 &&
+    targetPrice > 0
+  ) {
+    console.log("it has reached the target price");
+    console.log("targetQuantity", targetQuantity);
+    console.log("targetPrice", targetPrice);
+    const targetOrder = createLimitOrder(
+      symbol,
+      targetQuantity,
+      targetSide,
+      targetPrice
+    );
+    console.log("target has been reached!");
+    createOrder(socket, targetOrder);
+    setTargetSubmitted(true);
+  }
 
-    const stopTargetPrice = stopTarget.price;
-    const stopTargetQuantity = stopTarget.quantity;
-    const stopTargetSide = stopTarget.side;
+  const stopTargetPrice = stopTarget.price;
+  const stopTargetQuantity = stopTarget.quantity;
+  const stopTargetSide = stopTarget.side;
 
-    // if long position
-    let hasReachedStopPrice = price <= stopTargetPrice;
-    if (side === "short") {
-      hasReachedStopPrice = price >= stopTargetPrice;
-    }
+  // if long position
+  let hasReachedStopPrice = price <= stopTargetPrice;
+  if (side === "short") {
+    hasReachedStopPrice = price >= stopTargetPrice;
+  }
 
-    if (hasReachedStopPrice && stopTargetQuantity > 0 && stopTargetPrice > 0) {
-      const stopOrder = createLimitOrder(
-        symbol,
-        stopTargetQuantity,
-        stopTargetSide,
-        stopTargetPrice
-      );
-      console.log("stop target has been reached!");
-      createOrder(socket, stopOrder);
-    }
-  }, [targetPrice, price]);
+  if (
+    targetSubmitted === false &&
+    hasReachedStopPrice &&
+    stopTargetQuantity > 0 &&
+    stopTargetPrice > 0
+  ) {
+    const stopOrder = createLimitOrder(
+      symbol,
+      stopTargetQuantity,
+      stopTargetSide,
+      stopTargetPrice
+    );
+    console.log("stop target has been reached!");
+    createOrder(socket, stopOrder);
+    setTargetSubmitted(true);
+  }
 
   const sideInCaps = side.toUpperCase();
   const entryPrice = displayPrice(initialPrice);
@@ -120,7 +134,8 @@ export default function PositionsTableRowData({
         <strong>{symbol}</strong>
       </td>
       <td>{sideInCaps}</td>
-      <td className="bg-info">{entryPrice}</td>
+      <td>{entryPrice}</td>
+      <td className="bg-danger text-white">{stopPrice}</td>
       <td
         className="bg-warning"
         onClick={() => setLimitPrice(currentPrice)}
@@ -129,7 +144,6 @@ export default function PositionsTableRowData({
         <strong>{currentPrice}</strong>
       </td>
       {profitTargetData}
-      <td className="bg-danger text-white">{stopPrice}</td>
       <td>${profitOrLoss}</td>
       <td>{quantity.toLocaleString()} shares</td>
       <td>${cost}</td>
