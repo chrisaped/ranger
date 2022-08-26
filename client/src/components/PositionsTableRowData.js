@@ -74,10 +74,12 @@ export default function PositionsTableRowData({
   }, [stopTarget]);
 
   const hasReachedTargetPrice = (targetPrice) => {
-    if (side === "long") {
-      return price >= targetPrice;
+    if (targetPrice !== 0) {
+      if (side === "long") {
+        return price >= targetPrice;
+      }
+      return price <= targetPrice;
     }
-    return price <= targetPrice;
   };
 
   if (!firstTargetSubmitted && hasReachedTargetPrice(firstTargetPrice)) {
@@ -116,10 +118,12 @@ export default function PositionsTableRowData({
   }
 
   const hasReachedStopPrice = (stopPrice) => {
-    if (side === "long") {
-      return price <= stopPrice;
+    if (stopPrice !== 0) {
+      if (side === "long") {
+        return price <= stopPrice;
+      }
+      return price >= stopPrice;
     }
-    return price >= stopPrice;
   };
 
   if (!stopTargetSubmitted && hasReachedStopPrice(stopTargetPrice)) {
@@ -154,12 +158,17 @@ export default function PositionsTableRowData({
   }
 
   const profitTargetData = profitTargets.map((profitTarget) => {
+    const profitTargetPrice = profitTarget.price;
     const targetPriceClassName =
-      profitTarget.price === activeProfitTargetPrice
+      profitTargetPrice === activeProfitTargetPrice
         ? "bg-success text-white"
         : "bg-secondary";
 
-    return <td className={targetPriceClassName}>{displayPrice(price)}</td>;
+    return (
+      <td className={targetPriceClassName}>
+        {displayPrice(profitTargetPrice)}
+      </td>
+    );
   });
 
   return (
