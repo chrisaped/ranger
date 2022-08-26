@@ -77,12 +77,12 @@ export const calculateProfitLoss = (
   entryPrice,
   shares,
   side,
-  profitOrLoss
+  grossEarnings
 ) => {
-  const profitOrLossFloat = parseFloat(profitOrLoss);
+  const grossEarningsFloat = parseFloat(grossEarnings);
   const purchaseValue = shares * entryPrice;
   const currentValue = shares * currentPrice;
-  const combinedCurrentValue = currentValue + profitOrLossFloat;
+  const combinedCurrentValue = currentValue + grossEarningsFloat;
   if (side === "long") {
     return combinedCurrentValue - purchaseValue;
   }
