@@ -83,7 +83,7 @@ export default function PositionsTableRowData({
   };
 
   if (!firstTargetSubmitted && hasReachedTargetPrice(firstTargetPrice)) {
-    console.log("reached firstTarget");
+    console.log(`${symbol} reached firstTarget`);
     const targetOrder = createLimitOrder(
       symbol,
       firstTargetQuantity,
@@ -96,7 +96,7 @@ export default function PositionsTableRowData({
     !secondTargetSubmitted &&
     hasReachedTargetPrice(secondTargetPrice)
   ) {
-    console.log("reached secondTarget");
+    console.log(`${symbol} reached secondTarget`);
     const targetOrder = createLimitOrder(
       symbol,
       secondTargetQuantity,
@@ -106,7 +106,7 @@ export default function PositionsTableRowData({
     createOrder(socket, targetOrder);
     setSecondTargetSubmitted(true);
   } else if (!thirdTargetSubmitted && hasReachedTargetPrice(thirdTargetPrice)) {
-    console.log("reached thirdTarget");
+    console.log(`${symbol} reached thirdTarget`);
     const targetOrder = createLimitOrder(
       symbol,
       thirdTargetQuantity,
@@ -127,7 +127,7 @@ export default function PositionsTableRowData({
   };
 
   if (!stopTargetSubmitted && hasReachedStopPrice(stopTargetPrice)) {
-    console.log("reached stopTarget");
+    console.log(`${symbol} reached stopTarget`);
     const stopOrder = createLimitOrder(
       symbol,
       stopTargetQuantity,
