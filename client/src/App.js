@@ -82,10 +82,10 @@ export default function App() {
             </div>
             <div className="col d-flex justify-content-around align-items-center">
               <div>${accountSize}</div>
-              <div>
+              {/* <div>
                 Day Trades: <strong>{accountInfo.daytrade_count}</strong> (3
                 MAX)
-              </div>
+              </div> */}
               {orders.length > 0 && (
                 <ProfitLoss
                   orders={orders}
