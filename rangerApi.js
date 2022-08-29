@@ -17,7 +17,12 @@ module.exports = {
   },
   getPositions: async function (io) {
     const response = await axiosInstance.get("/get_positions");
-    console.log("here is the getPositions response", response.data);
+    console.log("getPositions response", response.data);
     io.emit("getPositionsResponse", response.data);
+  },
+  getTotalProfitOrLossToday: async function (io) {
+    const response = await axiosInstance.get("/get_total_profit_or_loss_today");
+    console.log("getTotalProfitOrLossToday response", response.data);
+    io.emit("getTotalProfitOrLossTodayResponse", response.data);
   },
 };

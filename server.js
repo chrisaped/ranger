@@ -69,6 +69,7 @@ io.on("connection", (socket) => {
     }
     if (symbol && event === "fill") {
       rangerApi.createOrder(data, io);
+      rangerApi.getTotalProfitOrLossToday(io);
       // alpaca.getPositions(alpacaInstance, io, alpacaSocket);
       // alpaca.getOrders(alpacaInstance, io);
 
@@ -88,6 +89,7 @@ io.on("connection", (socket) => {
   alpacaSocket.onConnect(() => {
     alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
     rangerApi.getPositions(io);
+    rangerApi.getTotalProfitOrLossToday(io);
     // alpaca.getPositions(alpacaInstance, io, alpacaSocket);
     // alpaca.getOrders(alpacaInstance, io);
     alpaca.getAssets(alpacaInstance, io);

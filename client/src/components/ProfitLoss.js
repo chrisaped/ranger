@@ -1,9 +1,17 @@
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 import { sumObjectValues, calculateProfitLoss } from "../shared/calculations";
-import { extractTotalProfitLossFromClosedOrders } from "../shared/orders";
 import { selectPrice } from "../shared/quotes";
 
-export default function ProfitLoss({ orders, positions, quotes }) {
+export default function ProfitLoss({ positions, quotes, socket }) {
+  const [totalProfitOrLossToday, setTotalProfitOrLossToday] = useState(0.0);
+
+  useEffect(() => {
+    socket.on("getTotalProfitOrLossTodayResponse", (data) => {
+      setTotalProfitOrLossToday(data);
+    });
+  }, [socket]);
+
   const createCurrentPositions = (positions) => {
     const newObj = {};
     positions.forEach((positionObj) => {
@@ -43,9 +51,8 @@ export default function ProfitLoss({ orders, positions, quotes }) {
   if (Object.keys(currentPositionsWithQuotes).length > 0) {
     currentPositionsProfitLoss = sumObjectValues(currentPositionsWithQuotes);
   }
-  const closedPositionsProfitLoss =
-    extractTotalProfitLossFromClosedOrders(orders);
-  let profitLoss = currentPositionsProfitLoss + closedPositionsProfitLoss;
+
+  let profitLoss = currentPositionsProfitLoss + totalProfitOrLossToday || 0.0;
   let badgeClass;
   if (profitLoss < 0) {
     badgeClass = "badge bg-danger fs-6 text";
@@ -61,23 +68,13 @@ export default function ProfitLoss({ orders, positions, quotes }) {
 
   return (
     <div>
-      {/* <span className="p-2"><strong>Daily P/L:</strong></span> */}
+      <span className="p-2">Today's P/L:</span>
       <span className={badgeClass}>{profitLoss}</span>
     </div>
   );
 }
 
 ProfitLoss.propTypes = {
-  orders: PropTypes.arrayOf(
-    PropTypes.shape({
-      status: PropTypes.string,
-      legs: PropTypes.arrayOf(PropTypes.object),
-      symbol: PropTypes.string,
-      side: PropTypes.string,
-      filled_qty: PropTypes.string,
-      filled_avg_price: PropTypes.string,
-    })
-  ).isRequired,
   positions: PropTypes.arrayOf(
     PropTypes.shape({
       symbol: PropTypes.string,
@@ -90,7 +87,6 @@ ProfitLoss.propTypes = {
 };
 
 ProfitLoss.defaultProps = {
-  orders: [],
   positions: [],
   quotes: {},
 };
