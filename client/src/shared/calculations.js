@@ -2,6 +2,7 @@ import {
   riskPercentage,
   defaultStopPriceDifference,
   profitTarget,
+  VWAPPercentageDifference,
 } from "./constants";
 
 const calculateRiskPerShare = (limitPrice, stopPrice) => {
@@ -108,11 +109,13 @@ export const isInProfit = (calculatedProfitLoss) => {
   return false;
 };
 
-export const calculateDefaultStopPrice = (side, limitPrice) => {
+export const calculateDefaultStopPrice = (side, limitPrice, VWAP) => {
   const limitPriceFloat = parseFloat(limitPrice);
   let defaultStopPrice = limitPriceFloat + defaultStopPriceDifference;
+  if (VWAP !== 0) defaultStopPrice = VWAP + VWAP * VWAPPercentageDifference;
   if (side === "sell") {
     defaultStopPrice = limitPriceFloat - defaultStopPriceDifference;
+    if (VWAP !== 0) defaultStopPrice = VWAP - VWAP * VWAPPercentageDifference;
   }
   return defaultStopPrice?.toFixed(2);
 };
