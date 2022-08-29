@@ -8,7 +8,7 @@ export default function ProfitLoss({ positions, quotes, socket }) {
 
   useEffect(() => {
     socket.on("getTotalProfitOrLossTodayResponse", (data) => {
-      setTotalProfitOrLossToday(data);
+      setTotalProfitOrLossToday(parseFloat(data));
     });
   }, [socket]);
 
@@ -43,11 +43,10 @@ export default function ProfitLoss({ positions, quotes, socket }) {
     return newObj;
   };
   const currentPositionsWithQuotes = createCurrentPositionsWithQuotes(quotes);
-  let currentPositionsProfitLoss = 0;
+  let currentPositionsProfitLoss = 0.0;
   if (Object.keys(currentPositionsWithQuotes).length > 0) {
     currentPositionsProfitLoss = sumObjectValues(currentPositionsWithQuotes);
   }
-
   let profitLoss = currentPositionsProfitLoss + totalProfitOrLossToday || 0.0;
   let badgeClass;
   if (profitLoss < 0) {
@@ -59,7 +58,7 @@ export default function ProfitLoss({ positions, quotes, socket }) {
   }
 
   if (!isNaN(profitLoss)) {
-    profitLoss = profitLoss.toFixed(2);
+    profitLoss = profitLoss?.toFixed(2);
   }
 
   return (
