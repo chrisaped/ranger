@@ -16,10 +16,9 @@ export default function ProfitLoss({ positions, quotes, socket }) {
     const newObj = {};
     positions.forEach((positionObj) => {
       newObj[positionObj.symbol] = {
-        shares: Math.abs(parseInt(positionObj.qty)),
-        entryPrice: parseFloat(positionObj.avg_entry_price),
+        shares: Math.abs(parseInt(positionObj.current_quantity)),
+        entryPrice: parseFloat(positionObj.initial_filled_avg_price),
         side: positionObj.side,
-        currentPrice: positionObj.current_price,
         grossEarnings: positionObj.gross_earnings,
       };
     });
@@ -32,9 +31,6 @@ export default function ProfitLoss({ positions, quotes, socket }) {
       const priceObj = quotes[symbol];
       const side = infoObj.side;
       let price = selectPrice(priceObj, side);
-      if (!price) {
-        price = parseFloat(infoObj.currentPrice);
-      }
       const calculatedProfitLoss = calculateProfitLoss(
         price,
         infoObj.entryPrice,
@@ -69,7 +65,7 @@ export default function ProfitLoss({ positions, quotes, socket }) {
   return (
     <div>
       <span className="p-2">Today's P/L:</span>
-      <span className={badgeClass}>{profitLoss}</span>
+      <span className={badgeClass}>${profitLoss}</span>
     </div>
   );
 }
