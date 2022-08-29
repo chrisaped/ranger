@@ -14,10 +14,7 @@ import {
 } from "../shared/orders";
 import { updateNumberField } from "../shared/inputs";
 import { displayPrice } from "../shared/formatting";
-import {
-  defaultStopPriceDifference,
-  VWAPPercentageDifference,
-} from "../shared/constants";
+import { defaultStopPriceDifference } from "../shared/constants";
 import {
   displayOrderButton,
   isForbiddenStopPrice,
@@ -40,7 +37,6 @@ export default function QuotesTableRowData({
   const [limitPrice, setLimitPrice] = useState(defaultLimitPrice);
   const [side, setSide] = useState("buy");
   const [orderId, setOrderId] = useState("");
-  const [VWAP, setVWAP] = useState(0.0);
 
   const price = selectPrice(priceObj, side);
 
@@ -58,22 +54,11 @@ export default function QuotesTableRowData({
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    socket.on(`${symbol} VWAP`, (data) => {
-      setVWAP(data);
-    });
-  }, []); // eslint-disable-line
-
-  useEffect(() => {
     if (price && stopPrice === defaultStopPrice) {
-      let newDefaultStopPrice = (price - defaultStopPriceDifference).toFixed(2);
-
-      if (VWAP !== 0)
-        newDefaultStopPrice = (VWAP - VWAP * VWAPPercentageDifference).toFixed(
-          2
-        );
+      const newDefaultStopPrice = price - defaultStopPriceDifference;
       setStopPrice(newDefaultStopPrice);
     }
-  }, [price, stopPrice, VWAP]);
+  }, [price, stopPrice]);
 
   useEffect(() => {
     if (price && limitPrice === defaultLimitPrice) {
@@ -84,11 +69,7 @@ export default function QuotesTableRowData({
   const onSelectChange = (e) => {
     const newSide = e.target.value;
     setSide(newSide);
-    const newDefaultStopPrice = calculateDefaultStopPrice(
-      side,
-      limitPrice,
-      VWAP
-    );
+    const newDefaultStopPrice = calculateDefaultStopPrice(side, limitPrice);
     setStopPrice(newDefaultStopPrice);
   };
 
