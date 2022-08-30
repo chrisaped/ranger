@@ -68,7 +68,6 @@ export default function PositionsTableRowData({
 
   useEffect(() => {
     setStopTargetPrice(stopTarget.price);
-    console.log(`${symbol} stopTargetPrice is now ${stopTargetPrice}`);
     setStopTargetQuantity(stopTarget.quantity);
     setStopTargetSide(stopTarget.side);
     setStopTargetSubmitted(false);
@@ -137,7 +136,9 @@ export default function PositionsTableRowData({
   };
 
   if (!stopTargetSubmitted && hasReachedStopPrice(stopTargetPrice)) {
-    console.log(`${symbol} reached stopTarget`);
+    console.log(
+      `${symbol} hasReachedStopPrice, stopPrice: ${stopTargetPrice}, price: ${price}, side: ${side}`
+    );
     const stopOrder = createLimitOrder(
       symbol,
       stopTargetQuantity,

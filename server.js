@@ -78,7 +78,6 @@ io.on("connection", (socket) => {
         alpaca.getSnapshot(alpacaInstance, io, symbol);
       }
       io.emit("fillOrderResponse", data);
-      rangerApi.getTotalProfitOrLossToday(io);
     }
   });
 

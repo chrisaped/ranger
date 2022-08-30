@@ -14,6 +14,7 @@ module.exports = {
     const response = await axiosInstance.post("/create_order", orderData);
     console.log("createOrder response", response.status);
     this.getPositions(io);
+    this.getTotalProfitOrLossToday(io);
   },
   getPositions: async function (io) {
     const response = await axiosInstance.get("/get_positions");
