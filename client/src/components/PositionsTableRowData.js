@@ -68,10 +68,11 @@ export default function PositionsTableRowData({
 
   useEffect(() => {
     setStopTargetPrice(stopTarget.price);
+    console.log(`${symbol} stopTargetPrice is now ${stopTargetPrice}`);
     setStopTargetQuantity(stopTarget.quantity);
     setStopTargetSide(stopTarget.side);
     setStopTargetSubmitted(false);
-  }, [stopTarget]);
+  }, [stopTarget]); // eslint-disable-line
 
   const hasReachedTargetPrice = (targetPrice) => {
     if (targetPrice !== 0) {
@@ -82,8 +83,12 @@ export default function PositionsTableRowData({
     }
   };
 
-  if (!firstTargetSubmitted && hasReachedTargetPrice(firstTargetPrice)) {
-    console.log(`${symbol} reached firstTarget`);
+  if (
+    !firstTargetSubmitted &&
+    !stopTargetSubmitted &&
+    hasReachedTargetPrice(firstTargetPrice)
+  ) {
+    console.log(`${symbol} reached firstTarget at ${firstTargetPrice}`);
     const targetOrder = createLimitOrder(
       symbol,
       firstTargetQuantity,
@@ -94,9 +99,10 @@ export default function PositionsTableRowData({
     setFirstTargetSubmitted(true);
   } else if (
     !secondTargetSubmitted &&
+    !stopTargetSubmitted &&
     hasReachedTargetPrice(secondTargetPrice)
   ) {
-    console.log(`${symbol} reached secondTarget`);
+    console.log(`${symbol} reached secondTarget at ${secondTargetPrice}`);
     const targetOrder = createLimitOrder(
       symbol,
       secondTargetQuantity,
@@ -105,8 +111,12 @@ export default function PositionsTableRowData({
     );
     createOrder(socket, targetOrder);
     setSecondTargetSubmitted(true);
-  } else if (!thirdTargetSubmitted && hasReachedTargetPrice(thirdTargetPrice)) {
-    console.log(`${symbol} reached thirdTarget`);
+  } else if (
+    !thirdTargetSubmitted &&
+    !stopTargetSubmitted &&
+    hasReachedTargetPrice(thirdTargetPrice)
+  ) {
+    console.log(`${symbol} reached thirdTarget at ${thirdTargetPrice}`);
     const targetOrder = createLimitOrder(
       symbol,
       thirdTargetQuantity,
