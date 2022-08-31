@@ -103,7 +103,11 @@ export default function QuotesTableRowData({
   );
   const createLimitOrder = () => createNewOrder(socket, orderObject);
   const cancelNewOrder = () => {
-    cancelOrder(socket, orderId);
+    const orderObj = {
+      orderId: orderId,
+      symbol: symbol,
+    };
+    cancelOrder(socket, orderObj);
     setOrderId("");
   };
   const currentPrice = displayPrice(price);

@@ -77,8 +77,8 @@ export const createNewOrder = (socket, orderObject) => {
   socket.emit("createNewOrder", orderObject);
 };
 
-export const cancelOrder = (socket, orderId) => {
-  socket.emit("cancelOrder", orderId);
+export const cancelOrder = (socket, orderObject) => {
+  socket.emit("cancelOrder", orderObject);
 };
 
 export const extractBracketOrderInfo = (

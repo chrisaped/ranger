@@ -135,8 +135,10 @@ io.on("connection", (socket) => {
     alpaca.deleteFromWatchlist(alpacaInstance, symbol, alpacaWatchlistId);
   });
 
-  socket.on("cancelOrder", (orderId) => {
+  socket.on("cancelOrder", (orderObj) => {
+    const { orderId, symbol } = orderObj;
     alpaca.cancelOrder(alpacaInstance, orderId);
+    rangerApi.cancelPosition(symbol);
   });
 });
 

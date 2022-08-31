@@ -81,12 +81,14 @@ export const calculateProfitLoss = (
   profitTargets
 ) => {
   let filledEarnings = 0.0;
-  profitTargets.forEach((profitTarget) => {
-    const { filled, quantity, filled_avg_price } = profitTarget;
-    if (filled) {
-      filledEarnings += quantity * filled_avg_price;
-    }
-  });
+  if (profitTargets?.length > 0) {
+    profitTargets.forEach((profitTarget) => {
+      const { filled, quantity, filled_avg_price } = profitTarget;
+      if (filled) {
+        filledEarnings += quantity * filled_avg_price;
+      }
+    });
+  }
   const unFilledCurrentValue = currentShares * currentPrice;
   const purchaseValue = initialShares * entryPrice;
   const combinedCurrentValue = filledEarnings + unFilledCurrentValue;

@@ -10,6 +10,12 @@ module.exports = {
     const response = await axiosInstance.post("/create_position", orderObject);
     console.log("createPosition response", response.status);
   },
+  cancelPosition: async function (symbol) {
+    const response = await axiosInstance.put("/cancel_position", {
+      symbol: symbol,
+    });
+    console.log("cancelPosition response", response.status);
+  },
   createOrder: async function (orderData, io) {
     const response = await axiosInstance.post("/create_order", orderData);
     console.log("createOrder response", response.status);
