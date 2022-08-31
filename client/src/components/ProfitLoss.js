@@ -16,10 +16,11 @@ export default function ProfitLoss({ positions, quotes, socket }) {
     const newObj = {};
     positions.forEach((positionObj) => {
       newObj[positionObj.symbol] = {
-        shares: Math.abs(parseInt(positionObj.current_quantity)),
-        entryPrice: parseFloat(positionObj.initial_filled_avg_price),
         side: positionObj.side,
-        grossEarnings: positionObj.gross_earnings,
+        quantity: Math.abs(parseInt(positionObj.current_quantity)),
+        initialQuantity: Math.abs(parseInt(positionObj.initial_quantity)),
+        entryPrice: parseFloat(positionObj.initial_filled_avg_price),
+        profitTargets: positionObj.profit_targets,
       };
     });
     return newObj;
@@ -33,10 +34,11 @@ export default function ProfitLoss({ positions, quotes, socket }) {
       let price = selectPrice(priceObj, side);
       const calculatedProfitLoss = calculateProfitLoss(
         price,
-        infoObj.entryPrice,
-        infoObj.shares,
         infoObj.side,
-        infoObj.grossEarnings
+        infoObj.quantity,
+        infoObj.initialQuantity,
+        infoObj.entryPrice,
+        infoObj.profitTargets
       );
       newObj[symbol] = parseFloat(calculatedProfitLoss);
     });

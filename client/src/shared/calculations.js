@@ -74,15 +74,22 @@ export const calculateMoneyUpfront = (limitPrice, stopPrice, accountSize) => {
 
 export const calculateProfitLoss = (
   currentPrice,
-  entryPrice,
-  shares,
   side,
-  grossEarnings
+  currentShares,
+  initialShares,
+  entryPrice,
+  profitTargets
 ) => {
-  const grossEarningsFloat = parseFloat(grossEarnings);
-  const purchaseValue = shares * entryPrice;
-  const currentValue = shares * currentPrice;
-  const combinedCurrentValue = currentValue + grossEarningsFloat;
+  let filledEarnings = 0.0;
+  profitTargets.forEach((profitTarget) => {
+    const { filled, quantity, filled_avg_price } = profitTarget;
+    if (filled) {
+      filledEarnings += quantity * filled_avg_price;
+    }
+  });
+  const unFilledCurrentValue = currentShares * currentPrice;
+  const purchaseValue = initialShares * entryPrice;
+  const combinedCurrentValue = filledEarnings + unFilledCurrentValue;
   if (side === "long") {
     return combinedCurrentValue - purchaseValue;
   }
