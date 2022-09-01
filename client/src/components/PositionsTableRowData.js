@@ -3,7 +3,11 @@ import PropTypes from "prop-types";
 import SpinnerButton from "./SpinnerButton";
 import { displayPrice } from "../shared/formatting";
 import { updateNumberField } from "../shared/inputs";
-import { createLimitOrder, createOrder } from "../shared/orders";
+import {
+  createLimitOrder,
+  createOrder,
+  createStopOrder,
+} from "../shared/orders";
 
 export default function PositionsTableRowData({
   socket,
@@ -139,7 +143,7 @@ export default function PositionsTableRowData({
     console.log(
       `${symbol} hasReachedStopPrice, stopPrice: ${stopTargetPrice}, price: ${price}, side: ${side}`
     );
-    const stopOrder = createLimitOrder(
+    const stopOrder = createStopOrder(
       symbol,
       stopTargetQuantity,
       stopTargetSide,
