@@ -1,10 +1,10 @@
-In the root directory run:
-
-### `node server.js`
-
-In the client directory run:
+In the client and root directories run:
 
 ### `npm start`
+
+In the ranger api run:
+
+### `rails s`
 
 Things to add:
 
