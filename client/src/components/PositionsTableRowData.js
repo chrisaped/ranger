@@ -10,6 +10,7 @@ import {
 } from "../shared/orders";
 
 export default function PositionsTableRowData({
+  rowClassName,
   socket,
   symbol,
   side,
@@ -187,7 +188,7 @@ export default function PositionsTableRowData({
   });
 
   return (
-    <>
+    <tr className={rowClassName} key={symbol}>
       <td>
         <strong>{symbol}</strong>
       </td>
@@ -225,7 +226,7 @@ export default function PositionsTableRowData({
           />
         </div>
       </td>
-    </>
+    </tr>
   );
 }
 

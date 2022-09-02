@@ -16,7 +16,7 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
     return rowClass;
   };
 
-  const positionsTableData = positions.map((positionObj, index) => {
+  const positionsTableData = positions.map((positionObj) => {
     const {
       symbol,
       side,
@@ -43,19 +43,18 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
     const rowClassName = getRowClassName(profitOrLoss);
 
     return (
-      <tr className={rowClassName} key={index}>
-        <PositionsTableRowData
-          socket={socket}
-          symbol={symbol}
-          side={side}
-          initialPrice={initial_filled_avg_price}
-          price={price}
-          profitOrLoss={profitOrLoss}
-          quantity={quantity}
-          profitTargets={profit_targets}
-          stopTarget={stop_target}
-        />
-      </tr>
+      <PositionsTableRowData
+        rowClassName={rowClassName}
+        socket={socket}
+        symbol={symbol}
+        side={side}
+        initialPrice={initial_filled_avg_price}
+        price={price}
+        profitOrLoss={profitOrLoss}
+        quantity={quantity}
+        profitTargets={profit_targets}
+        stopTarget={stop_target}
+      />
     );
   });
 
