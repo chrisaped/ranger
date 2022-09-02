@@ -66,7 +66,7 @@ export default function ProfitLoss({ positions, quotes, socket }) {
   return (
     <div>
       <span className="p-2">Today's P/L:</span>
-      <span className={badgeClass}>${profitLoss}</span>
+      <span className={badgeClass}>${profitLoss.toLocaleString()}</span>
     </div>
   );
 }
