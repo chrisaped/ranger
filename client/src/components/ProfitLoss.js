@@ -62,7 +62,13 @@ export default function ProfitLoss({ positions, quotes, socket }) {
   return (
     <div>
       <span className="p-2">Today's P/L:</span>
-      <span className={badgeClass}>${profitLoss.toLocaleString()}</span>
+      <span className={badgeClass}>
+        $
+        {profitLoss.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}
+      </span>
     </div>
   );
 }

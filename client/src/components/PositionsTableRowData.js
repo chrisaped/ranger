@@ -203,7 +203,13 @@ export default function PositionsTableRowData({
         <strong>{currentPrice}</strong>
       </td>
       {profitTargetData}
-      <td>${profitOrLoss.toLocaleString()}</td>
+      <td>
+        $
+        {profitOrLoss.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}
+      </td>
       <td>{quantity.toLocaleString()} shares</td>
       <td>${cost}</td>
       <td className="">
