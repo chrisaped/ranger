@@ -39,7 +39,7 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
       initial_quantity,
       initial_filled_avg_price,
       profit_targets
-    ).toFixed(2);
+    );
     const rowClassName = getRowClassName(profitOrLoss);
 
     return (

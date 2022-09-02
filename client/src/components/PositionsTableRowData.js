@@ -236,7 +236,7 @@ PositionsTableRowData.propTypes = {
   side: PropTypes.string.isRequired,
   initialPrice: PropTypes.number.isRequired,
   price: PropTypes.number.isRequired,
-  profitOrLoss: PropTypes.string.isRequired,
+  profitOrLoss: PropTypes.number.isRequired,
   quantity: PropTypes.number.isRequired,
   orders: PropTypes.arrayOf(
     PropTypes.shape({

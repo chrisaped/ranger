@@ -59,10 +59,6 @@ export default function ProfitLoss({ positions, quotes, socket }) {
     badgeClass = "badge bg-success fs-6 text";
   }
 
-  if (!isNaN(profitLoss)) {
-    profitLoss = profitLoss?.toFixed(2);
-  }
-
   return (
     <div>
       <span className="p-2">Today's P/L:</span>
