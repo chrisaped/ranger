@@ -188,7 +188,7 @@ export default function PositionsTableRowData({
   });
 
   return (
-    <tr className={rowClassName} key={symbol}>
+    <tr className={rowClassName}>
       <td>
         <strong>{symbol}</strong>
       </td>

@@ -1,3 +1,4 @@
+import React from "react";
 import PropTypes from "prop-types";
 import PositionsTableRowData from "./PositionsTableRowData";
 import { calculateProfitLoss } from "../shared/calculations";
@@ -43,18 +44,20 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
     const rowClassName = getRowClassName(profitOrLoss);
 
     return (
-      <PositionsTableRowData
-        rowClassName={rowClassName}
-        socket={socket}
-        symbol={symbol}
-        side={side}
-        initialPrice={initial_filled_avg_price}
-        price={price}
-        profitOrLoss={profitOrLoss}
-        quantity={quantity}
-        profitTargets={profit_targets}
-        stopTarget={stop_target}
-      />
+      <React.Fragment key={symbol}>
+        <PositionsTableRowData
+          rowClassName={rowClassName}
+          socket={socket}
+          symbol={symbol}
+          side={side}
+          initialPrice={initial_filled_avg_price}
+          price={price}
+          profitOrLoss={profitOrLoss}
+          quantity={quantity}
+          profitTargets={profit_targets}
+          stopTarget={stop_target}
+        />
+      </React.Fragment>
     );
   });
 
