@@ -31,8 +31,8 @@ export default function QuotesTableRowData({
   tradeableAssets,
   accountInfo,
 }) {
-  const defaultStopPrice = 0;
-  const defaultLimitPrice = 0;
+  const defaultStopPrice = 0.0;
+  const defaultLimitPrice = 0.0;
   const [stopPrice, setStopPrice] = useState(defaultStopPrice);
   const [limitPrice, setLimitPrice] = useState(defaultLimitPrice);
   const [side, setSide] = useState("buy");
@@ -55,21 +55,23 @@ export default function QuotesTableRowData({
 
   useEffect(() => {
     if (price && stopPrice === defaultStopPrice) {
-      const newDefaultStopPrice = price - defaultStopPriceDifference;
+      let newDefaultStopPrice = (price - defaultStopPriceDifference).toFixed(2);
+      if (newDefaultStopPrice < 0) newDefaultStopPrice = 0.01;
       setStopPrice(newDefaultStopPrice);
     }
   }, [price, stopPrice]);
 
   useEffect(() => {
     if (price && limitPrice === defaultLimitPrice) {
-      setLimitPrice(price);
+      setLimitPrice(price.toFixed(2));
     }
   }, [price, limitPrice]);
 
   const onSelectChange = (e) => {
     const newSide = e.target.value;
     setSide(newSide);
-    const newDefaultStopPrice = calculateDefaultStopPrice(side, limitPrice);
+    let newDefaultStopPrice = calculateDefaultStopPrice(side, limitPrice);
+    if (newDefaultStopPrice < 0) newDefaultStopPrice = 0.01;
     setStopPrice(newDefaultStopPrice);
   };
 
@@ -148,7 +150,7 @@ export default function QuotesTableRowData({
           </td>
           <td
             className="bg-warning"
-            onClick={() => setLimitPrice(price)}
+            onClick={() => setLimitPrice(price.toFixed(2))}
             style={{ cursor: "pointer" }}
           >
             <strong>{currentPrice}</strong>
