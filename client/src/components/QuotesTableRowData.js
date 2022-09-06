@@ -5,7 +5,7 @@ import {
   calculatePositionSize,
   calculateMoneyUpfront,
   calculateDefaultStopPrice,
-  calculate1xProfitTarget,
+  calculateFirstProfitTarget,
 } from "../shared/calculations";
 import {
   createNewOrder,
@@ -30,6 +30,7 @@ export default function QuotesTableRowData({
   removeFromQuotesAndWatchlist,
   tradeableAssets,
   accountInfo,
+  firstMultiplier,
 }) {
   const defaultStopPrice = 0.0;
   const defaultLimitPrice = 0.0;
@@ -88,7 +89,12 @@ export default function QuotesTableRowData({
     stopPrice,
     accountSize
   );
-  const profitTarget = calculate1xProfitTarget(limitPrice, stopPrice, side);
+  const profitTarget = calculateFirstProfitTarget(
+    limitPrice,
+    stopPrice,
+    side,
+    firstMultiplier
+  );
   const positionSizeDisplay = positionSize.toLocaleString();
   const moneyUpfront = calculateMoneyUpfront(
     limitPrice,

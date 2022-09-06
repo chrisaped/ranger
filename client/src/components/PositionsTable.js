@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import PositionsTableRowData from "./PositionsTableRowData";
 import { calculateProfitLoss } from "../shared/calculations";
 import { selectPrice } from "../shared/quotes";
+import { profitMultipliers } from "../shared/constants";
 
 export default function PositionsTable({ socket, quotes, orders, positions }) {
   const getRowClassName = (profitOrLoss) => {
@@ -61,6 +62,12 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
     );
   });
 
+  const multiplierHeaders = () => {
+    profitMultipliers.map((profitMultiplier) => {
+      return <th>{profitMultiplier}x</th>;
+    });
+  };
+
   return (
     <table className="table table-bordered align-middle text-center">
       <thead className="table-dark">
@@ -70,9 +77,7 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
           <th>Entry</th>
           <th>Stop</th>
           <th>Price</th>
-          <th>1x</th>
-          <th>2x</th>
-          <th>3x</th>
+          {multiplierHeaders}
           <th>P/L</th>
           <th>Shares</th>
           <th>Cost</th>

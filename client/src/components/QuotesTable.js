@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import QuotesTableRowData from "./QuotesTableRowData";
+import { profitMultipliers } from "../shared/constants";
 
 export default function QuotesTable({
   socket,
@@ -10,6 +11,8 @@ export default function QuotesTable({
   removeFromWatchlist,
   accountInfo,
 }) {
+  const firstMultiplier = profitMultipliers[0];
+
   return (
     <table className="table table-bordered align-middle text-center">
       <thead className="table-dark">
@@ -18,7 +21,7 @@ export default function QuotesTable({
           <th>Side</th>
           <th>Price</th>
           <th>Limit</th>
-          <th>1x Target</th>
+          <th>{firstMultiplier}x Target</th>
           <th>Stop</th>
           <th>Shares</th>
           <th>Cost</th>
@@ -39,6 +42,7 @@ export default function QuotesTable({
                 removeFromQuotesAndWatchlist={removeFromQuotesAndWatchlist}
                 tradeableAssets={tradeableAssets}
                 accountInfo={accountInfo}
+                firstMultiplier={firstMultiplier}
               />
             </tr>
           );
