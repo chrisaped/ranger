@@ -62,11 +62,9 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
     );
   });
 
-  const multiplierHeaders = () => {
-    profitMultipliers.map((profitMultiplier) => {
-      return <th>{profitMultiplier}x</th>;
-    });
-  };
+  const multiplierHeaders = profitMultipliers.map((profitMultiplier) => {
+    return <th>{profitMultiplier}x</th>;
+  });
 
   return (
     <table className="table table-bordered align-middle text-center">
