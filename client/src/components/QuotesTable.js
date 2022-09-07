@@ -11,7 +11,7 @@ export default function QuotesTable({
   removeFromWatchlist,
   accountInfo,
 }) {
-  const firstMultiplier = profitMultipliers[0];
+  const lastMultiplier = profitMultipliers[profitMultipliers.length - 1];
 
   return (
     <table className="table table-bordered align-middle text-center">
@@ -21,7 +21,7 @@ export default function QuotesTable({
           <th>Side</th>
           <th>Price</th>
           <th>Limit</th>
-          <th>{firstMultiplier}x Target</th>
+          <th>{lastMultiplier}x Target</th>
           <th>Stop</th>
           <th>Shares</th>
           <th>Cost</th>
@@ -42,7 +42,7 @@ export default function QuotesTable({
                 removeFromQuotesAndWatchlist={removeFromQuotesAndWatchlist}
                 tradeableAssets={tradeableAssets}
                 accountInfo={accountInfo}
-                firstMultiplier={firstMultiplier}
+                lastMultiplier={lastMultiplier}
               />
             </tr>
           );

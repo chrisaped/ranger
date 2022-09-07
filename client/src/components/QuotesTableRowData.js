@@ -30,7 +30,7 @@ export default function QuotesTableRowData({
   removeFromQuotesAndWatchlist,
   tradeableAssets,
   accountInfo,
-  firstMultiplier,
+  lastMultiplier,
 }) {
   const defaultStopPrice = 0.0;
   const defaultLimitPrice = 0.0;
@@ -93,7 +93,7 @@ export default function QuotesTableRowData({
     limitPrice,
     stopPrice,
     side,
-    firstMultiplier
+    lastMultiplier
   );
   const positionSizeDisplay = positionSize.toLocaleString();
   const moneyUpfront = calculateMoneyUpfront(
