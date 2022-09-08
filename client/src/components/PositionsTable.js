@@ -20,6 +20,7 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
 
   const positionsTableData = positions.map((positionObj) => {
     const {
+      id,
       symbol,
       side,
       current_quantity,
@@ -45,7 +46,7 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
     const rowClassName = getRowClassName(profitOrLoss);
 
     return (
-      <React.Fragment key={symbol}>
+      <React.Fragment key={id}>
         <PositionsTableRowData
           rowClassName={rowClassName}
           socket={socket}
