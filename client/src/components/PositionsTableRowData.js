@@ -23,22 +23,10 @@ export default function PositionsTableRowData({
 }) {
   const defaultLimitPrice = 0;
   const [limitPrice, setLimitPrice] = useState(defaultLimitPrice);
-
-  const [firstTargetPrice, setFirstTargetPrice] = useState(0.0);
-  const [firstTargetQuantity, setFirstTargetQuantity] = useState(0);
-  const [firstTargetSide, setFirstTargetSide] = useState("");
-  const [firstTargetSubmitted, setFirstTargetSubmitted] = useState(false);
-
-  const [secondTargetPrice, setSecondTargetPrice] = useState(0.0);
-  const [secondTargetQuantity, setSecondTargetQuantity] = useState(0);
-  const [secondTargetSide, setSecondTargetSide] = useState("");
-  const [secondTargetSubmitted, setSecondTargetSubmitted] = useState(false);
-
-  const [thirdTargetPrice, setThirdTargetPrice] = useState(0.0);
-  const [thirdTargetQuantity, setThirdTargetQuantity] = useState(0);
-  const [thirdTargetSide, setThirdTargetSide] = useState("");
-  const [thirdTargetSubmitted, setThirdTargetSubmitted] = useState(false);
-
+  const [targetPrice, setTargetPrice] = useState(0.0);
+  const [targetQuantity, setTargetQuantity] = useState(0);
+  const [targetSide, setTargetSide] = useState("");
+  const [targetSubmitted, setTargetSubmitted] = useState(false);
   const [stopTargetPrice, setStopTargetPrice] = useState(0.0);
   const [stopTargetQuantity, setStopTargetQuantity] = useState(0);
   const [stopTargetSide, setStopTargetSide] = useState("");
@@ -51,25 +39,22 @@ export default function PositionsTableRowData({
   }, [price, limitPrice]);
 
   useEffect(() => {
-    const firstTarget = profitTargets[0];
-    setFirstTargetPrice(firstTarget.price);
-    setFirstTargetQuantity(firstTarget.quantity);
-    setFirstTargetSide(firstTarget.side);
+    const unFilledTargets = profitTargets.filter(
+      (target) => target.filled === false
+    );
 
-    const secondTarget = profitTargets[1];
-    setSecondTargetPrice(secondTarget.price);
-    setSecondTargetQuantity(secondTarget.quantity);
-    setSecondTargetSide(secondTarget.side);
+    if (unFilledTargets.length > 0) {
+      const firstUnfilledTarget = unFilledTargets[0];
+      const firstUnfilledTargetPrice = firstUnfilledTarget.price;
 
-    const thirdTarget = profitTargets[2];
-    setThirdTargetPrice(thirdTarget.price);
-    setThirdTargetQuantity(thirdTarget.quantity);
-    setThirdTargetSide(thirdTarget.side);
-
-    setStopTargetPrice(stopTarget.price);
-    setStopTargetQuantity(stopTarget.quantity);
-    setStopTargetSide(stopTarget.side);
-  }, []); // eslint-disable-line
+      if (firstUnfilledTargetPrice !== targetPrice) {
+        setTargetPrice(firstUnfilledTargetPrice);
+        setTargetQuantity(firstUnfilledTarget.quantity);
+        setTargetSide(firstUnfilledTarget.side);
+        setTargetSubmitted(false);
+      }
+    }
+  }, [profitTargets]); // eslint-disable-line
 
   useEffect(() => {
     if (stopTarget.price !== stopTargetPrice) {
@@ -90,47 +75,19 @@ export default function PositionsTableRowData({
   };
 
   if (
-    !firstTargetSubmitted &&
+    !targetSubmitted &&
     !stopTargetSubmitted &&
-    hasReachedTargetPrice(firstTargetPrice)
+    hasReachedTargetPrice(targetPrice)
   ) {
-    console.log(`${symbol} reached firstTarget at ${firstTargetPrice}`);
+    console.log(`${symbol} reached target at ${targetPrice}`);
     const targetOrder = createLimitOrder(
       symbol,
-      firstTargetQuantity,
-      firstTargetSide,
-      firstTargetPrice
+      targetQuantity,
+      targetSide,
+      targetPrice
     );
     createOrder(socket, targetOrder);
-    setFirstTargetSubmitted(true);
-  } else if (
-    !secondTargetSubmitted &&
-    !stopTargetSubmitted &&
-    hasReachedTargetPrice(secondTargetPrice)
-  ) {
-    console.log(`${symbol} reached secondTarget at ${secondTargetPrice}`);
-    const targetOrder = createLimitOrder(
-      symbol,
-      secondTargetQuantity,
-      secondTargetSide,
-      secondTargetPrice
-    );
-    createOrder(socket, targetOrder);
-    setSecondTargetSubmitted(true);
-  } else if (
-    !thirdTargetSubmitted &&
-    !stopTargetSubmitted &&
-    hasReachedTargetPrice(thirdTargetPrice)
-  ) {
-    console.log(`${symbol} reached thirdTarget at ${thirdTargetPrice}`);
-    const targetOrder = createLimitOrder(
-      symbol,
-      thirdTargetQuantity,
-      thirdTargetSide,
-      thirdTargetPrice
-    );
-    createOrder(socket, targetOrder);
-    setThirdTargetSubmitted(true);
+    setTargetSubmitted(true);
   }
 
   const hasReachedStopPrice = (stopPrice) => {
@@ -166,19 +123,10 @@ export default function PositionsTableRowData({
   const submitOrder = () => createOrder(socket, limitOrder);
   const orderButtonText = side === "long" ? "Sell" : "Buy";
 
-  let activeProfitTargetPrice = 0.0;
-  if (!firstTargetSubmitted) {
-    activeProfitTargetPrice = firstTargetPrice;
-  } else if (!secondTargetSubmitted) {
-    activeProfitTargetPrice = secondTargetPrice;
-  } else if (!thirdTargetSubmitted) {
-    activeProfitTargetPrice = thirdTargetPrice;
-  }
-
   const profitTargetData = profitTargets.map((profitTarget) => {
     const profitTargetPrice = profitTarget.price;
     const targetPriceClassName =
-      profitTargetPrice === activeProfitTargetPrice
+      profitTargetPrice === targetPrice
         ? "bg-success text-white"
         : "bg-secondary";
 
