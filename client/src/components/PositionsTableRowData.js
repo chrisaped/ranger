@@ -72,10 +72,12 @@ export default function PositionsTableRowData({
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    setStopTargetPrice(stopTarget.price);
-    setStopTargetQuantity(stopTarget.quantity);
-    setStopTargetSide(stopTarget.side);
-    setStopTargetSubmitted(false);
+    if (stopTarget.price !== stopTargetPrice) {
+      console.log("updating stopTarget");
+      setStopTargetPrice(stopTarget.price);
+      setStopTargetQuantity(stopTarget.quantity);
+      setStopTargetSide(stopTarget.side);
+    }
   }, [stopTarget]); // eslint-disable-line
 
   const hasReachedTargetPrice = (targetPrice) => {
