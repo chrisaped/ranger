@@ -31,9 +31,18 @@ const alpacaInstance = new Alpaca({
 const alpacaSocket = alpacaInstance.data_stream_v2;
 const alpacaTradeSocket = alpacaInstance.trade_ws;
 
+const establishInitialConnections = (io) => {
+  alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
+  rangerApi.getPositions(io);
+  rangerApi.getTotalProfitOrLossToday(io);
+  alpaca.getAssets(alpacaInstance, io);
+  alpaca.getAccount(alpacaInstance, io);
+};
+
 io.on("connection", (socket) => {
   if (!alpacaSocket.conn) {
     alpacaSocket.connect();
+    establishInitialConnections(io);
   }
 
   alpacaTradeSocket.connect();
@@ -86,13 +95,7 @@ io.on("connection", (socket) => {
   });
 
   alpacaSocket.onConnect(() => {
-    alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
-    rangerApi.getPositions(io);
-    rangerApi.getTotalProfitOrLossToday(io);
-    // alpaca.getPositions(alpacaInstance, io, alpacaSocket);
-    // alpaca.getOrders(alpacaInstance, io);
-    alpaca.getAssets(alpacaInstance, io);
-    alpaca.getAccount(alpacaInstance, io);
+    establishInitialConnections(io);
   });
 
   alpacaSocket.onStockQuote((quote) => {
