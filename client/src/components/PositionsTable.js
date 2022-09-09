@@ -31,18 +31,20 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
     } = positionObj;
     const quantity = Math.abs(current_quantity);
     const priceObj = quotes[symbol];
-    let price = selectPrice(priceObj, side);
-    if (!price) {
-      price = parseFloat(initial_filled_avg_price);
+    const price = selectPrice(priceObj, side);
+
+    let profitOrLoss = 0.0;
+    if (price) {
+      profitOrLoss = calculateProfitLoss(
+        price,
+        side,
+        quantity,
+        initial_quantity,
+        initial_filled_avg_price,
+        profit_targets
+      );
     }
-    const profitOrLoss = calculateProfitLoss(
-      price,
-      side,
-      quantity,
-      initial_quantity,
-      initial_filled_avg_price,
-      profit_targets
-    );
+
     const rowClassName = getRowClassName(profitOrLoss);
 
     return (

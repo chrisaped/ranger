@@ -66,12 +66,13 @@ export default function PositionsTableRowData({
   }, [stopTarget]); // eslint-disable-line
 
   const hasReachedTargetPrice = (targetPrice) => {
-    if (targetPrice !== 0) {
+    if (price && targetPrice !== 0) {
       if (side === "long") {
         return price >= targetPrice;
       }
       return price <= targetPrice;
     }
+    return false;
   };
 
   if (
@@ -91,12 +92,13 @@ export default function PositionsTableRowData({
   }
 
   const hasReachedStopPrice = (stopPrice) => {
-    if (stopPrice !== 0) {
+    if (price && stopPrice !== 0) {
       if (side === "long") {
         return price <= stopPrice;
       }
       return price >= stopPrice;
     }
+    return false;
   };
 
   if (!stopTargetSubmitted && hasReachedStopPrice(stopTargetPrice)) {
