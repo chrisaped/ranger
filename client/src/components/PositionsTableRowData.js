@@ -7,6 +7,7 @@ import {
   createLimitOrder,
   createOrder,
   createStopOrder,
+  cancelOrder,
 } from "../shared/orders";
 
 export default function PositionsTableRowData({
@@ -23,6 +24,7 @@ export default function PositionsTableRowData({
 }) {
   const defaultLimitPrice = 0;
   const [limitPrice, setLimitPrice] = useState(defaultLimitPrice);
+  const [orderId, setOrderId] = useState("");
   const [targetPrice, setTargetPrice] = useState(0.0);
   const [targetQuantity, setTargetQuantity] = useState(0);
   const [targetSide, setTargetSide] = useState("");
@@ -31,6 +33,13 @@ export default function PositionsTableRowData({
   const [stopTargetQuantity, setStopTargetQuantity] = useState(0);
   const [stopTargetSide, setStopTargetSide] = useState("");
   const [stopTargetSubmitted, setStopTargetSubmitted] = useState(false);
+
+  useEffect(() => {
+    socket.on(`${symbol} newOrderResponse`, (data) => {
+      const newOrderId = data.order.id;
+      setOrderId(newOrderId);
+    });
+  }, []); // eslint-disable-line
 
   useEffect(() => {
     if (price && limitPrice === defaultLimitPrice) {
@@ -124,6 +133,10 @@ export default function PositionsTableRowData({
   const limitOrder = createLimitOrder(symbol, quantity, orderSide, limitPrice);
   const submitOrder = () => createOrder(socket, limitOrder);
   const orderButtonText = side === "long" ? "Sell" : "Buy";
+  const cancelNewOrder = () => {
+    cancelOrder(socket, orderId);
+    setOrderId("");
+  };
 
   const profitTargetData = profitTargets.map((profitTarget) => {
     const profitTargetPrice = profitTarget.price;
@@ -164,25 +177,37 @@ export default function PositionsTableRowData({
       </td>
       <td>{quantity.toLocaleString()} shares</td>
       <td>${cost}</td>
-      <td className="">
-        <div className="d-flex">
-          <input
-            className="form-control"
-            type="text"
-            size="3"
-            value={limitPrice}
-            placeholder="Limit Price"
-            onChange={(e) => updateNumberField(e.target.value, setLimitPrice)}
-          />
+      <td>
+        {!orderId && (
+          <div className="d-flex">
+            <input
+              className="form-control"
+              type="text"
+              size="3"
+              value={limitPrice}
+              placeholder="Limit Price"
+              onChange={(e) => updateNumberField(e.target.value, setLimitPrice)}
+            />
+            <SpinnerButton
+              socket={socket}
+              buttonClass="btn btn-dark"
+              buttonText={orderButtonText}
+              buttonDisabled={!limitPrice}
+              onClickFunction={submitOrder}
+              symbol={symbol}
+            />
+          </div>
+        )}
+        {orderId && (
           <SpinnerButton
             socket={socket}
             buttonClass="btn btn-dark"
-            buttonText={orderButtonText}
-            buttonDisabled={!limitPrice}
-            onClickFunction={submitOrder}
+            buttonText={`Cancel $${limitPrice} Order`}
+            onClickFunction={cancelNewOrder}
+            orderId={orderId}
             symbol={symbol}
           />
-        </div>
+        )}
       </td>
     </tr>
   );
