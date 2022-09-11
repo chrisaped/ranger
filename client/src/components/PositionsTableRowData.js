@@ -39,6 +39,10 @@ export default function PositionsTableRowData({
       const newOrderId = data.order.id;
       setOrderId(newOrderId);
     });
+
+    socket.on(`${symbol} fillOrderResponse`, (data) => {
+      setOrderId("");
+    });
   }, []); // eslint-disable-line
 
   useEffect(() => {
@@ -67,7 +71,7 @@ export default function PositionsTableRowData({
 
   useEffect(() => {
     if (stopTarget.price !== stopTargetPrice) {
-      console.log("updating stopTarget");
+      console.log(`updating ${symbol} stopTarget to ${stopTarget.price}`);
       setStopTargetPrice(stopTarget.price);
       setStopTargetQuantity(stopTarget.quantity);
       setStopTargetSide(stopTarget.side);
@@ -134,7 +138,11 @@ export default function PositionsTableRowData({
   const submitOrder = () => createOrder(socket, limitOrder);
   const orderButtonText = side === "long" ? "Sell" : "Buy";
   const cancelNewOrder = () => {
-    cancelOrder(socket, orderId);
+    const orderObj = {
+      orderId: orderId,
+      symbol: symbol,
+    };
+    cancelOrder(socket, orderObj);
     setOrderId("");
   };
 
