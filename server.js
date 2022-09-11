@@ -33,7 +33,7 @@ const alpacaTradeSocket = alpacaInstance.trade_ws;
 
 const establishInitialConnections = (io) => {
   alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
-  rangerApi.getPositions(io);
+  rangerApi.getPositions(io, alpacaSocket);
   rangerApi.getTotalProfitOrLossToday(io);
   alpaca.getAssets(alpacaInstance, io);
   alpaca.getAccount(alpacaInstance, io);
@@ -42,7 +42,6 @@ const establishInitialConnections = (io) => {
 io.on("connection", (socket) => {
   if (!alpacaSocket.conn) {
     alpacaSocket.connect();
-    establishInitialConnections(io);
   }
 
   alpacaTradeSocket.connect();
@@ -62,7 +61,7 @@ io.on("connection", (socket) => {
   });
 
   alpacaTradeSocket.onOrderUpdate((data) => {
-    console.log(`Order updates: ${JSON.stringify(data)}`);
+    console.log(`Order update: ${JSON.stringify(data)}`);
     const event = data.event;
     const symbol = data.order.symbol;
 
@@ -70,10 +69,10 @@ io.on("connection", (socket) => {
       io.emit(`${symbol} newOrderResponse`, data);
     }
     if (symbol && event === "canceled") {
-      rangerApi.getPositions(io);
+      rangerApi.getPositions(io, alpacaSocket);
       // alpaca.getPositions(alpacaInstance, io, alpacaSocket);
       // alpaca.getOrders(alpacaInstance, io);
-      io.emit(`${symbol} canceledOrderResponse`, data);
+      // io.emit(`${symbol} canceledOrderResponse`, data);
       io.emit("canceledOrderResponse", data);
     }
     if (symbol && event === "fill") {
@@ -82,9 +81,11 @@ io.on("connection", (socket) => {
       // alpaca.getOrders(alpacaInstance, io);
 
       const positionQuantity = data.position_qty;
-      if (positionQuantity !== "0") {
+      if (positionQuantity === "0") {
+        alpacaSocket.unsubscribeFromQuotes([symbol]);
+      } else {
         io.emit(`${symbol} fillOrderResponse`, data);
-        alpaca.getSnapshot(alpacaInstance, io, symbol);
+        // alpaca.getSnapshot(alpacaInstance, io, symbol);
       }
       io.emit("fillOrderResponse", data);
     }
@@ -113,32 +114,36 @@ io.on("connection", (socket) => {
   });
 
   socket.on("createOrder", (orderObject) => {
-    console.log("createOrder request", orderObject);
+    console.log("createOrder", orderObject);
     alpaca.createOrder(alpacaInstance, orderObject, io);
   });
 
   socket.on("createNewOrder", (orderObject) => {
-    console.log("createNewOrder request", orderObject);
+    console.log("createNewOrder", orderObject);
     rangerApi.createPosition(orderObject);
     alpaca.createOrder(alpacaInstance, orderObject, io);
   });
 
   socket.on("addToWatchlist", (symbol) => {
-    alpaca.getSnapshot(alpacaInstance, io, symbol);
+    console.log("addToWatchlist", symbol);
+    // alpaca.getSnapshot(alpacaInstance, io, symbol);
     alpaca.addToWatchlist(alpacaInstance, symbol, alpacaWatchlistId);
     alpacaSocket.subscribeForQuotes([symbol]);
   });
 
   socket.on("removeFromQuotesAndWatchlist", (symbol) => {
+    console.log("removeFromQuotesAndWatchlist", symbol);
     alpacaSocket.unsubscribeFromQuotes([symbol]);
     alpaca.deleteFromWatchlist(alpacaInstance, symbol, alpacaWatchlistId);
   });
 
   socket.on("removeFromWatchlist", (symbol) => {
+    console.log("removeFromWatchlist", symbol);
     alpaca.deleteFromWatchlist(alpacaInstance, symbol, alpacaWatchlistId);
   });
 
   socket.on("cancelOrder", (orderObj) => {
+    console.log("cancelOrder", orderObj);
     const { orderId, symbol } = orderObj;
     alpaca.cancelOrder(alpacaInstance, orderId);
     rangerApi.cancelPosition(symbol);

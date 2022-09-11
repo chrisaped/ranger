@@ -22,10 +22,15 @@ module.exports = {
     this.getPositions(io);
     this.getTotalProfitOrLossToday(io);
   },
-  getPositions: async function (io) {
+  getPositions: async function (io, alpacaSocket) {
     const response = await axiosInstance.get("/get_positions");
     console.log("getPositions response", response.data);
     io.emit("getPositionsResponse", response.data);
+
+    const symbolsArray = response.data.map((obj) => obj.symbol) || [];
+    if (symbolsArray.length > 0) {
+      alpacaSocket.subscribeForQuotes(symbolsArray);
+    }
   },
   getTotalProfitOrLossToday: async function (io) {
     const response = await axiosInstance.get("/get_total_profit_or_loss_today");

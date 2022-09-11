@@ -22,7 +22,7 @@ module.exports = {
     );
     const symbolsArray = response?.assets?.map((obj) => obj.symbol) || [];
     if (symbolsArray.length > 0) {
-      console.log("addToWatchlist", symbolsArray);
+      console.log("addToWatchlist response", symbolsArray);
     }
   },
   deleteFromWatchlist: async function (
@@ -35,7 +35,7 @@ module.exports = {
       symbol
     );
     const symbolsArray = response?.assets?.map((obj) => obj.symbol) || [];
-    console.log("deleteFromWatchlist", symbolsArray);
+    console.log("deleteFromWatchlist response", symbolsArray);
   },
   getPositions: async function (alpacaInstance, io, alpacaSocket) {
     const response = await alpacaInstance.getPositions();
@@ -78,7 +78,11 @@ module.exports = {
       alpacaInstance.configuration
     );
 
-    const quote = { Symbol: symbol, AskPrice: response.LatestQuote.AskPrice };
+    const quote = {
+      Symbol: symbol,
+      AskPrice: response.LatestQuote.AskPrice,
+      BidPrice: response.LatestQuote.BidPrice,
+    };
     io.emit("stockQuoteResponse", quote);
 
     const barObj = response.MinuteBar;
