@@ -162,7 +162,7 @@ export default function QuotesTableRowData({
           </td>
           <td
             className="bg-warning"
-            onClick={() => setLimitPrice(price.toFixed(2))}
+            onClick={() => setLimitPrice(price)}
             style={{ cursor: "pointer" }}
           >
             <strong>{displayCurrency(price)}</strong>
