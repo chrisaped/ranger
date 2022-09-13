@@ -15,18 +15,13 @@ export default function SpinnerButton({
   useEffect(() => {
     socket.on("canceledOrderResponse", (data) => {
       const responseOrderId = data.order.id;
-      if (orderId === responseOrderId) {
-        setSubmitted(false);
-      }
+      if (orderId === responseOrderId) setSubmitted(false);
     });
   }, [socket, orderId]);
 
   const handleOnClick = () => {
     setSubmitted(true);
-
-    if (onClickFunction) {
-      onClickFunction();
-    }
+    onClickFunction();
   };
 
   return (
