@@ -141,6 +141,7 @@ export default function PositionsTableRowData({
     const orderObj = {
       orderId: orderId,
       symbol: symbol,
+      cancelPosition: false,
     };
     cancelOrder(socket, orderObj);
     setOrderId("");

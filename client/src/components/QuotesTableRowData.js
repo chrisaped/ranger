@@ -114,6 +114,7 @@ export default function QuotesTableRowData({
     const orderObj = {
       orderId: orderId,
       symbol: symbol,
+      cancelPosition: true,
     };
     cancelOrder(socket, orderObj);
     setOrderId("");
