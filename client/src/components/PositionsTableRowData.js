@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import SpinnerButton from "./SpinnerButton";
 import {
-  displayCost,
+  displayRoundNumber,
   displayCurrency,
   capitalizeString,
 } from "../shared/formatting";
@@ -133,7 +133,7 @@ export default function PositionsTableRowData({
     setStopTargetSubmitted(true);
   }
 
-  const cost = displayCost(initialPrice * quantity);
+  const cost = displayRoundNumber(initialPrice * quantity);
   const orderSide = determineOrderSide(side);
   const limitOrder = createLimitOrder(symbol, quantity, orderSide, limitPrice);
   const submitOrder = () => createOrder(socket, limitOrder);
@@ -181,7 +181,7 @@ export default function PositionsTableRowData({
       </td>
       {profitTargetData}
       <td>${displayCurrency(profitOrLoss)}</td>
-      <td>{quantity.toLocaleString()} shares</td>
+      <td>{displayRoundNumber(quantity)} shares</td>
       <td>${cost}</td>
       <td>
         {orderId ? (
@@ -226,23 +226,6 @@ PositionsTableRowData.propTypes = {
   price: PropTypes.number.isRequired,
   profitOrLoss: PropTypes.number.isRequired,
   quantity: PropTypes.number.isRequired,
-  orders: PropTypes.arrayOf(
-    PropTypes.shape({
-      symbol: PropTypes.string,
-      filled_qty: PropTypes.string,
-      filled_avg_price: PropTypes.string,
-      status: PropTypes.string,
-      legs: PropTypes.arrayOf(
-        PropTypes.shape({
-          type: PropTypes.string,
-          limit_price: PropTypes.string,
-          id: PropTypes.string,
-          status: PropTypes.string,
-          stop_price: PropTypes.string,
-        })
-      ),
-    })
-  ).isRequired,
 };
 
 PositionsTableRowData.defaultProps = {
@@ -253,5 +236,4 @@ PositionsTableRowData.defaultProps = {
   price: 0,
   profitOrLoss: 0,
   quantity: 0,
-  orders: [],
 };

@@ -34,7 +34,7 @@ export default function PositionsTable({ socket, quotes, positions }) {
     const price = selectPrice(priceObj, side);
 
     let profitOrLoss = 0.0;
-    if (price) {
+    if (price)
       profitOrLoss = calculateProfitLoss(
         price,
         side,
@@ -43,7 +43,6 @@ export default function PositionsTable({ socket, quotes, positions }) {
         initial_filled_avg_price,
         profit_targets
       );
-    }
 
     const rowClassName = getRowClassName(profitOrLoss);
 

@@ -3,7 +3,8 @@ export const displayCurrency = (price) => {
   return price.toFixed(2);
 };
 
-export const displayCost = (cost) => Math.round(cost).toLocaleString();
+export const displayRoundNumber = (number) =>
+  Math.round(number).toLocaleString();
 
 const displayAlertTimeout = (setDisplayAlert) => {
   setTimeout(() => {
