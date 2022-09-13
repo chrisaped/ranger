@@ -22,3 +22,6 @@ export const enableAlert = (
   setDisplayAlert(true);
   displayAlertTimeout(setDisplayAlert);
 };
+
+export const capitalizeString = (string) =>
+  string.charAt(0).toUpperCase() + string.slice(1);
