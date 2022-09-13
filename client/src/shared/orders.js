@@ -1,6 +1,12 @@
 import { displayPrice } from "./formatting";
 import { calculateProfitLossByValues } from "./calculations";
 
+export const determineOrderSide = (side) => {
+  let orderSide = "sell";
+  if (side === "short") orderSide = "buy";
+  return orderSide;
+};
+
 export const createBracketOrderObject = (
   symbol,
   side,
@@ -27,12 +33,8 @@ export const createBracketOrderObject = (
 };
 
 export const createMarketOrder = (symbol, qty, side) => {
-  let action = "sell";
-  if (side === "short") {
-    action = "buy";
-  }
   return {
-    side: action,
+    side: side,
     symbol: symbol,
     type: "market",
     qty: `${qty}`,

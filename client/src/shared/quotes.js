@@ -1,3 +1,5 @@
+import { determineOrderSide } from "./orders";
+
 export const displayOrderButton = (side, symbol, tradeableAssets) => {
   let buttonText = "Long";
   let buttonClass = "btn btn-success";
@@ -14,12 +16,8 @@ export const displayOrderButton = (side, symbol, tradeableAssets) => {
 };
 
 export const isForbiddenStopPrice = (side, stopPrice, price) => {
-  if (side === "buy" && stopPrice > price) {
-    return true;
-  }
-  if (side === "sell" && stopPrice < price) {
-    return true;
-  }
+  if (side === "buy" && stopPrice > price) return true;
+  if (side === "sell" && stopPrice < price) return true;
   return false;
 };
 
@@ -28,12 +26,7 @@ const isShortable = (symbol, tradeableAssets) => {
   return assetsObject?.shortable;
 };
 
-const isProperPositionSize = (positionSize) => {
-  if (positionSize === 0) {
-    return false;
-  }
-  return true;
-};
+const isProperPositionSize = (positionSize) => positionSize !== 0;
 
 export const isDisabled = (
   side,
@@ -46,31 +39,26 @@ export const isDisabled = (
   moneyUpfront,
   accountSize
 ) => {
-  if (!limitPrice || !stopPrice) {
-    return true;
-  }
+  if (!limitPrice || !stopPrice) return true;
+
   const accountSizeFloat = parseFloat(accountSize);
-  if (moneyUpfront >= accountSizeFloat) {
-    return true;
-  }
+  if (moneyUpfront >= accountSizeFloat) return true;
 
   if (side === "sell") {
     if (
       isForbiddenStopPrice(side, stopPrice, currentPrice) ||
       !isShortable(symbol, tradeableAssets) ||
       !isProperPositionSize(positionSize)
-    ) {
+    )
       return true;
-    }
   }
 
   if (side === "buy") {
     if (
       isForbiddenStopPrice(side, stopPrice, currentPrice) ||
       !isProperPositionSize(positionSize)
-    ) {
+    )
       return true;
-    }
   }
 
   return false;
@@ -80,21 +68,9 @@ export const selectPrice = (priceObj, side) => {
   if (!priceObj) return;
   const { ask, bid } = priceObj;
   let price = ask;
-  const priceSide = determineSide(side);
+  const priceSide = determineOrderSide(side);
   if (priceSide === "sell") {
     price = bid;
   }
   return price;
-};
-
-const determineSide = (side) => {
-  let priceSide = side;
-  const positionSides = ["long", "short"];
-  if (positionSides.includes(side)) {
-    priceSide = "sell";
-    if (side === "short") {
-      priceSide = "buy";
-    }
-  }
-  return priceSide;
 };
