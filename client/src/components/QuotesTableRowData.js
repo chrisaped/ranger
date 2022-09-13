@@ -13,7 +13,7 @@ import {
   createLimitOrderWithStop,
 } from "../shared/orders";
 import { updateNumberField } from "../shared/inputs";
-import { displayCurrency, displayRoundNumber } from "../shared/formatting";
+import { displayCurrency } from "../shared/formatting";
 import { defaultStopPriceDifference } from "../shared/constants";
 import {
   displayOrderButton,
@@ -56,14 +56,16 @@ export default function QuotesTableRowData({
 
   useEffect(() => {
     if (price && stopPrice === defaultStopPrice) {
-      let newDefaultStopPrice = price - defaultStopPriceDifference;
+      let newDefaultStopPrice = (price - defaultStopPriceDifference).toFixed(2);
       if (newDefaultStopPrice < 0) newDefaultStopPrice = 0.01;
       setStopPrice(newDefaultStopPrice);
     }
   }, [price, stopPrice]);
 
   useEffect(() => {
-    if (price && limitPrice === defaultLimitPrice) setLimitPrice(price);
+    if (price && limitPrice === defaultLimitPrice) {
+      setLimitPrice(price.toFixed(2));
+    }
   }, [price, limitPrice]);
 
   const onSelectChange = (e) => {
@@ -81,28 +83,25 @@ export default function QuotesTableRowData({
   )
     ? "form-control border border-danger"
     : "form-control";
-
   const accountSize = accountInfo.buying_power;
-
   const positionSize = calculatePositionSize(
     limitPrice,
     stopPrice,
     accountSize
   );
-
   const profitTarget = calculateFirstProfitTarget(
     limitPrice,
     stopPrice,
     side,
     lastMultiplier
   );
-
+  const positionSizeDisplay = positionSize.toLocaleString();
   const moneyUpfront = calculateMoneyUpfront(
     limitPrice,
     stopPrice,
     accountSize
   );
-
+  const moneyUpfrontDisplay = Math.round(moneyUpfront).toLocaleString();
   const orderObject = createLimitOrderWithStop(
     symbol,
     positionSize,
@@ -110,9 +109,7 @@ export default function QuotesTableRowData({
     limitPrice,
     stopPrice
   );
-
   const createLimitOrder = () => createNewOrder(socket, orderObject);
-
   const cancelNewOrder = () => {
     const orderObj = {
       orderId: orderId,
@@ -122,19 +119,17 @@ export default function QuotesTableRowData({
     cancelOrder(socket, orderObj);
     setOrderId("");
   };
-
+  const currentPrice = displayCurrency(price);
   const { buttonClass, buttonText } = displayOrderButton(
     side,
     symbol,
     tradeableAssets
   );
-
   const onClickRemove = () => removeFromQuotesAndWatchlist(symbol);
-
   const isOrderButtonDisabled = isDisabled(
     side,
     stopPrice,
-    price,
+    currentPrice,
     symbol,
     positionSize,
     tradeableAssets,
@@ -165,7 +160,7 @@ export default function QuotesTableRowData({
             onClick={() => setLimitPrice(price.toFixed(2))}
             style={{ cursor: "pointer" }}
           >
-            <strong>{displayCurrency(price)}</strong>
+            <strong>{currentPrice}</strong>
           </td>
           <td>
             <input
@@ -186,8 +181,8 @@ export default function QuotesTableRowData({
               onChange={(e) => updateNumberField(e.target.value, setStopPrice)}
             />
           </td>
-          <td>{displayRoundNumber(positionSize)} shares</td>
-          <td>${displayRoundNumber(moneyUpfront)}</td>
+          <td>{positionSizeDisplay} shares</td>
+          <td>${moneyUpfrontDisplay}</td>
           <td>
             <SpinnerButton
               socket={socket}
