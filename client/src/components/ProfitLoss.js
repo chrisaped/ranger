@@ -2,7 +2,6 @@ import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import { sumObjectValues, calculateProfitLoss } from "../shared/calculations";
 import { selectPrice } from "../shared/quotes";
-import { displayCurrency } from "../shared/formatting";
 
 export default function ProfitLoss({ positions, quotes, socket }) {
   const [totalProfitOrLossToday, setTotalProfitOrLossToday] = useState(0.0);
@@ -13,46 +12,44 @@ export default function ProfitLoss({ positions, quotes, socket }) {
     });
   }, [socket]);
 
-  const createCurrentPositions = () => {
+  const createCurrentPositions = (positions) => {
     const newObj = {};
-
     positions.forEach((positionObj) => {
-      const {
-        symbol,
-        side,
-        current_quantity,
-        initial_quantity,
-        initial_filled_avg_price,
-        profit_targets,
-      } = positionObj;
-
-      const priceObj = quotes[symbol];
-      const price = selectPrice(priceObj, side);
-
-      const calculatedProfitLoss = calculateProfitLoss(
-        price,
-        side,
-        current_quantity,
-        initial_quantity,
-        initial_filled_avg_price,
-        profit_targets
-      );
-
-      newObj[symbol] = calculatedProfitLoss;
+      newObj[positionObj.symbol] = {
+        side: positionObj.side,
+        quantity: Math.abs(parseInt(positionObj.current_quantity)),
+        initialQuantity: Math.abs(parseInt(positionObj.initial_quantity)),
+        entryPrice: parseFloat(positionObj.initial_filled_avg_price),
+        profitTargets: positionObj.profit_targets,
+      };
     });
-
     return newObj;
   };
-
-  const currentPositions = createCurrentPositions();
-
+  const currentPositions = createCurrentPositions(positions);
+  const createCurrentPositionsWithQuotes = (quotes) => {
+    const newObj = {};
+    Object.entries(currentPositions).forEach(([symbol, infoObj]) => {
+      const priceObj = quotes[symbol];
+      const side = infoObj.side;
+      let price = selectPrice(priceObj, side);
+      const calculatedProfitLoss = calculateProfitLoss(
+        price,
+        infoObj.side,
+        infoObj.quantity,
+        infoObj.initialQuantity,
+        infoObj.entryPrice,
+        infoObj.profitTargets
+      );
+      newObj[symbol] = parseFloat(calculatedProfitLoss);
+    });
+    return newObj;
+  };
+  const currentPositionsWithQuotes = createCurrentPositionsWithQuotes(quotes);
   let currentPositionsProfitLoss = 0.0;
-  if (Object.keys(currentPositions).length > 0) {
-    currentPositionsProfitLoss = sumObjectValues(currentPositions);
+  if (Object.keys(currentPositionsWithQuotes).length > 0) {
+    currentPositionsProfitLoss = sumObjectValues(currentPositionsWithQuotes);
   }
-
-  const profitLoss = currentPositionsProfitLoss + totalProfitOrLossToday || 0.0;
-
+  let profitLoss = currentPositionsProfitLoss + totalProfitOrLossToday || 0.0;
   let badgeClass;
   if (profitLoss < 0) {
     badgeClass = "badge bg-danger fs-6 text";
@@ -65,7 +62,13 @@ export default function ProfitLoss({ positions, quotes, socket }) {
   return (
     <div>
       <span className="p-2">Today's P/L:</span>
-      <span className={badgeClass}>${displayCurrency(profitLoss)}</span>
+      <span className={badgeClass}>
+        $
+        {profitLoss.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}
+      </span>
     </div>
   );
 }
@@ -74,11 +77,9 @@ ProfitLoss.propTypes = {
   positions: PropTypes.arrayOf(
     PropTypes.shape({
       symbol: PropTypes.string,
+      qty: PropTypes.string,
+      avg_entry_price: PropTypes.string,
       side: PropTypes.string,
-      current_quantity: PropTypes.number,
-      initial_quantity: PropTypes.number,
-      initial_filled_avg_price: PropTypes.number,
-      profit_targets: PropTypes.array,
     })
   ).isRequired,
   quotes: PropTypes.object.isRequired,
