@@ -12,7 +12,6 @@ export default function App() {
   const [quotes, setQuotes] = useState({});
   const [watchlist, setWatchlist] = useState([]);
   const [tradeableAssets, setTradeableAssets] = useState({});
-  const [orders, setOrders] = useState([]);
   const [positions, setPositions] = useState([]);
   const [alert, setAlert] = useState({});
   const [displayAlert, setDisplayAlert] = useState(false);
@@ -29,10 +28,6 @@ export default function App() {
 
     newSocket.on("getAssetsResponse", (assets) => {
       setTradeableAssets(assets);
-    });
-
-    newSocket.on("getOrdersResponse", (array) => {
-      setOrders(array);
     });
 
     newSocket.on("getPositionsResponse", (array) => {
@@ -103,12 +98,7 @@ export default function App() {
             />
           </div>
           <div className="row">
-            <Positions
-              socket={socket}
-              quotes={quotes}
-              orders={orders}
-              positions={positions}
-            />
+            <Positions socket={socket} quotes={quotes} positions={positions} />
           </div>
         </div>
       ) : (

@@ -5,7 +5,7 @@ import { calculateProfitLoss } from "../shared/calculations";
 import { selectPrice } from "../shared/quotes";
 import { profitMultipliers } from "../shared/constants";
 
-export default function PositionsTable({ socket, quotes, orders, positions }) {
+export default function PositionsTable({ socket, quotes, positions }) {
   const getRowClassName = (profitOrLoss) => {
     let rowClass;
     if (profitOrLoss > 0) {
@@ -65,9 +65,9 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
     );
   });
 
-  const multiplierHeaders = profitMultipliers.map((profitMultiplier) => {
-    return <th>{profitMultiplier}x</th>;
-  });
+  const multiplierHeaders = profitMultipliers.map((profitMultiplier) => (
+    <th>{profitMultiplier}x</th>
+  ));
 
   return (
     <table className="table table-bordered align-middle text-center">
@@ -93,23 +93,6 @@ export default function PositionsTable({ socket, quotes, orders, positions }) {
 PositionsTable.propTypes = {
   socket: PropTypes.object.isRequired,
   quotes: PropTypes.object.isRequired,
-  orders: PropTypes.arrayOf(
-    PropTypes.shape({
-      symbol: PropTypes.string,
-      filled_qty: PropTypes.string,
-      filled_avg_price: PropTypes.string,
-      status: PropTypes.string,
-      legs: PropTypes.arrayOf(
-        PropTypes.shape({
-          type: PropTypes.string,
-          limit_price: PropTypes.string,
-          id: PropTypes.string,
-          status: PropTypes.string,
-          stop_price: PropTypes.string,
-        })
-      ),
-    })
-  ).isRequired,
   positions: PropTypes.arrayOf(
     PropTypes.shape({
       symbol: PropTypes.string,
@@ -124,6 +107,5 @@ PositionsTable.propTypes = {
 PositionsTable.defaultProps = {
   socket: {},
   quotes: {},
-  orders: [],
   positions: [],
 };
