@@ -1,13 +1,18 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import SpinnerButton from "./SpinnerButton";
-import { displayPrice } from "../shared/formatting";
+import {
+  displayCost,
+  displayPrice,
+  capitalizeString,
+} from "../shared/formatting";
 import { updateNumberField } from "../shared/inputs";
 import {
   createLimitOrder,
   createOrder,
   createStopOrder,
   cancelOrder,
+  determineOrderSide,
 } from "../shared/orders";
 
 export default function PositionsTableRowData({
@@ -71,7 +76,7 @@ export default function PositionsTableRowData({
 
   useEffect(() => {
     if (stopTarget.price !== stopTargetPrice) {
-      console.log(`updating ${symbol} stopTarget to ${stopTarget.price}`);
+      console.log(`setting ${symbol} stopTarget at ${stopTarget.price}`);
       setStopTargetPrice(stopTarget.price);
       setStopTargetQuantity(stopTarget.quantity);
       setStopTargetSide(stopTarget.side);
@@ -128,15 +133,11 @@ export default function PositionsTableRowData({
     setStopTargetSubmitted(true);
   }
 
-  const sideInCaps = side.toUpperCase();
-  const entryPrice = displayPrice(initialPrice);
-  const currentPrice = displayPrice(price);
-  const stopPrice = displayPrice(stopTarget.price);
-  const cost = Math.round(initialPrice * quantity).toLocaleString();
-  const orderSide = side === "long" ? "sell" : "buy";
+  const cost = displayCost(initialPrice * quantity);
+  const orderSide = determineOrderSide(side);
   const limitOrder = createLimitOrder(symbol, quantity, orderSide, limitPrice);
   const submitOrder = () => createOrder(socket, limitOrder);
-  const orderButtonText = side === "long" ? "Sell" : "Buy";
+  const orderButtonText = capitalizeString(orderSide);
   const cancelNewOrder = () => {
     const orderObj = {
       orderId: orderId,
@@ -166,15 +167,15 @@ export default function PositionsTableRowData({
       <td>
         <strong>{symbol}</strong>
       </td>
-      <td>{sideInCaps}</td>
-      <td>{entryPrice}</td>
-      <td className="bg-danger text-white">{stopPrice}</td>
+      <td>{side.toUpperCase()}</td>
+      <td>{displayPrice(initialPrice)}</td>
+      <td className="bg-danger text-white">{displayPrice(stopTarget.price)}</td>
       <td
         className="bg-warning"
-        onClick={() => setLimitPrice(currentPrice)}
+        onClick={() => setLimitPrice(price)}
         style={{ cursor: "pointer" }}
       >
-        <strong>{currentPrice}</strong>
+        <strong>{displayPrice(price)}</strong>
       </td>
       {profitTargetData}
       <td>
@@ -187,7 +188,16 @@ export default function PositionsTableRowData({
       <td>{quantity.toLocaleString()} shares</td>
       <td>${cost}</td>
       <td>
-        {!orderId && (
+        {orderId ? (
+          <SpinnerButton
+            socket={socket}
+            buttonClass="btn btn-dark"
+            buttonText={`Cancel $${limitPrice} Order`}
+            onClickFunction={cancelNewOrder}
+            orderId={orderId}
+            symbol={symbol}
+          />
+        ) : (
           <div className="d-flex">
             <input
               className="form-control"
@@ -206,16 +216,6 @@ export default function PositionsTableRowData({
               symbol={symbol}
             />
           </div>
-        )}
-        {orderId && (
-          <SpinnerButton
-            socket={socket}
-            buttonClass="btn btn-dark"
-            buttonText={`Cancel $${limitPrice} Order`}
-            onClickFunction={cancelNewOrder}
-            orderId={orderId}
-            symbol={symbol}
-          />
         )}
       </td>
     </tr>
