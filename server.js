@@ -6,7 +6,7 @@ const io = require("socket.io")(http, {
   cors: { origins: ["http://localhost:2000"] },
 });
 require("dotenv").config();
-const Alpaca = require("@alpacahq/alpaca-trade-api");
+const AlpacaTradeApi = require("@alpacahq/alpaca-trade-api");
 const alpaca = require("./alpaca");
 const indicators = require("./indicators");
 const rangerApi = require("./rangerApi");
@@ -22,7 +22,7 @@ if (isPaper) {
   alpacaWatchlistId = process.env.PAPER_ALPACA_WATCHLIST_ID;
 }
 
-const alpacaInstance = new Alpaca({
+const alpacaInstance = new AlpacaTradeApi({
   keyId: alpacaApiKey,
   secretKey: alpacaApiSecret,
   feed: "sip",
@@ -70,23 +70,18 @@ io.on("connection", (socket) => {
     }
     if (symbol && event === "canceled") {
       rangerApi.getPositions(io, alpacaSocket);
-      // alpaca.getPositions(alpacaInstance, io, alpacaSocket);
-      // alpaca.getOrders(alpacaInstance, io);
-      // io.emit(`${symbol} canceledOrderResponse`, data);
       io.emit("canceledOrderResponse", data);
     }
     if (symbol && event === "fill") {
-      rangerApi.createOrder(data, io);
-      // alpaca.getPositions(alpacaInstance, io, alpacaSocket);
-      // alpaca.getOrders(alpacaInstance, io);
+      rangerApi.createOrder(data, io, alpacaSocket);
 
       const positionQuantity = data.position_qty;
       if (positionQuantity === "0") {
         alpacaSocket.unsubscribeFromQuotes([symbol]);
       } else {
         io.emit(`${symbol} fillOrderResponse`, data);
-        // alpaca.getSnapshot(alpacaInstance, io, symbol);
       }
+
       io.emit("fillOrderResponse", data);
     }
   });
@@ -103,10 +98,10 @@ io.on("connection", (socket) => {
     io.emit("stockQuoteResponse", quote);
   });
 
-  alpacaSocket.onStockBar((barObj) => {
-    // stock bar data once a minute
-    indicators.calculateIndicators(barObj, alpacaInstance, io, alpaca);
-  });
+  // alpacaSocket.onStockBar((barObj) => {
+  // stock bar data once a minute
+  //   indicators.calculateIndicators(barObj, alpacaInstance, io, alpaca);
+  // });
 
   alpacaSocket.onError((error) => {
     console.log("error", error);
@@ -126,7 +121,6 @@ io.on("connection", (socket) => {
 
   socket.on("addToWatchlist", (symbol) => {
     console.log("addToWatchlist", symbol);
-    // alpaca.getSnapshot(alpacaInstance, io, symbol);
     alpaca.addToWatchlist(alpacaInstance, symbol, alpacaWatchlistId);
     alpacaSocket.subscribeForQuotes([symbol]);
   });
@@ -144,9 +138,9 @@ io.on("connection", (socket) => {
 
   socket.on("cancelOrder", (orderObj) => {
     console.log("cancelOrder", orderObj);
-    const { orderId, symbol } = orderObj;
+    const { orderId, symbol, cancelPosition } = orderObj;
     alpaca.cancelOrder(alpacaInstance, orderId);
-    rangerApi.cancelPosition(symbol);
+    if (cancelPosition) rangerApi.cancelPosition(symbol);
   });
 });
 

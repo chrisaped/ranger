@@ -16,10 +16,10 @@ module.exports = {
     });
     console.log("cancelPosition response", response.status);
   },
-  createOrder: async function (orderData, io) {
+  createOrder: async function (orderData, io, alpacaSocket) {
     const response = await axiosInstance.post("/create_order", orderData);
     console.log("createOrder response", response.status);
-    this.getPositions(io);
+    this.getPositions(io, alpacaSocket);
     this.getTotalProfitOrLossToday(io);
   },
   getPositions: async function (io, alpacaSocket) {
