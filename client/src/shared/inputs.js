@@ -1,5 +1,3 @@
 export const updateNumberField = (value, updateFunction) => {
-  if (!isNaN(value)) {
-    updateFunction(value);
-  }
+  if (!isNaN(value)) updateFunction(value);
 };
