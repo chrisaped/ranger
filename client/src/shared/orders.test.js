@@ -1,4 +1,8 @@
-import { createBracketOrderObject } from "./orders";
+import {
+  createBracketOrderObject,
+  extractTotalProfitLossFromClosedOrders,
+} from "./orders";
+import { orders } from "../dataSamples/orders";
 
 describe("orders", () => {
   test("createBracketOrderObject", () => {
@@ -17,5 +21,11 @@ describe("orders", () => {
       limitPrice
     );
     expect(orderObject.symbol).toBe("GME");
+  });
+
+  test("get profitLoss from closed orders", () => {
+    const closedPositionsProfitLoss =
+      extractTotalProfitLossFromClosedOrders(orders);
+    expect(closedPositionsProfitLoss).toBe(-29.35);
   });
 });
