@@ -84,10 +84,6 @@ export default function App() {
               <div>
                 Account Size: <strong>${accountSize}</strong>
               </div>
-              {/* <div>
-                Day Trades: <strong>{accountInfo.daytrade_count}</strong> (3
-                MAX)
-              </div> */}
               <ProfitLoss
                 positions={positions}
                 quotes={quotes}
