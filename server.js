@@ -8,7 +8,6 @@ const io = require("socket.io")(http, {
 require("dotenv").config();
 const AlpacaTradeApi = require("@alpacahq/alpaca-trade-api");
 const alpaca = require("./alpaca");
-const indicators = require("./indicators");
 const rangerApi = require("./rangerApi");
 
 const isPaper = process.env.IS_PAPER;
@@ -97,11 +96,6 @@ io.on("connection", (socket) => {
   alpacaSocket.onStockQuote((quote) => {
     io.emit("stockQuoteResponse", quote);
   });
-
-  // alpacaSocket.onStockBar((barObj) => {
-  // stock bar data once a minute
-  //   indicators.calculateIndicators(barObj, alpacaInstance, io, alpaca);
-  // });
 
   alpacaSocket.onError((error) => {
     console.log("error", error);

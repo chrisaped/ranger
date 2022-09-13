@@ -1,5 +1,3 @@
-const indicators = require("./indicators");
-
 module.exports = {
   getWatchlist: async function (
     alpacaInstance,
@@ -71,23 +69,6 @@ module.exports = {
   cancelOrder: async function (alpacaInstance, orderId) {
     const response = await alpacaInstance.cancelOrder(orderId);
     console.log("cancelOrder", response);
-  },
-  getSnapshot: async function (alpacaInstance, io, symbol) {
-    const response = await alpacaInstance.getSnapshot(
-      symbol,
-      alpacaInstance.configuration
-    );
-
-    const quote = {
-      Symbol: symbol,
-      AskPrice: response.LatestQuote.AskPrice,
-      BidPrice: response.LatestQuote.BidPrice,
-    };
-    io.emit("stockQuoteResponse", quote);
-
-    const barObj = response.MinuteBar;
-    barObj["Symbol"] = symbol;
-    indicators.calculateIndicators(barObj, alpacaInstance, io, this);
   },
   createOrder: async function (alpacaInstance, orderObject, _io) {
     if ("stop_price" in orderObject) delete orderObject.stop_price;
