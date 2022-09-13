@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import SpinnerButton from "./SpinnerButton";
 import {
   displayCost,
-  displayPrice,
+  displayCurrency,
   capitalizeString,
 } from "../shared/formatting";
 import { updateNumberField } from "../shared/inputs";
@@ -157,7 +157,7 @@ export default function PositionsTableRowData({
 
     return (
       <td className={targetPriceClassName}>
-        {displayPrice(profitTargetPrice)}
+        {displayCurrency(profitTargetPrice)}
       </td>
     );
   });
@@ -168,23 +168,19 @@ export default function PositionsTableRowData({
         <strong>{symbol}</strong>
       </td>
       <td>{side.toUpperCase()}</td>
-      <td>{displayPrice(initialPrice)}</td>
-      <td className="bg-danger text-white">{displayPrice(stopTarget.price)}</td>
+      <td>{displayCurrency(initialPrice)}</td>
+      <td className="bg-danger text-white">
+        {displayCurrency(stopTarget.price)}
+      </td>
       <td
         className="bg-warning"
         onClick={() => setLimitPrice(price)}
         style={{ cursor: "pointer" }}
       >
-        <strong>{displayPrice(price)}</strong>
+        <strong>{displayCurrency(price)}</strong>
       </td>
       {profitTargetData}
-      <td>
-        $
-        {profitOrLoss.toLocaleString(undefined, {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2,
-        })}
-      </td>
+      <td>${displayCurrency(profitOrLoss)}</td>
       <td>{quantity.toLocaleString()} shares</td>
       <td>${cost}</td>
       <td>

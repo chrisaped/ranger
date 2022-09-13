@@ -1,4 +1,4 @@
-import { displayPrice } from "./formatting";
+import { displayCurrency } from "./formatting";
 import { calculateProfitLossByValues } from "./calculations";
 
 export const determineOrderSide = (side) => {
@@ -128,8 +128,8 @@ export const extractBracketOrderInfo = (
     }
   });
 
-  targetPrice = displayPrice(targetPrice);
-  stopPrice = displayPrice(stopPrice);
+  targetPrice = displayCurrency(targetPrice);
+  stopPrice = displayCurrency(stopPrice);
 
   const hasLegs = legs.length > 0;
 

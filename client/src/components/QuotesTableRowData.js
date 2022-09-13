@@ -13,7 +13,7 @@ import {
   createLimitOrderWithStop,
 } from "../shared/orders";
 import { updateNumberField } from "../shared/inputs";
-import { displayPrice } from "../shared/formatting";
+import { displayCurrency } from "../shared/formatting";
 import { defaultStopPriceDifference } from "../shared/constants";
 import {
   displayOrderButton,
@@ -119,7 +119,7 @@ export default function QuotesTableRowData({
     cancelOrder(socket, orderObj);
     setOrderId("");
   };
-  const currentPrice = displayPrice(price);
+  const currentPrice = displayCurrency(price);
   const { buttonClass, buttonText } = displayOrderButton(
     side,
     symbol,

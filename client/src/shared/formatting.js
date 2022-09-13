@@ -1,9 +1,9 @@
-export const displayPrice = (price) => {
+export const displayCurrency = (price) => {
   if (isNaN(price)) return "N/A";
   return price.toFixed(2);
 };
 
-export const displayCost = (cost) => Math.round(cost);
+export const displayCost = (cost) => Math.round(cost).toLocaleString();
 
 const displayAlertTimeout = (setDisplayAlert) => {
   setTimeout(() => {
