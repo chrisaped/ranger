@@ -30,12 +30,11 @@ const alpacaInstance = new AlpacaTradeApi({
 const alpacaSocket = alpacaInstance.data_stream_v2;
 const alpacaTradeSocket = alpacaInstance.trade_ws;
 
-const establishInitialConnections = (io) => {
+const getCurrentWatchlistAndPositions = (io) => {
   alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
+  alpaca.getNewOrders(alpacaInstance, io);
   rangerApi.getPositions(io, alpacaSocket);
   rangerApi.getTotalProfitOrLossToday(io);
-  alpaca.getAssets(alpacaInstance, io);
-  alpaca.getAccount(alpacaInstance, io);
 };
 
 io.on("connection", (socket) => {
@@ -68,11 +67,13 @@ io.on("connection", (socket) => {
       io.emit(`${symbol} newOrderResponse`, data);
     }
     if (symbol && event === "canceled") {
-      rangerApi.getPositions(io, alpacaSocket);
+      getCurrentWatchlistAndPositions(io);
+
       io.emit("canceledOrderResponse", data);
     }
     if (symbol && event === "fill") {
-      rangerApi.createOrder(data, io, alpacaSocket);
+      rangerApi.createOrder(data);
+      getCurrentWatchlistAndPositions(io);
 
       const positionQuantity = data.position_qty;
       if (positionQuantity === "0") {
@@ -90,7 +91,9 @@ io.on("connection", (socket) => {
   });
 
   alpacaSocket.onConnect(() => {
-    establishInitialConnections(io);
+    getCurrentWatchlistAndPositions(io);
+    alpaca.getAssets(alpacaInstance, io);
+    alpaca.getAccount(alpacaInstance, io);
   });
 
   alpacaSocket.onStockQuote((quote) => {

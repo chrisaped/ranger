@@ -44,16 +44,16 @@ module.exports = {
     }
     io.emit("getPositionsResponse", response);
   },
-  getOrders: async function (alpacaInstance, io) {
+  getNewOrders: async function (alpacaInstance, io) {
     const today = new Date().toISOString().slice(0, 10);
     const orderObj = {
-      status: "all",
+      status: "new",
       after: today,
-      nested: true,
-      direction: "asc",
     };
-    const response = await alpacaInstance.getOrders(orderObj);
-    io.emit("getOrdersResponse", response);
+    const responseArray = await alpacaInstance.getOrders(orderObj);
+    if (responseArray.length > 0) {
+      io.emit("getNewOrdersResponse", responseArray);
+    }
   },
   getAssets: async function (alpacaInstance, io) {
     const response = await alpacaInstance.getAssets({ status: "active" });

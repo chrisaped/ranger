@@ -52,6 +52,12 @@ export default function QuotesTableRowData({
       setOrderId(newOrderId);
       removeFromWatchlist(symbol);
     });
+
+    socket.on("getNewOrdersResponse", (dataArray) => {
+      dataArray.forEach((obj) => {
+        if (obj.symbol === symbol && !obj.filled_at) setOrderId(obj.id);
+      });
+    });
   }, []); // eslint-disable-line
 
   useEffect(() => {
@@ -143,6 +149,8 @@ export default function QuotesTableRowData({
     accountSize
   );
 
+  const inputIsDisabled = orderId !== "";
+
   return (
     <>
       <td>
@@ -173,6 +181,7 @@ export default function QuotesTableRowData({
               type="text"
               size="3"
               value={limitPrice}
+              disabled={inputIsDisabled}
               onChange={(e) => updateNumberField(e.target.value, setLimitPrice)}
             />
           </td>
@@ -185,21 +194,33 @@ export default function QuotesTableRowData({
               type="text"
               size="3"
               value={stopPrice}
+              disabled={inputIsDisabled}
               onChange={(e) => updateNumberField(e.target.value, setStopPrice)}
             />
           </td>
           <td>{displayRoundNumber(positionSize)} shares</td>
           <td>${displayRoundNumber(moneyUpfront)}</td>
           <td>
-            <SpinnerButton
-              socket={socket}
-              buttonClass={buttonClass}
-              buttonText={buttonText}
-              buttonDisabled={isOrderButtonDisabled}
-              onClickFunction={createLimitOrder}
-              orderId={orderId}
-              symbol={symbol}
-            />
+            {orderId ? (
+              <SpinnerButton
+                socket={socket}
+                buttonClass="btn btn-dark"
+                buttonText={`Cancel $${limitPrice} Order`}
+                onClickFunction={cancelNewOrder}
+                orderId={orderId}
+                symbol={symbol}
+              />
+            ) : (
+              <SpinnerButton
+                socket={socket}
+                buttonClass={buttonClass}
+                buttonText={buttonText}
+                buttonDisabled={isOrderButtonDisabled}
+                onClickFunction={createLimitOrder}
+                orderId={orderId}
+                symbol={symbol}
+              />
+            )}
           </td>
         </>
       ) : (
@@ -210,16 +231,7 @@ export default function QuotesTableRowData({
         </>
       )}
       <td colSpan="2">
-        {orderId ? (
-          <SpinnerButton
-            socket={socket}
-            buttonClass="btn btn-dark"
-            buttonText="Cancel Order"
-            onClickFunction={cancelNewOrder}
-            orderId={orderId}
-            symbol={symbol}
-          />
-        ) : (
+        {!orderId && (
           <button className="btn btn-secondary" onClick={onClickRemove}>
             Remove
           </button>
