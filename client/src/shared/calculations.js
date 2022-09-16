@@ -1,78 +1,33 @@
-import {
-  riskPercentage,
-  defaultStopPriceDifference,
-  profitTarget,
-} from "./constants";
+import { riskPercentage, defaultStopPriceDifference } from "./constants";
 
-const calculateRiskPerShare = (limitPrice, stopPrice) => {
-  return Math.abs(limitPrice - stopPrice);
-};
+const calculateRiskPerShare = (limitPrice, stopPrice) =>
+  Math.abs(limitPrice - stopPrice);
 
-const calculateProfitTargetMultiple = (
-  limitPrice,
-  positionSize,
-  riskPerShare
-) => {
-  return (
-    ((profitTarget + limitPrice * positionSize) / positionSize - limitPrice) /
-    riskPerShare
-  );
-};
-
-export const calculateProfitTarget = (
+export const calculateLastProfitTarget = (
   limitPrice,
   stopPrice,
   side,
-  positionSize
+  lastMultiplier
 ) => {
-  const limitPriceFloat = parseFloat(limitPrice);
-  const stopPriceFloat = parseFloat(stopPrice);
-  const riskPerShare = calculateRiskPerShare(limitPriceFloat, stopPriceFloat);
-  const profitTargetMultiple = calculateProfitTargetMultiple(
-    limitPriceFloat,
-    positionSize,
-    riskPerShare
-  );
+  const riskPerShare = calculateRiskPerShare(limitPrice, stopPrice);
 
   if (side === "buy") {
-    return (limitPriceFloat + riskPerShare * profitTargetMultiple)?.toFixed(2);
+    return limitPrice + riskPerShare * lastMultiplier;
   }
-  return (limitPriceFloat - riskPerShare * profitTargetMultiple)?.toFixed(2);
-};
-
-export const calculateFirstProfitTarget = (
-  limitPrice,
-  stopPrice,
-  side,
-  firstMultiplier
-) => {
-  const limitPriceFloat = parseFloat(limitPrice);
-  const stopPriceFloat = parseFloat(stopPrice);
-  const riskPerShare = calculateRiskPerShare(limitPriceFloat, stopPriceFloat);
-
-  if (side === "buy") {
-    return (limitPriceFloat + riskPerShare * firstMultiplier)?.toFixed(2);
-  }
-  return (limitPriceFloat - riskPerShare * firstMultiplier)?.toFixed(2);
+  return limitPrice - riskPerShare * lastMultiplier;
 };
 
 export const calculatePositionSize = (limitPrice, stopPrice, accountSize) => {
-  const limitPriceFloat = parseFloat(limitPrice);
-  const stopPriceFloat = parseFloat(stopPrice);
-  const accountSizeFloat = parseFloat(accountSize);
-  const risk = accountSizeFloat * riskPercentage;
-  const riskPerShare = calculateRiskPerShare(limitPriceFloat, stopPriceFloat);
+  const risk = accountSize * riskPercentage;
+  const riskPerShare = calculateRiskPerShare(limitPrice, stopPrice);
   return Math.round(risk / riskPerShare);
 };
 
 export const calculateMoneyUpfront = (limitPrice, stopPrice, accountSize) => {
-  const limitPriceFloat = parseFloat(limitPrice);
-  const stopPriceFloat = parseFloat(stopPrice);
-  const accountSizeFloat = parseFloat(accountSize);
   const positionSize = calculatePositionSize(
-    limitPriceFloat,
-    stopPriceFloat,
-    accountSizeFloat
+    limitPrice,
+    stopPrice,
+    accountSize
   );
   return limitPrice * positionSize;
 };
@@ -89,9 +44,7 @@ export const calculateProfitLoss = (
   if (profitTargets?.length > 0) {
     profitTargets.forEach((profitTarget) => {
       const { filled, quantity, filled_avg_price } = profitTarget;
-      if (filled) {
-        filledEarnings += quantity * filled_avg_price;
-      }
+      if (filled) filledEarnings += quantity * filled_avg_price;
     });
   }
   const unFilledCurrentValue = currentShares * currentPrice;
@@ -103,32 +56,12 @@ export const calculateProfitLoss = (
   return purchaseValue - combinedCurrentValue;
 };
 
-export const calculateProfitLossByValues = (
-  purchaseValue,
-  childValue,
-  side
-) => {
-  if (side === "buy") {
-    return (childValue - purchaseValue).toFixed(2);
-  }
-  return (purchaseValue - childValue).toFixed(2);
-};
-
-export const isInProfit = (calculatedProfitLoss) => {
-  const plFloat = parseFloat(calculatedProfitLoss);
-  if (plFloat > 0) {
-    return true;
-  }
-  return false;
-};
-
 export const calculateDefaultStopPrice = (side, limitPrice) => {
-  const limitPriceFloat = parseFloat(limitPrice);
-  let defaultStopPrice = limitPriceFloat + defaultStopPriceDifference;
+  let defaultStopPrice = limitPrice + defaultStopPriceDifference;
   if (side === "sell") {
-    defaultStopPrice = limitPriceFloat - defaultStopPriceDifference;
+    defaultStopPrice = limitPrice - defaultStopPriceDifference;
   }
-  return defaultStopPrice?.toFixed(2);
+  return defaultStopPrice;
 };
 
 export const sumObjectValues = (obj) =>

@@ -5,7 +5,7 @@ import {
   calculatePositionSize,
   calculateMoneyUpfront,
   calculateDefaultStopPrice,
-  calculateFirstProfitTarget,
+  calculateLastProfitTarget,
 } from "../shared/calculations";
 import {
   createNewOrder,
@@ -90,7 +90,7 @@ export default function QuotesTableRowData({
     accountSize
   );
 
-  const profitTarget = calculateFirstProfitTarget(
+  const profitTarget = calculateLastProfitTarget(
     limitPrice,
     stopPrice,
     side,
@@ -176,7 +176,9 @@ export default function QuotesTableRowData({
               onChange={(e) => updateNumberField(e.target.value, setLimitPrice)}
             />
           </td>
-          <td className="bg-success text-white">{profitTarget}</td>
+          <td className="bg-success text-white">
+            {displayCurrency(profitTarget)}
+          </td>
           <td>
             <input
               className={stopPriceInputClassName}
