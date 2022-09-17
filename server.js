@@ -37,9 +37,16 @@ const getCurrentWatchlistAndPositions = (io) => {
   rangerApi.getTotalProfitOrLossToday(io);
 };
 
+const establishInitialConnections = (io) => {
+  getCurrentWatchlistAndPositions(io);
+  alpaca.getAssets(alpacaInstance, io);
+  alpaca.getAccount(alpacaInstance, io);
+};
+
 io.on("connection", (socket) => {
   if (!alpacaSocket.conn) {
     alpacaSocket.connect();
+    establishInitialConnections(io);
   }
 
   alpacaTradeSocket.connect();
@@ -90,11 +97,9 @@ io.on("connection", (socket) => {
     console.log(`Account updates: ${JSON.stringify(data)}`);
   });
 
-  alpacaSocket.onConnect(() => {
-    getCurrentWatchlistAndPositions(io);
-    alpaca.getAssets(alpacaInstance, io);
-    alpaca.getAccount(alpacaInstance, io);
-  });
+  // alpacaSocket.onConnect(() => {
+  //   establishInitialConnections(io);
+  // });
 
   alpacaSocket.onStockQuote((quote) => {
     io.emit("stockQuoteResponse", quote);
@@ -120,6 +125,11 @@ io.on("connection", (socket) => {
     console.log("addToWatchlist", symbol);
     alpaca.addToWatchlist(alpacaInstance, symbol, alpacaWatchlistId);
     alpacaSocket.subscribeForQuotes([symbol]);
+  });
+
+  socket.on("getLatestTrade", (symbol) => {
+    console.log("getLatestTrade", symbol);
+    alpaca.getLatestTrade(alpacaInstance, io, symbol);
   });
 
   socket.on("removeFromQuotesAndWatchlist", (symbol) => {

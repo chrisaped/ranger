@@ -38,8 +38,10 @@ export default function QuotesTableRowData({
   const [limitPrice, setLimitPrice] = useState(defaultLimitPrice);
   const [side, setSide] = useState("buy");
   const [orderId, setOrderId] = useState("");
+  const [lastPrice, setLastPrice] = useState(0.0);
 
-  const price = selectPrice(priceObj, side);
+  let price = selectPrice(priceObj, side);
+  if (!price && lastPrice !== 0.0) price = lastPrice;
 
   useEffect(() => {
     socket.on(`${symbol} newOrderResponse`, (data) => {
@@ -58,6 +60,15 @@ export default function QuotesTableRowData({
         if (obj.symbol === symbol && !obj.filled_at) setOrderId(obj.id);
       });
     });
+
+    socket.on(`${symbol} getLatestTradeResponse`, (data) => {
+      const latestPrice = data.Price;
+      setLastPrice(latestPrice);
+    });
+  }, []); // eslint-disable-line
+
+  useEffect(() => {
+    if (!price) socket.emit("getLatestTrade", symbol);
   }, []); // eslint-disable-line
 
   useEffect(() => {
