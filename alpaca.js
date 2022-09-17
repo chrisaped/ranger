@@ -114,7 +114,6 @@ module.exports = {
   },
   getLatestTrade: async function (alpacaInstance, io, symbol) {
     const response = await alpacaInstance.getLatestTrade(symbol);
-    console.log("getLatestTradeResponse", response);
     io.emit(`${symbol} getLatestTradeResponse`, response);
   },
 };
