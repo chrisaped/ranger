@@ -40,8 +40,12 @@ export default function QuotesTableRowData({
   const [orderId, setOrderId] = useState("");
   const [lastPrice, setLastPrice] = useState(0.0);
 
+  const stopPriceNum = parseFloat(stopPrice);
+  const limitPriceNum = parseFloat(limitPrice);
+  const lastPriceNum = parseFloat(lastPrice);
+
   let price = selectPrice(priceObj, side);
-  if (!price && lastPrice !== 0.0) price = lastPrice;
+  if (!price && lastPriceNum !== 0.0) price = lastPriceNum;
 
   useEffect(() => {
     socket.on(`${symbol} newOrderResponse`, (data) => {
@@ -72,29 +76,29 @@ export default function QuotesTableRowData({
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    if (price && stopPrice === defaultStopPrice) {
+    if (price && stopPriceNum === defaultStopPrice) {
       let newDefaultStopPrice = price - defaultStopPriceDifference;
       if (newDefaultStopPrice < 0) newDefaultStopPrice = 0.01;
       setStopPrice(newDefaultStopPrice);
     }
-  }, [price, stopPrice]);
+  }, [price, stopPriceNum]);
 
   useEffect(() => {
-    if (price && limitPrice === defaultLimitPrice) setLimitPrice(price);
-  }, [price, limitPrice]);
+    if (price && limitPriceNum === defaultLimitPrice) setLimitPrice(price);
+  }, [price, limitPriceNum]);
 
   const onSelectChange = (e) => {
     const newSide = e.target.value;
     setSide(newSide);
-    let newDefaultStopPrice = calculateDefaultStopPrice(side, limitPrice);
+    let newDefaultStopPrice = calculateDefaultStopPrice(side, limitPriceNum);
     if (newDefaultStopPrice < 0) newDefaultStopPrice = 0.01;
     setStopPrice(newDefaultStopPrice);
   };
 
   const stopPriceInputClassName = isForbiddenStopPrice(
     side,
-    stopPrice,
-    limitPrice
+    stopPriceNum,
+    limitPriceNum
   )
     ? "form-control border border-danger"
     : "form-control";
@@ -102,21 +106,21 @@ export default function QuotesTableRowData({
   const accountSize = accountInfo.buying_power;
 
   const positionSize = calculatePositionSize(
-    limitPrice,
-    stopPrice,
+    limitPriceNum,
+    stopPriceNum,
     accountSize
   );
 
   const profitTarget = calculateLastProfitTarget(
-    limitPrice,
-    stopPrice,
+    limitPriceNum,
+    stopPriceNum,
     side,
     lastMultiplier
   );
 
   const moneyUpfront = calculateMoneyUpfront(
-    limitPrice,
-    stopPrice,
+    limitPriceNum,
+    stopPriceNum,
     accountSize
   );
 
@@ -124,8 +128,8 @@ export default function QuotesTableRowData({
     symbol,
     positionSize,
     side,
-    limitPrice,
-    stopPrice
+    limitPriceNum,
+    stopPriceNum
   );
 
   const createLimitOrder = () => createNewOrder(socket, orderObject);
@@ -150,12 +154,12 @@ export default function QuotesTableRowData({
 
   const isOrderButtonDisabled = isDisabled(
     side,
-    stopPrice,
+    stopPriceNum,
     price,
     symbol,
     positionSize,
     tradeableAssets,
-    limitPrice,
+    limitPriceNum,
     moneyUpfront,
     accountSize
   );
