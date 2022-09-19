@@ -21,12 +21,6 @@ export default function Alert({
   );
 
   useEffect(() => {
-    socket.on("newOrderResponse", (data) => {
-      const symbol = data.order.symbol;
-      const alertString = `${symbol} order initiated`;
-      enableAlert(alertString, setAlert, setDisplayAlert);
-    });
-
     socket.on("canceledOrderResponse", (data) => {
       handleOrderUpdateResponse(data);
     });
