@@ -10,11 +10,11 @@ export default function Watchlist({
   setWatchlist,
   tradeableAssets,
   accountInfo,
+  pendingPositions,
+  newOrders,
 }) {
   useEffect(() => {
-    socket.on("getWatchlist", (symbols) => {
-      setWatchlist(symbols);
-    });
+    socket.on("getWatchlist", (symbols) => setWatchlist(symbols));
   }, [socket, setWatchlist]);
 
   const removeFromQuotesAndWatchlist = useCallback(
@@ -54,6 +54,8 @@ export default function Watchlist({
           tradeableAssets={tradeableAssets}
           removeFromWatchlist={removeFromWatchlist}
           accountInfo={accountInfo}
+          pendingPositions={pendingPositions}
+          newOrders={newOrders}
         />
       )}
     </div>

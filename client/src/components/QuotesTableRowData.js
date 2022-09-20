@@ -31,6 +31,8 @@ export default function QuotesTableRowData({
   tradeableAssets,
   accountInfo,
   lastMultiplier,
+  pendingPosition,
+  newOrder,
 }) {
   const defaultStopPrice = 0.0;
   const defaultLimitPrice = 0.0;
@@ -48,21 +50,13 @@ export default function QuotesTableRowData({
   if (!price && lastPriceNum !== 0.0) price = lastPriceNum;
 
   useEffect(() => {
-    socket.on(`${symbol} newOrderResponse`, (data) => {
-      const newOrderId = data.order.id;
-      setOrderId(newOrderId);
-    });
+    socket.on(`${symbol} fillOrderResponse`, (_data) =>
+      removeFromWatchlist(symbol)
+    );
 
-    socket.on(`${symbol} fillOrderResponse`, (data) => {
-      const newOrderId = data.order.id;
+    socket.on(`${symbol} createNewOrderResponse`, (data) => {
+      const newOrderId = data.id;
       setOrderId(newOrderId);
-      removeFromWatchlist(symbol);
-    });
-
-    socket.on("getNewOrdersResponse", (dataArray) => {
-      dataArray.forEach((obj) => {
-        if (obj.symbol === symbol && !obj.filled_at) setOrderId(obj.id);
-      });
     });
 
     socket.on(`${symbol} getLatestTradeResponse`, (data) => {
@@ -72,7 +66,8 @@ export default function QuotesTableRowData({
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    if (!price) socket.emit("getLatestTrade", symbol);
+    if (!price && !newOrder && !pendingPosition)
+      socket.emit("getLatestTrade", symbol);
   }, []); // eslint-disable-line
 
   useEffect(() => {
@@ -86,6 +81,15 @@ export default function QuotesTableRowData({
   useEffect(() => {
     if (price && limitPriceNum === defaultLimitPrice) setLimitPrice(price);
   }, [price, limitPriceNum]);
+
+  useEffect(() => {
+    if (pendingPosition && newOrder) {
+      setStopPrice(pendingPosition.initial_stop_price);
+      setLimitPrice(pendingPosition.initial_price);
+      setOrderId(newOrder.id);
+      setSide(newOrder.side);
+    }
+  }, [pendingPosition, newOrder]);
 
   const onSelectChange = (e) => {
     const newSide = e.target.value;
@@ -171,13 +175,14 @@ export default function QuotesTableRowData({
       <td>
         <strong>{symbol}</strong>
       </td>
-      {price ? (
+      {price || (newOrder && pendingPosition) ? (
         <>
           <td>
             <select
               className="form-select"
               value={side}
               onChange={onSelectChange}
+              disabled={inputIsDisabled}
             >
               <option value="buy">Long</option>
               <option value="sell">Short</option>
@@ -216,26 +221,17 @@ export default function QuotesTableRowData({
           <td>{displayRoundNumber(positionSize)} shares</td>
           <td>${displayRoundNumber(moneyUpfront)}</td>
           <td>
-            {orderId ? (
-              <SpinnerButton
-                socket={socket}
-                buttonClass="btn btn-dark"
-                buttonText={`Cancel $${limitPrice} Order`}
-                onClickFunction={cancelNewOrder}
-                orderId={orderId}
-                symbol={symbol}
-              />
-            ) : (
-              <SpinnerButton
-                socket={socket}
-                buttonClass={buttonClass}
-                buttonText={buttonText}
-                buttonDisabled={isOrderButtonDisabled}
-                onClickFunction={createLimitOrder}
-                orderId={orderId}
-                symbol={symbol}
-              />
-            )}
+            <SpinnerButton
+              socket={socket}
+              buttonClass={buttonClass}
+              buttonText={buttonText}
+              buttonDisabled={isOrderButtonDisabled || inputIsDisabled}
+              onClickFunction={createLimitOrder}
+              orderId={orderId}
+              symbol={symbol}
+              isNewOrder={true}
+              hasBeenSubmitted={pendingPosition && newOrder}
+            />
           </td>
         </>
       ) : (
@@ -246,7 +242,16 @@ export default function QuotesTableRowData({
         </>
       )}
       <td colSpan="2">
-        {!orderId && (
+        {orderId ? (
+          <SpinnerButton
+            socket={socket}
+            buttonClass="btn btn-dark"
+            buttonText={`Cancel $${limitPrice} Order`}
+            onClickFunction={cancelNewOrder}
+            orderId={orderId}
+            symbol={symbol}
+          />
+        ) : (
           <button className="btn btn-secondary" onClick={onClickRemove}>
             Remove
           </button>

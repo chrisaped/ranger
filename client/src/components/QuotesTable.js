@@ -10,6 +10,8 @@ export default function QuotesTable({
   tradeableAssets,
   removeFromWatchlist,
   accountInfo,
+  pendingPositions,
+  newOrders,
 }) {
   const lastMultiplier = profitMultipliers[profitMultipliers.length - 1];
 
@@ -31,6 +33,8 @@ export default function QuotesTable({
       <tbody>
         {watchlist.map((symbol) => {
           const priceObj = quotes[symbol];
+          const pendingPosition = pendingPositions[symbol];
+          const newOrder = newOrders[symbol];
 
           return (
             <tr key={symbol}>
@@ -43,6 +47,8 @@ export default function QuotesTable({
                 tradeableAssets={tradeableAssets}
                 accountInfo={accountInfo}
                 lastMultiplier={lastMultiplier}
+                pendingPosition={pendingPosition}
+                newOrder={newOrder}
               />
             </tr>
           );

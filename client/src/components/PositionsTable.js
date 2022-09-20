@@ -5,7 +5,7 @@ import { calculateProfitLoss } from "../shared/calculations";
 import { selectPrice } from "../shared/quotes";
 import { profitMultipliers } from "../shared/constants";
 
-export default function PositionsTable({ socket, quotes, positions }) {
+export default function PositionsTable({ socket, quotes, openPositions }) {
   const getRowClassName = (profitOrLoss) => {
     let rowClass;
     if (profitOrLoss > 0) {
@@ -18,7 +18,7 @@ export default function PositionsTable({ socket, quotes, positions }) {
     return rowClass;
   };
 
-  const positionsTableData = positions.map((positionObj) => {
+  const positionsTableData = openPositions.map((positionObj) => {
     const {
       id,
       symbol,
@@ -92,7 +92,7 @@ export default function PositionsTable({ socket, quotes, positions }) {
 PositionsTable.propTypes = {
   socket: PropTypes.object.isRequired,
   quotes: PropTypes.object.isRequired,
-  positions: PropTypes.arrayOf(
+  openPositions: PropTypes.arrayOf(
     PropTypes.shape({
       symbol: PropTypes.string,
       side: PropTypes.string,
@@ -106,5 +106,5 @@ PositionsTable.propTypes = {
 PositionsTable.defaultProps = {
   socket: {},
   quotes: {},
-  positions: [],
+  openPositions: [],
 };

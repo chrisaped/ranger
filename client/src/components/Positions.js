@@ -1,10 +1,10 @@
 import PropTypes from "prop-types";
 import PositionsTable from "./PositionsTable";
 
-export default function Positions({ socket, quotes, positions }) {
+export default function Positions({ socket, quotes, openPositions }) {
   return (
     <div>
-      {positions.length > 0 && (
+      {openPositions.length > 0 && (
         <div>
           <div className="d-flex justify-content-center">
             <h2>Positions</h2>
@@ -12,7 +12,7 @@ export default function Positions({ socket, quotes, positions }) {
           <PositionsTable
             socket={socket}
             quotes={quotes}
-            positions={positions}
+            openPositions={openPositions}
           />
         </div>
       )}
@@ -23,7 +23,7 @@ export default function Positions({ socket, quotes, positions }) {
 Positions.propTypes = {
   socket: PropTypes.object.isRequired,
   quotes: PropTypes.object.isRequired,
-  positions: PropTypes.arrayOf(
+  openPositions: PropTypes.arrayOf(
     PropTypes.shape({
       symbol: PropTypes.string,
       side: PropTypes.string,
@@ -36,5 +36,5 @@ Positions.propTypes = {
 Positions.defaultProps = {
   socket: {},
   quotes: {},
-  positions: [],
+  openPositions: [],
 };

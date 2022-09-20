@@ -31,10 +31,12 @@ const alpacaSocket = alpacaInstance.data_stream_v2;
 const alpacaTradeSocket = alpacaInstance.trade_ws;
 
 const getCurrentWatchlistAndPositions = (io) => {
-  alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
-  alpaca.getNewOrders(alpacaInstance, io);
-  rangerApi.getPositions(io, alpacaSocket);
+  rangerApi.getPendingPositions(io);
+  rangerApi.getOpenPositions(io, alpacaSocket);
   rangerApi.getTotalProfitOrLossToday(io);
+  alpaca.getNewOrders(alpacaInstance, io);
+  alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
+  alpaca.getAccount(alpacaInstance, io);
 };
 
 io.on("connection", (socket) => {
@@ -42,7 +44,6 @@ io.on("connection", (socket) => {
 
   getCurrentWatchlistAndPositions(io);
   alpaca.getAssets(alpacaInstance, io);
-  alpaca.getAccount(alpacaInstance, io);
 
   alpacaTradeSocket.connect();
 
@@ -110,7 +111,7 @@ io.on("connection", (socket) => {
   socket.on("createNewOrder", (orderObject) => {
     console.log("createNewOrder", orderObject);
     rangerApi.createPosition(orderObject);
-    alpaca.createOrder(alpacaInstance, orderObject, io);
+    alpaca.createOrder(alpacaInstance, orderObject, io, true);
   });
 
   socket.on("addToWatchlist", (symbol) => {

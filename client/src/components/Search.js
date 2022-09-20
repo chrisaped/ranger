@@ -7,7 +7,7 @@ export default function Search({
   watchlist,
   setWatchlist,
   tradeableAssets,
-  positions,
+  openPositions,
   setAlert,
   setDisplayAlert,
 }) {
@@ -33,7 +33,9 @@ export default function Search({
 
   const isAPosition = () => {
     const symbolsArray = [];
-    positions.forEach((positionObj) => symbolsArray.push(positionObj.symbol));
+    openPositions.forEach((positionObj) =>
+      symbolsArray.push(positionObj.symbol)
+    );
     if (symbolsArray.includes(searchParams)) return true;
     return false;
   };
@@ -80,7 +82,7 @@ Search.propTypes = {
   watchlist: PropTypes.arrayOf(PropTypes.string).isRequired,
   setWatchlist: PropTypes.func.isRequired,
   tradeableAssets: PropTypes.object.isRequired,
-  positions: PropTypes.arrayOf(
+  openPositions: PropTypes.arrayOf(
     PropTypes.shape({
       symbol: PropTypes.string,
     })
@@ -93,5 +95,5 @@ Search.defaultProps = {
   socket: {},
   watchlist: [],
   tradeableAssets: {},
-  positions: [],
+  openPositions: [],
 };

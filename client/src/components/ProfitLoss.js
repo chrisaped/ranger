@@ -4,7 +4,7 @@ import { sumObjectValues, calculateProfitLoss } from "../shared/calculations";
 import { selectPrice } from "../shared/quotes";
 import { displayCurrency } from "../shared/formatting";
 
-export default function ProfitLoss({ positions, quotes, socket }) {
+export default function ProfitLoss({ openPositions, quotes, socket }) {
   const [totalProfitOrLossToday, setTotalProfitOrLossToday] = useState(0.0);
 
   useEffect(() => {
@@ -16,7 +16,7 @@ export default function ProfitLoss({ positions, quotes, socket }) {
   const createCurrentPositions = () => {
     const newObj = {};
 
-    positions.forEach((positionObj) => {
+    openPositions.forEach((positionObj) => {
       const {
         symbol,
         side,
@@ -71,7 +71,7 @@ export default function ProfitLoss({ positions, quotes, socket }) {
 }
 
 ProfitLoss.propTypes = {
-  positions: PropTypes.arrayOf(
+  openPositions: PropTypes.arrayOf(
     PropTypes.shape({
       symbol: PropTypes.string,
       side: PropTypes.string,
@@ -85,6 +85,6 @@ ProfitLoss.propTypes = {
 };
 
 ProfitLoss.defaultProps = {
-  positions: [],
+  openPositions: [],
   quotes: {},
 };

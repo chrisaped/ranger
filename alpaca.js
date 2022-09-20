@@ -51,30 +51,48 @@ module.exports = {
       after: today,
     };
     const responseArray = await alpacaInstance.getOrders(orderObj);
+    console.log("getNewOrdersResponse", responseArray);
+
     if (responseArray.length > 0) {
-      io.emit("getNewOrdersResponse", responseArray);
+      const newOrdersObj = {};
+      responseArray.forEach((orderObj) => {
+        newOrdersObj[orderObj.symbol] = orderObj;
+      });
+
+      io.emit("getNewOrdersResponse", newOrdersObj);
     }
   },
   getAssets: async function (alpacaInstance, io) {
-    const response = await alpacaInstance.getAssets({ status: "active" });
-    const assetsObject = () => {
-      const newObj = {};
-      response.forEach((assetObj) => {
-        newObj[assetObj.symbol] = assetObj;
+    const responseArray = await alpacaInstance.getAssets({ status: "active" });
+
+    if (responseArray.length > 0) {
+      const assetsObj = {};
+      responseArray.forEach((assetObj) => {
+        assetsObj[assetObj.symbol] = assetObj;
       });
-      return newObj;
-    };
-    io.emit("getAssetsResponse", assetsObject());
+
+      io.emit("getAssetsResponse", assetsObj);
+    }
   },
   cancelOrder: async function (alpacaInstance, orderId) {
     const response = await alpacaInstance.cancelOrder(orderId);
-    console.log("cancelOrder", response);
+    console.log("cancelOrderResponse", response);
   },
-  createOrder: async function (alpacaInstance, orderObject, _io) {
+  createOrder: async function (
+    alpacaInstance,
+    orderObject,
+    io,
+    isNewOrder = false
+  ) {
     if ("stop_price" in orderObject) delete orderObject.stop_price;
+
     const response = await alpacaInstance.createOrder(orderObject);
-    console.log("createOrder", response);
-    // emit error here
+    console.log("createOrderResponse", response);
+
+    if (isNewOrder) {
+      const symbol = response.symbol;
+      io.emit(`${symbol} createNewOrderResponse`, response);
+    }
   },
   getBars: async function (symbol, alpacaInstance, startDate, endDate) {
     const barsObj = {

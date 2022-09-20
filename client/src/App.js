@@ -12,7 +12,9 @@ export default function App() {
   const [quotes, setQuotes] = useState({});
   const [watchlist, setWatchlist] = useState([]);
   const [tradeableAssets, setTradeableAssets] = useState({});
-  const [positions, setPositions] = useState([]);
+  const [openPositions, setOpenPositions] = useState([]);
+  const [pendingPositions, setPendingPositions] = useState({});
+  const [newOrders, setNewOrders] = useState({});
   const [alert, setAlert] = useState({});
   const [displayAlert, setDisplayAlert] = useState(false);
   const [accountInfo, setAccountInfo] = useState({});
@@ -30,12 +32,20 @@ export default function App() {
       setTradeableAssets(assets);
     });
 
-    newSocket.on("getPositionsResponse", (array) => {
-      setPositions(array);
+    newSocket.on("getOpenPositionsResponse", (array) => {
+      setOpenPositions(array);
     });
 
     newSocket.on("getAccountResponse", (accountObj) => {
       setAccountInfo(accountObj);
+    });
+
+    newSocket.on("getPendingPositionsResponse", (obj) => {
+      setPendingPositions(obj);
+    });
+
+    newSocket.on("getNewOrdersResponse", (obj) => {
+      setNewOrders(obj);
     });
 
     return () => {
@@ -70,7 +80,7 @@ export default function App() {
                 watchlist={watchlist}
                 setWatchlist={setWatchlist}
                 tradeableAssets={tradeableAssets}
-                positions={positions}
+                openPositions={openPositions}
                 setAlert={setAlert}
                 setDisplayAlert={setDisplayAlert}
               />
@@ -80,7 +90,7 @@ export default function App() {
                 Account Size: <strong>${accountSize}</strong>
               </div>
               <ProfitLoss
-                positions={positions}
+                openPositions={openPositions}
                 quotes={quotes}
                 socket={socket}
               />
@@ -95,10 +105,16 @@ export default function App() {
               setWatchlist={setWatchlist}
               tradeableAssets={tradeableAssets}
               accountInfo={accountInfo}
+              pendingPositions={pendingPositions}
+              newOrders={newOrders}
             />
           </div>
           <div className="row">
-            <Positions socket={socket} quotes={quotes} positions={positions} />
+            <Positions
+              socket={socket}
+              quotes={quotes}
+              openPositions={openPositions}
+            />
           </div>
         </div>
       ) : (
