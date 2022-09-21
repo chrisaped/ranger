@@ -42,12 +42,8 @@ export default function QuotesTableRowData({
   const [orderId, setOrderId] = useState("");
   const [lastPrice, setLastPrice] = useState(0.0);
 
-  const stopPriceNum = parseFloat(stopPrice);
-  const limitPriceNum = parseFloat(limitPrice);
-  const lastPriceNum = parseFloat(lastPrice);
-
   let price = selectPrice(priceObj, side);
-  if (!price && lastPriceNum !== 0.0) price = lastPriceNum;
+  if (!price && lastPrice !== 0.0) price = lastPrice;
 
   useEffect(() => {
     socket.on(`${symbol} fillOrderResponse`, (_data) =>
@@ -71,16 +67,16 @@ export default function QuotesTableRowData({
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    if (price && stopPriceNum === defaultStopPrice) {
+    if (price && stopPrice === defaultStopPrice) {
       let newDefaultStopPrice = price - defaultStopPriceDifference;
       if (newDefaultStopPrice < 0) newDefaultStopPrice = 0.01;
       setStopPrice(newDefaultStopPrice);
     }
-  }, [price, stopPriceNum]);
+  }, [price, stopPrice]);
 
   useEffect(() => {
-    if (price && limitPriceNum === defaultLimitPrice) setLimitPrice(price);
-  }, [price, limitPriceNum]);
+    if (price && limitPrice === defaultLimitPrice) setLimitPrice(price);
+  }, [price, limitPrice]);
 
   useEffect(() => {
     if (pendingPosition && newOrder) {
@@ -94,15 +90,15 @@ export default function QuotesTableRowData({
   const onSelectChange = (e) => {
     const newSide = e.target.value;
     setSide(newSide);
-    let newDefaultStopPrice = calculateDefaultStopPrice(side, limitPriceNum);
+    let newDefaultStopPrice = calculateDefaultStopPrice(side, limitPrice);
     if (newDefaultStopPrice < 0) newDefaultStopPrice = 0.01;
     setStopPrice(newDefaultStopPrice);
   };
 
   const stopPriceInputClassName = isForbiddenStopPrice(
     side,
-    stopPriceNum,
-    limitPriceNum
+    stopPrice,
+    limitPrice
   )
     ? "form-control border border-danger"
     : "form-control";
@@ -110,21 +106,21 @@ export default function QuotesTableRowData({
   const accountSize = accountInfo.buying_power;
 
   const positionSize = calculatePositionSize(
-    limitPriceNum,
-    stopPriceNum,
+    limitPrice,
+    stopPrice,
     accountSize
   );
 
   const profitTarget = calculateLastProfitTarget(
-    limitPriceNum,
-    stopPriceNum,
+    limitPrice,
+    stopPrice,
     side,
     lastMultiplier
   );
 
   const moneyUpfront = calculateMoneyUpfront(
-    limitPriceNum,
-    stopPriceNum,
+    limitPrice,
+    stopPrice,
     accountSize
   );
 
@@ -132,8 +128,8 @@ export default function QuotesTableRowData({
     symbol,
     positionSize,
     side,
-    limitPriceNum,
-    stopPriceNum
+    limitPrice,
+    stopPrice
   );
 
   const createLimitOrder = () => createNewOrder(socket, orderObject);
@@ -158,17 +154,18 @@ export default function QuotesTableRowData({
 
   const isOrderButtonDisabled = isDisabled(
     side,
-    stopPriceNum,
+    stopPrice,
     price,
     symbol,
     positionSize,
     tradeableAssets,
-    limitPriceNum,
+    limitPrice,
     moneyUpfront,
     accountSize
   );
 
   const inputIsDisabled = orderId !== "";
+  const inputWidthPercentage = "9%";
 
   return (
     <>
@@ -195,11 +192,10 @@ export default function QuotesTableRowData({
           >
             <strong>{displayCurrency(price)}</strong>
           </td>
-          <td>
+          <td style={{ width: inputWidthPercentage }}>
             <input
               className="form-control"
-              type="text"
-              size="3"
+              type="number"
               value={limitPrice}
               disabled={inputIsDisabled}
               onChange={(e) => updateNumberField(e.target.value, setLimitPrice)}
@@ -208,11 +204,10 @@ export default function QuotesTableRowData({
           <td className="bg-success text-white">
             {displayCurrency(profitTarget)}
           </td>
-          <td>
+          <td style={{ width: inputWidthPercentage }}>
             <input
               className={stopPriceInputClassName}
-              type="text"
-              size="3"
+              type="number"
               value={stopPrice}
               disabled={inputIsDisabled}
               onChange={(e) => updateNumberField(e.target.value, setStopPrice)}
