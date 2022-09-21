@@ -92,14 +92,19 @@ export default function QuotesTableRowData({
     setSide(newSide);
     let newDefaultStopPrice = calculateDefaultStopPrice(side, limitPrice);
     if (newDefaultStopPrice < 0) newDefaultStopPrice = 0.01;
-    setStopPrice(newDefaultStopPrice);
+    const twoDecimalNewDefaultStopPrice = parseFloat(
+      newDefaultStopPrice.toFixed(2)
+    );
+    setStopPrice(twoDecimalNewDefaultStopPrice);
   };
 
-  const stopPriceInputClassName = isForbiddenStopPrice(
+  const stopPriceIsForbidden = isForbiddenStopPrice(
     side,
     stopPrice,
     limitPrice
-  )
+  );
+
+  const stopPriceInputClassName = stopPriceIsForbidden
     ? "form-control border border-danger"
     : "form-control";
 
@@ -220,7 +225,9 @@ export default function QuotesTableRowData({
               socket={socket}
               buttonClass={buttonClass}
               buttonText={buttonText}
-              buttonDisabled={isOrderButtonDisabled || inputIsDisabled}
+              buttonDisabled={
+                isOrderButtonDisabled || inputIsDisabled || stopPriceIsForbidden
+              }
               onClickFunction={createLimitOrder}
               orderId={orderId}
               symbol={symbol}

@@ -87,7 +87,7 @@ export default function App() {
             </div>
             <div className="col d-flex justify-content-around align-items-center">
               <div>
-                Account Size: <strong>${accountSize}</strong>
+                Buying Power: <strong>${accountSize}</strong>
               </div>
               <ProfitLoss
                 openPositions={openPositions}
