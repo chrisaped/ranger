@@ -183,7 +183,7 @@ export default function PositionsTableRowData({
       <td>${displayCurrency(profitOrLoss)}</td>
       <td>{displayRoundNumber(quantity)} shares</td>
       <td>${cost}</td>
-      <td>
+      <td style={{ width: "15%" }}>
         {orderId ? (
           <SpinnerButton
             socket={socket}
@@ -196,7 +196,7 @@ export default function PositionsTableRowData({
         ) : (
           <div className="d-flex">
             <input
-              className="form-control"
+              className="form-control mx-1"
               type="number"
               value={limitPrice}
               placeholder="Limit Price"
