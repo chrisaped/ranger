@@ -30,24 +30,35 @@ const alpacaInstance = new AlpacaTradeApi({
 const alpacaSocket = alpacaInstance.data_stream_v2;
 const alpacaTradeSocket = alpacaInstance.trade_ws;
 
-const getCurrentWatchlistAndPositions = (io) => {
-  rangerApi.getPendingPositions(io);
-  rangerApi.getOpenPositions(io, alpacaSocket);
-  rangerApi.getTotalProfitOrLossToday(io);
-  alpaca.getNewOrders(alpacaInstance, io);
-  alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
+const establishApiConnections = (io) => {
   alpaca.getAccount(alpacaInstance, io);
+  alpaca.getNewOrders(alpacaInstance, io);
+  rangerApi.getTotalProfitOrLossToday(io);
+  rangerApi.getPendingPositions(io);
+};
+
+const establishSocketConnections = (io) => {
+  alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
+  rangerApi.getOpenPositions(io, alpacaSocket);
 };
 
 io.on("connection", (socket) => {
   alpacaSocket.connect();
-
-  getCurrentWatchlistAndPositions(io);
-  alpaca.getAssets(alpacaInstance, io);
-
   alpacaTradeSocket.connect();
 
-  console.log("connected");
+  establishApiConnections(io);
+  alpaca.getAssets(alpacaInstance, io);
+
+  alpacaSocket.onConnect(() => {
+    console.log("alpacaSocket connected");
+    establishSocketConnections(io);
+  });
+
+  alpacaTradeSocket.onConnect(() => {
+    console.log("alpacaTradeSocket connected");
+    const tradeKeys = ["trade_updates", "account_updates"];
+    alpacaTradeSocket.subscribe(tradeKeys);
+  });
 
   socket.on("disconnect", () => {
     if (alpacaSocket.conn) {
@@ -55,11 +66,6 @@ io.on("connection", (socket) => {
     }
     alpacaTradeSocket.disconnect();
     console.log("disconnected");
-  });
-
-  alpacaTradeSocket.onConnect(() => {
-    const tradeKeys = ["trade_updates", "account_updates"];
-    alpacaTradeSocket.subscribe(tradeKeys);
   });
 
   alpacaTradeSocket.onOrderUpdate((data) => {
@@ -71,13 +77,13 @@ io.on("connection", (socket) => {
       io.emit(`${symbol} newOrderResponse`, data);
     }
     if (symbol && event === "canceled") {
-      getCurrentWatchlistAndPositions(io);
+      establishApiConnections(io);
+      establishSocketConnections(io);
 
       io.emit("canceledOrderResponse", data);
     }
     if (symbol && event === "fill") {
       rangerApi.createOrder(data);
-      getCurrentWatchlistAndPositions(io);
 
       const positionQuantity = data.position_qty;
       if (positionQuantity === "0") {
@@ -85,6 +91,9 @@ io.on("connection", (socket) => {
       } else {
         io.emit(`${symbol} fillOrderResponse`, data);
       }
+
+      establishApiConnections(io);
+      establishSocketConnections(io);
 
       io.emit("fillOrderResponse", data);
     }
