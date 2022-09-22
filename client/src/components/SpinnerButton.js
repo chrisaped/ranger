@@ -10,7 +10,6 @@ export default function SpinnerButton({
   orderId = "",
   symbol,
   isNewOrder = false,
-  hasBeenSubmitted = false,
 }) {
   const [submitted, setSubmitted] = useState(false);
 
@@ -20,10 +19,6 @@ export default function SpinnerButton({
       if (orderId === responseOrderId) setSubmitted(false);
     });
   }, [socket, orderId]);
-
-  useEffect(() => {
-    if (hasBeenSubmitted) setSubmitted(true);
-  }, [hasBeenSubmitted]);
 
   const handleOnClick = () => {
     if (!isNewOrder) setSubmitted(true);

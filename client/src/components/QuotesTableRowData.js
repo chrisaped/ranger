@@ -45,6 +45,8 @@ export default function QuotesTableRowData({
   let price = selectPrice(priceObj, side);
   if (!price && lastPrice !== 0.0) price = lastPrice;
 
+  const twoDecimalNumPrice = (num) => parseFloat(num.toFixed(2));
+
   useEffect(() => {
     socket.on(`${symbol} fillOrderResponse`, (_data) =>
       removeFromWatchlist(symbol)
@@ -70,12 +72,16 @@ export default function QuotesTableRowData({
     if (price && stopPrice === defaultStopPrice) {
       let newDefaultStopPrice = price - defaultStopPriceDifference;
       if (newDefaultStopPrice < 0) newDefaultStopPrice = 0.01;
+      newDefaultStopPrice = twoDecimalNumPrice(newDefaultStopPrice);
       setStopPrice(newDefaultStopPrice);
     }
   }, [price, stopPrice]);
 
   useEffect(() => {
-    if (price && limitPrice === defaultLimitPrice) setLimitPrice(price);
+    if (price && limitPrice === defaultLimitPrice) {
+      const formattedPrice = twoDecimalNumPrice(price);
+      setLimitPrice(formattedPrice);
+    }
   }, [price, limitPrice]);
 
   useEffect(() => {
@@ -92,10 +98,8 @@ export default function QuotesTableRowData({
     setSide(newSide);
     let newDefaultStopPrice = calculateDefaultStopPrice(side, limitPrice);
     if (newDefaultStopPrice < 0) newDefaultStopPrice = 0.01;
-    const twoDecimalNewDefaultStopPrice = parseFloat(
-      newDefaultStopPrice.toFixed(2)
-    );
-    setStopPrice(twoDecimalNewDefaultStopPrice);
+    newDefaultStopPrice = twoDecimalNumPrice(newDefaultStopPrice);
+    setStopPrice(newDefaultStopPrice);
   };
 
   const stopPriceIsForbidden = isForbiddenStopPrice(
@@ -232,7 +236,6 @@ export default function QuotesTableRowData({
               orderId={orderId}
               symbol={symbol}
               isNewOrder={true}
-              hasBeenSubmitted={pendingPosition && newOrder}
             />
           </td>
         </>
