@@ -235,7 +235,6 @@ export default function QuotesTableRowData({
               onClickFunction={createLimitOrder}
               orderId={orderId}
               symbol={symbol}
-              isNewOrder={true}
             />
           </td>
         </>

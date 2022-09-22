@@ -9,7 +9,6 @@ export default function SpinnerButton({
   onClickFunction,
   orderId = "",
   symbol,
-  isNewOrder = false,
 }) {
   const [submitted, setSubmitted] = useState(false);
 
@@ -21,7 +20,7 @@ export default function SpinnerButton({
   }, [socket, orderId]);
 
   const handleOnClick = () => {
-    if (!isNewOrder) setSubmitted(true);
+    setSubmitted(true);
     onClickFunction();
   };
 
