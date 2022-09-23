@@ -33,15 +33,18 @@ export default function Watchlist({
     [quotes, setQuotes, setWatchlist, socket, watchlist]
   );
 
-  const removeFromWatchlist = (symbol) => {
-    if (watchlist.includes(symbol)) {
-      const newWatchlist = watchlist.filter(
-        (watchlistSymbol) => watchlistSymbol !== symbol
-      );
-      setWatchlist(newWatchlist);
-      socket.emit("removeFromWatchlist", symbol);
-    }
-  };
+  const removeFromWatchlist = useCallback(
+    (symbol) => {
+      if (watchlist.includes(symbol)) {
+        const newWatchlist = watchlist.filter(
+          (watchlistSymbol) => watchlistSymbol !== symbol
+        );
+        setWatchlist(newWatchlist);
+        socket.emit("removeFromWatchlist", symbol);
+      }
+    },
+    [setWatchlist, socket, watchlist]
+  );
 
   return (
     <div>
