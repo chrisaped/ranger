@@ -69,12 +69,11 @@ io.on("connection", (socket) => {
     if (symbol && event === "new") {
       io.emit(`${symbol} newOrderResponse`, data);
     }
+
     if (symbol && event === "canceled") {
       io.emit("canceledOrderResponse", data);
-
-      // alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
-      // rangerApi.getOpenPositions(io, alpacaSocket);
     }
+
     if (symbol && event === "fill") {
       rangerApi.createOrder(data, io, alpacaSocket);
 
