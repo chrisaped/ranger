@@ -30,28 +30,21 @@ const alpacaInstance = new AlpacaTradeApi({
 const alpacaSocket = alpacaInstance.data_stream_v2;
 const alpacaTradeSocket = alpacaInstance.trade_ws;
 
-const establishApiConnections = (io) => {
-  alpaca.getAccount(alpacaInstance, io);
-  alpaca.getNewOrders(alpacaInstance, io);
-  rangerApi.getTotalProfitOrLossToday(io);
-  rangerApi.getPendingPositions(io);
-};
-
-const establishSocketConnections = (io) => {
-  alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
-  rangerApi.getOpenPositions(io, alpacaSocket);
-};
-
 io.on("connection", (socket) => {
   alpacaSocket.connect();
   alpacaTradeSocket.connect();
 
-  establishApiConnections(io);
   alpaca.getAssets(alpacaInstance, io);
+
+  alpaca.getAccount(alpacaInstance, io);
+  alpaca.getNewOrders(alpacaInstance, io);
+  rangerApi.getTotalProfitOrLossToday(io);
+  rangerApi.getPendingPositions(io);
 
   alpacaSocket.onConnect(() => {
     console.log("alpacaSocket connected");
-    establishSocketConnections(io);
+    alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
+    rangerApi.getOpenPositions(io, alpacaSocket);
   });
 
   alpacaTradeSocket.onConnect(() => {
@@ -77,13 +70,13 @@ io.on("connection", (socket) => {
       io.emit(`${symbol} newOrderResponse`, data);
     }
     if (symbol && event === "canceled") {
-      establishApiConnections(io);
-      establishSocketConnections(io);
-
       io.emit("canceledOrderResponse", data);
+
+      // alpaca.getWatchlist(alpacaInstance, alpacaSocket, io, alpacaWatchlistId);
+      // rangerApi.getOpenPositions(io, alpacaSocket);
     }
     if (symbol && event === "fill") {
-      rangerApi.createOrder(data);
+      rangerApi.createOrder(data, io, alpacaSocket);
 
       const positionQuantity = data.position_qty;
       if (positionQuantity === "0") {
@@ -92,10 +85,9 @@ io.on("connection", (socket) => {
         io.emit(`${symbol} fillOrderResponse`, data);
       }
 
-      establishApiConnections(io);
-      establishSocketConnections(io);
-
       io.emit("fillOrderResponse", data);
+
+      alpaca.getAccount(alpacaInstance, io);
     }
   });
 

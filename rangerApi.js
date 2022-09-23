@@ -16,9 +16,15 @@ module.exports = {
     });
     console.log("cancelPosition response", response.status);
   },
-  createOrder: async function (orderData) {
+  createOrder: async function (orderData, io, alpacaSocket) {
     const response = await axiosInstance.post("/create_order", orderData);
-    console.log("createOrder response", response.status);
+    const statusCode = response.status;
+    console.log("createOrder response", statusCode);
+    if (statusCode === 201) {
+      this.getTotalProfitOrLossToday(io);
+      this.getOpenPositions(io, alpacaSocket);
+      this.getPendingPositions(io);
+    }
   },
   getOpenPositions: async function (io, alpacaSocket) {
     const response = await axiosInstance.get("/open_positions");

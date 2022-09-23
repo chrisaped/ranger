@@ -7,6 +7,7 @@ module.exports = {
   ) {
     const response = await alpacaInstance.getWatchlist(alpacaWatchlistId);
     const symbolsArray = response?.assets?.map((obj) => obj.symbol) || [];
+    console.log("getWatchlist response", symbolsArray);
     io.emit("getWatchlist", symbolsArray);
     if (symbolsArray.length > 0) {
       alpacaSocket.subscribeForQuotes(symbolsArray);
