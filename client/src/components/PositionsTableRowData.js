@@ -38,6 +38,13 @@ export default function PositionsTableRowData({
   const [stopTargetQuantity, setStopTargetQuantity] = useState(0);
   const [stopTargetSide, setStopTargetSide] = useState("");
   const [stopTargetSubmitted, setStopTargetSubmitted] = useState(false);
+  const [lastPrice, setLastPrice] = useState(0.0);
+
+  if (!price && lastPrice !== 0.0) price = lastPrice;
+
+  useEffect(() => {
+    if (!price) socket.emit("getLatestTrade", symbol);
+  }, []); // eslint-disable-line
 
   useEffect(() => {
     socket.on(`${symbol} newOrderResponse`, (data) => {
@@ -45,8 +52,11 @@ export default function PositionsTableRowData({
       setOrderId(newOrderId);
     });
 
-    socket.on(`${symbol} fillOrderResponse`, (data) => {
-      setOrderId("");
+    socket.on(`${symbol} fillOrderResponse`, (_data) => setOrderId(""));
+
+    socket.on(`${symbol} getLatestTradeResponse`, (data) => {
+      const latestPrice = data.Price;
+      setLastPrice(latestPrice);
     });
   }, []); // eslint-disable-line
 
