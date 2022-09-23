@@ -209,7 +209,7 @@ export default function PositionsTableRowData({
               className="form-control mx-1"
               type="number"
               value={limitPrice}
-              placeholder="Limit Price"
+              placeholder="Limit"
               onChange={(e) => updateNumberField(e.target.value, setLimitPrice)}
             />
             <SpinnerButton

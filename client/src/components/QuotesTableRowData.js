@@ -207,6 +207,7 @@ export default function QuotesTableRowData({
               type="number"
               value={limitPrice}
               disabled={inputIsDisabled}
+              placeholder="Limit"
               onChange={(e) => updateNumberField(e.target.value, setLimitPrice)}
             />
           </td>
@@ -219,6 +220,7 @@ export default function QuotesTableRowData({
               type="number"
               value={stopPrice}
               disabled={inputIsDisabled}
+              placeholder="Stop"
               onChange={(e) => updateNumberField(e.target.value, setStopPrice)}
             />
           </td>
