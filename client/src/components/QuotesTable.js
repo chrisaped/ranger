@@ -8,10 +8,10 @@ export default function QuotesTable({
   removeFromQuotesAndWatchlist,
   watchlist,
   tradeableAssets,
-  removeFromWatchlist,
   accountInfo,
   pendingPositions,
   newOrders,
+  setWatchlist,
 }) {
   const lastMultiplier = profitMultipliers[profitMultipliers.length - 1];
 
@@ -42,13 +42,14 @@ export default function QuotesTable({
                 socket={socket}
                 symbol={symbol}
                 priceObj={priceObj}
-                removeFromWatchlist={removeFromWatchlist}
                 removeFromQuotesAndWatchlist={removeFromQuotesAndWatchlist}
                 tradeableAssets={tradeableAssets}
                 accountInfo={accountInfo}
                 lastMultiplier={lastMultiplier}
                 pendingPosition={pendingPosition}
                 newOrder={newOrder}
+                watchlist={watchlist}
+                setWatchlist={setWatchlist}
               />
             </tr>
           );
@@ -64,7 +65,6 @@ QuotesTable.propTypes = {
   removeFromQuotesAndWatchlist: PropTypes.func.isRequired,
   watchlist: PropTypes.arrayOf(PropTypes.string).isRequired,
   tradeableAssets: PropTypes.object.isRequired,
-  removeFromWatchlist: PropTypes.func.isRequired,
   accountInfo: PropTypes.object.isRequired,
 };
 

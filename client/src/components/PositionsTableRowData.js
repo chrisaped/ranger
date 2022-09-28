@@ -207,7 +207,7 @@ export default function PositionsTableRowData({
           <div className="d-flex">
             <input
               className="form-control mx-1"
-              type="number"
+              type="text"
               value={limitPrice}
               placeholder="Limit"
               onChange={(e) => updateNumberField(e.target.value, setLimitPrice)}

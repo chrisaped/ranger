@@ -26,13 +26,14 @@ export default function QuotesTableRowData({
   socket,
   symbol,
   priceObj,
-  removeFromWatchlist,
   removeFromQuotesAndWatchlist,
   tradeableAssets,
   accountInfo,
   lastMultiplier,
   pendingPosition,
   newOrder,
+  watchlist,
+  setWatchlist,
 }) {
   const defaultStopPrice = 0.0;
   const defaultLimitPrice = 0.0;
@@ -45,13 +46,7 @@ export default function QuotesTableRowData({
   let price = selectPrice(priceObj, side);
   if (!price && lastPrice !== 0.0) price = lastPrice;
 
-  const twoDecimalNumPrice = (num) => parseFloat(num.toFixed(2));
-
   useEffect(() => {
-    socket.on(`${symbol} fillOrderResponse`, (_data) =>
-      removeFromWatchlist(symbol)
-    );
-
     socket.on(`${symbol} createNewOrderResponse`, (data) => {
       const newOrderId = data.id;
       setOrderId(newOrderId);
@@ -64,6 +59,18 @@ export default function QuotesTableRowData({
   }, []); // eslint-disable-line
 
   useEffect(() => {
+    socket.on(`${symbol} fillOrderResponse`, (_data) => {
+      if (watchlist.includes(symbol)) {
+        const newWatchlist = watchlist.filter(
+          (watchlistSymbol) => watchlistSymbol !== symbol
+        );
+        setWatchlist(newWatchlist);
+        socket.emit("removeFromWatchlist", symbol);
+      }
+    });
+  }, [watchlist]); // eslint-disable-line
+
+  useEffect(() => {
     if (!price && !newOrder && !pendingPosition)
       socket.emit("getLatestTrade", symbol);
   }, []); // eslint-disable-line
@@ -72,14 +79,14 @@ export default function QuotesTableRowData({
     if (price && stopPrice === defaultStopPrice) {
       let newDefaultStopPrice = price - defaultStopPriceDifference;
       if (newDefaultStopPrice < 0) newDefaultStopPrice = 0.01;
-      newDefaultStopPrice = twoDecimalNumPrice(newDefaultStopPrice);
+      newDefaultStopPrice = newDefaultStopPrice.toFixed(2);
       setStopPrice(newDefaultStopPrice);
     }
   }, [price, stopPrice]);
 
   useEffect(() => {
     if (price && limitPrice === defaultLimitPrice) {
-      const formattedPrice = twoDecimalNumPrice(price);
+      const formattedPrice = price.toFixed(2);
       setLimitPrice(formattedPrice);
     }
   }, [price, limitPrice]);
@@ -98,7 +105,7 @@ export default function QuotesTableRowData({
     setSide(newSide);
     let newDefaultStopPrice = calculateDefaultStopPrice(side, limitPrice);
     if (newDefaultStopPrice < 0) newDefaultStopPrice = 0.01;
-    newDefaultStopPrice = twoDecimalNumPrice(newDefaultStopPrice);
+    newDefaultStopPrice = newDefaultStopPrice.toFixed(2);
     setStopPrice(newDefaultStopPrice);
   };
 
@@ -204,7 +211,7 @@ export default function QuotesTableRowData({
           <td style={{ width: inputWidthPercentage }}>
             <input
               className="form-control"
-              type="number"
+              type="text"
               value={limitPrice}
               disabled={inputIsDisabled}
               placeholder="Limit"
@@ -217,7 +224,7 @@ export default function QuotesTableRowData({
           <td style={{ width: inputWidthPercentage }}>
             <input
               className={stopPriceInputClassName}
-              type="number"
+              type="text"
               value={stopPrice}
               disabled={inputIsDisabled}
               placeholder="Stop"
@@ -271,7 +278,6 @@ QuotesTableRowData.propTypes = {
   socket: PropTypes.object.isRequired,
   symbol: PropTypes.string.isRequired,
   priceObj: PropTypes.object.isRequired,
-  removeFromWatchlist: PropTypes.func.isRequired,
   removeFromQuotesAndWatchlist: PropTypes.func.isRequired,
   tradeableAssets: PropTypes.object.isRequired,
   accountInfo: PropTypes.object.isRequired,

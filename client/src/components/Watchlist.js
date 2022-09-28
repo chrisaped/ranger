@@ -15,7 +15,7 @@ export default function Watchlist({
 }) {
   useEffect(() => {
     socket.on("getWatchlist", (symbols) => setWatchlist(symbols));
-  }, [socket, setWatchlist]);
+  }, []); // eslint-disable-line
 
   const removeFromQuotesAndWatchlist = useCallback(
     (symbol) => {
@@ -30,20 +30,7 @@ export default function Watchlist({
       }
       socket.emit("removeFromQuotesAndWatchlist", symbol);
     },
-    [quotes, setQuotes, setWatchlist, socket, watchlist]
-  );
-
-  const removeFromWatchlist = useCallback(
-    (symbol) => {
-      if (watchlist.includes(symbol)) {
-        const newWatchlist = watchlist.filter(
-          (watchlistSymbol) => watchlistSymbol !== symbol
-        );
-        setWatchlist(newWatchlist);
-        socket.emit("removeFromWatchlist", symbol);
-      }
-    },
-    [setWatchlist, socket, watchlist]
+    [watchlist] // eslint-disable-line
   );
 
   return (
@@ -55,10 +42,10 @@ export default function Watchlist({
           removeFromQuotesAndWatchlist={removeFromQuotesAndWatchlist}
           watchlist={watchlist}
           tradeableAssets={tradeableAssets}
-          removeFromWatchlist={removeFromWatchlist}
           accountInfo={accountInfo}
           pendingPositions={pendingPositions}
           newOrders={newOrders}
+          setWatchlist={setWatchlist}
         />
       )}
     </div>
