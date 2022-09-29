@@ -193,7 +193,7 @@ export default function PositionsTableRowData({
       <td>${displayCurrency(profitOrLoss)}</td>
       <td>{displayRoundNumber(quantity)} shares</td>
       <td>${cost}</td>
-      <td style={{ width: "15%" }}>
+      <td style={{ width: "18%" }}>
         {orderId ? (
           <SpinnerButton
             socket={socket}
