@@ -27,7 +27,8 @@ module.exports = {
   deleteFromWatchlist: async function (
     alpacaInstance,
     symbol,
-    alpacaWatchlistId
+    alpacaWatchlistId,
+    io
   ) {
     const response = await alpacaInstance.deleteFromWatchlist(
       alpacaWatchlistId,

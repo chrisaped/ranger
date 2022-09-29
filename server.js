@@ -128,12 +128,12 @@ io.on("connection", (socket) => {
   socket.on("removeFromQuotesAndWatchlist", (symbol) => {
     console.log("removeFromQuotesAndWatchlist", symbol);
     alpacaSocket.unsubscribeFromQuotes([symbol]);
-    alpaca.deleteFromWatchlist(alpacaInstance, symbol, alpacaWatchlistId);
+    alpaca.deleteFromWatchlist(alpacaInstance, symbol, alpacaWatchlistId, io);
   });
 
   socket.on("removeFromWatchlist", (symbol) => {
     console.log("removeFromWatchlist", symbol);
-    alpaca.deleteFromWatchlist(alpacaInstance, symbol, alpacaWatchlistId);
+    alpaca.deleteFromWatchlist(alpacaInstance, symbol, alpacaWatchlistId, io);
   });
 
   socket.on("cancelOrder", (orderObj) => {
