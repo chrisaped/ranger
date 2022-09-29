@@ -255,9 +255,13 @@ export default function QuotesTableRowData({
             symbol={symbol}
           />
         ) : (
-          <button className="btn btn-secondary" onClick={onClickRemove}>
-            Remove
-          </button>
+          <SpinnerButton
+            socket={socket}
+            buttonClass="btn btn-secondary"
+            buttonText="Remove"
+            onClickFunction={onClickRemove}
+            symbol={symbol}
+          />
         )}
       </td>
     </>
