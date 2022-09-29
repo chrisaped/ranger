@@ -11,7 +11,6 @@ export default function QuotesTable({
   accountInfo,
   pendingPositions,
   newOrders,
-  setWatchlist,
 }) {
   const lastMultiplier = profitMultipliers[profitMultipliers.length - 1];
 
@@ -48,8 +47,6 @@ export default function QuotesTable({
                 lastMultiplier={lastMultiplier}
                 pendingPosition={pendingPosition}
                 newOrder={newOrder}
-                watchlist={watchlist}
-                setWatchlist={setWatchlist}
               />
             </tr>
           );

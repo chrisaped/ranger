@@ -19,16 +19,13 @@ export default function Watchlist({
 
   const removeFromQuotesAndWatchlist = useCallback(
     (symbol) => {
-      const newWatchlist = watchlist.filter(
-        (watchlistSymbol) => watchlistSymbol !== symbol
-      );
-      setWatchlist(newWatchlist);
+      socket.emit("removeFromQuotesAndWatchlist", symbol);
+
       if (Object.keys(quotes).length > 0) {
         const newQuotes = quotes;
         delete newQuotes[symbol];
         setQuotes(newQuotes);
       }
-      socket.emit("removeFromQuotesAndWatchlist", symbol);
     },
     [watchlist] // eslint-disable-line
   );
@@ -45,7 +42,6 @@ export default function Watchlist({
           accountInfo={accountInfo}
           pendingPositions={pendingPositions}
           newOrders={newOrders}
-          setWatchlist={setWatchlist}
         />
       )}
     </div>

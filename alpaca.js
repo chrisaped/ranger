@@ -35,6 +35,7 @@ module.exports = {
     );
     const symbolsArray = response?.assets?.map((obj) => obj.symbol) || [];
     console.log("deleteFromWatchlist response", symbolsArray);
+    io.emit("getWatchlist", symbolsArray);
   },
   getPositions: async function (alpacaInstance, io, alpacaSocket) {
     const response = await alpacaInstance.getPositions();

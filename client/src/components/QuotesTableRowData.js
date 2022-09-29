@@ -32,8 +32,6 @@ export default function QuotesTableRowData({
   lastMultiplier,
   pendingPosition,
   newOrder,
-  watchlist,
-  setWatchlist,
 }) {
   const defaultStopPrice = 0.0;
   const defaultLimitPrice = 0.0;
@@ -56,19 +54,11 @@ export default function QuotesTableRowData({
       const latestPrice = data.Price;
       setLastPrice(latestPrice);
     });
-  }, []); // eslint-disable-line
 
-  useEffect(() => {
     socket.on(`${symbol} fillOrderResponse`, (_data) => {
-      if (watchlist.includes(symbol)) {
-        const newWatchlist = watchlist.filter(
-          (watchlistSymbol) => watchlistSymbol !== symbol
-        );
-        setWatchlist(newWatchlist);
-        socket.emit("removeFromWatchlist", symbol);
-      }
+      socket.emit("removeFromWatchlist", symbol);
     });
-  }, [watchlist]); // eslint-disable-line
+  }, []); // eslint-disable-line
 
   useEffect(() => {
     if (!price && !newOrder && !pendingPosition)
