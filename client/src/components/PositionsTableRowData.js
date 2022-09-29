@@ -12,7 +12,7 @@ import {
   createOrder,
   createStopOrder,
   cancelOrder,
-  determineOrderSide,
+  determinePositionOrderSide,
 } from "../shared/orders";
 
 export default function PositionsTableRowData({
@@ -144,7 +144,7 @@ export default function PositionsTableRowData({
   }
 
   const cost = displayRoundNumber(initialPrice * quantity);
-  const orderSide = determineOrderSide(side);
+  const orderSide = determinePositionOrderSide(side);
   const limitOrder = createLimitOrder(symbol, quantity, orderSide, limitPrice);
   const submitOrder = () => createOrder(socket, limitOrder);
   const orderButtonText = capitalizeString(orderSide);

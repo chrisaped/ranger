@@ -1,4 +1,4 @@
-export const determineOrderSide = (side) => {
+export const determinePositionOrderSide = (side) => {
   let orderSide = "sell";
   if (side === "short") orderSide = "buy";
   return orderSide;

@@ -4,6 +4,7 @@ import PositionsTableRowData from "./PositionsTableRowData";
 import { calculateProfitLoss } from "../shared/calculations";
 import { selectPrice } from "../shared/quotes";
 import { profitMultipliers } from "../shared/constants";
+import { determinePositionOrderSide } from "../shared/orders";
 
 export default function PositionsTable({ socket, quotes, openPositions }) {
   const getRowClassName = (profitOrLoss) => {
@@ -31,7 +32,8 @@ export default function PositionsTable({ socket, quotes, openPositions }) {
     } = positionObj;
     const quantity = Math.abs(current_quantity);
     const priceObj = quotes[symbol];
-    const price = selectPrice(priceObj, side);
+    const positionSide = determinePositionOrderSide(side);
+    const price = selectPrice(priceObj, positionSide);
 
     let profitOrLoss = 0.0;
     if (price)

@@ -1,5 +1,3 @@
-import { determineOrderSide } from "./orders";
-
 export const displayOrderButton = (side, symbol, tradeableAssets) => {
   let buttonText = "Long";
   let buttonClass = "btn btn-success";
@@ -66,11 +64,11 @@ export const isDisabled = (
 
 export const selectPrice = (priceObj, side) => {
   if (!priceObj) return;
+
   const { ask, bid } = priceObj;
+
   let price = ask;
-  const priceSide = determineOrderSide(side);
-  if (priceSide === "sell") {
-    price = bid;
-  }
+  if (side === "sell") price = bid;
+
   return price;
 };
