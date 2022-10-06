@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { sumObjectValues, calculateProfitLoss } from "../shared/calculations";
 import { selectPrice } from "../shared/quotes";
 import { displayCurrency } from "../shared/formatting";
+import { determinePositionOrderSide } from "../shared/orders";
 
 export default function ProfitLoss({ openPositions, quotes, socket }) {
   const [totalProfitOrLossToday, setTotalProfitOrLossToday] = useState(0.0);
@@ -27,7 +28,8 @@ export default function ProfitLoss({ openPositions, quotes, socket }) {
       } = positionObj;
 
       const priceObj = quotes[symbol];
-      const price = selectPrice(priceObj, side);
+      const positionSide = determinePositionOrderSide(side);
+      const price = selectPrice(priceObj, positionSide);
 
       const calculatedProfitLoss = calculateProfitLoss(
         price,
