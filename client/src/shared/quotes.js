@@ -68,7 +68,9 @@ export const selectPrice = (priceObj, side) => {
   const { ask, bid } = priceObj;
 
   let price = ask;
-  if (side === "sell") price = bid;
+  const bidStrings = ["sell", "long"];
+
+  if (bidStrings.includes(side)) price = bid;
 
   return price;
 };
